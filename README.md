@@ -62,6 +62,17 @@ Unit tests are written with standard `unittest` and verify public API contracts,
 python3.14 -m unittest discover -s tests -v
 ```
 
+The offline evaluation and benchmark commands write JSON reports with dataset and source hashes:
+
+```bash
+python3.14 -m tools.evaluate --dictionary tests/fixtures/dictionary.json --cases tests/fixtures/cases.jsonl --output reports/baseline.json
+python3.14 -m tools.benchmark --dictionary tests/fixtures/dictionary.json --cases tests/fixtures/cases.jsonl --output reports/timing.json
+python3.14 -m benchmarks.generate --output-dir reports/scale --seed 42
+python3.14 -m tools.benchmark --dictionary reports/scale/dictionary.json --cases reports/scale/cases.jsonl --output reports/scale-timing.json
+```
+
+Evaluation reports separate wrong labels, false non-null assignments, and missed matches. Use `--baseline PATH` on the evaluation command to compare case-level gains and regressions against a report for the same dictionary and cases. Benchmarks separate import, loading, indexing, first request, warm requests, and JSONL process costs; memory runs in a separate process. Synthetic datasets exercise scale and controlled behaviors and do not establish accuracy on instructor data. Generated reports are ignored by Git; reviewed stage measurements are recorded under `docs/`.
+
 ---
 
 ## 3. Component Boundaries (Stage A)

@@ -1,3 +1,4 @@
 visualization/
 __pycache__/
 *.py[cod]
+reports/

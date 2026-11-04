@@ -140,7 +140,7 @@ Each feature experiment compares identical cases/configuration except the featur
 
 ## Execution stages and delegation boundaries
 
-Current status: stage A is implemented and independently verified on CPython 3.14.4. Antigravity completed the resumed task with a 30-minute timeout and a corrective review turn. All 33 foundation tests and separate contract, collision, Unicode, numeric-boundary and CLI checks pass. The baseline includes exact and accent-folded token matching, dictionary validation, conservative ambiguity rejection, a JSONL CLI, fixtures, and README. Full joint selection, fuzzy/typing recovery, the evaluation harness and runtime benchmarks remain pending. This is not yet a grader-ready submission.
+Current status: stages A and B are implemented and verified on CPython 3.14.4 (64 tests). Stage B adds strict evaluation cases and prediction validation, baseline comparisons, cold/warm subprocess benchmarks, memory measurements, and deterministic synthetic scale data. The 15-case baseline fixture passes completely; measurements and hashes are recorded in `stage-results.json`. Stages C–F are in progress. Official grader compatibility remains unverified.
 
 | Stage | Owned deliverables | Exit gate |
 | --- | --- | --- |
@@ -149,10 +149,10 @@ Current status: stage A is implemented and independently verified on CPython 3.1
 | C Evidence and joint selection | Source-span candidates, context rules, joint selector, trace API | Collisions, overlapping fields and ambiguous-field independence pass |
 | D General recovery | Approximate indexes, edit verifier, work budgets | Better targeted recall with measured false-positive and latency changes; prefix regression passes |
 | E Typing recovery | Telex/VNI and compact variants, optional keyboard features | Positive/negative controls and ablations justify each enabled rule |
-| F Official integration | Schema adapter, frozen split, official protocol | Real dictionaries preserve canonical labels and contract smoke test passes |
+| F Provisional integration | Explicit source manifest adapter, frozen grouped split, documented development protocol | Fixture dictionaries preserve canonical labels; schema, split and protocol smoke tests pass; official integration remains pending |
 | G Release | README, selected runtime files, preflight, offline bundle report | Exact artifact passes correctness, protocol, offline and official timing gates |
 
-Dependencies: A precedes B and C; B+C precede D; D precedes E; F starts when materials arrive and feeds evaluation; G follows integration and measured tuning. The first Antigravity work order covers A only. It must not present exact-only matching as the complete system. Later work orders own one stage or smaller file set, include the applicable tests, and stop for review before new algorithm families.
+Dependencies: A precedes B and C; B+C precede D; D precedes E. Per the user's instruction to proceed without further instructor materials, F implements and tests explicit source adapters and grouped splitting against fixtures now. Reconcile those adapters and the protocol with official materials when supplied. G follows official integration and measured tuning. Each implementation stage is independently reviewed, tested and committed before the next stage is integrated.
 
 Codex owns architecture, acceptance criteria, integration and independent verification. Antigravity works in a scratch copy, preserves others' changes, uses the existing login and permission policy, and reports unrun tests honestly. Review actual changed files and run tests locally before copying approved files into the repository. Keep logs outside the submission.
 

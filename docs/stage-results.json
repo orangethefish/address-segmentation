@@ -1,0 +1,645 @@
+{
+  "stage_b": {
+    "tests": 64,
+    "evaluation": {
+      "metadata": {
+        "dictionary_path": "/home/orange/Code/address-segmentation/tests/fixtures/dictionary.json",
+        "dictionary_hash": "6b4bba30bef12b818c319e43263e31a9c1fa60bab09d84a1afca4ede1388b653",
+        "cases_path": "/home/orange/Code/address-segmentation/tests/fixtures/cases.jsonl",
+        "cases_hash": "5dfd6b0cd8c893df247780b7e09fd0d1088ffd99961bc2a111a20c9055fe89db",
+        "source_hash": "b2e732d67102f4a64a980a0c1c90facddc46a716a9a0d7f2b8748a1dd6be2f35",
+        "platform": {
+          "python_version": "3.14.4 (main, Aug 20 2026, 10:41:58) [GCC 15.2.0]",
+          "python_implementation": "CPython",
+          "platform": "Linux-7.0.0-42-generic-x86_64-with-glibc2.43",
+          "system": "Linux",
+          "release": "7.0.0-42-generic",
+          "machine": "x86_64",
+          "processor": "",
+          "cpu_count": 12
+        },
+        "config": {
+          "matcher_class": "AddressMatcher",
+          "trace_supported": false
+        },
+        "total_cases": 15
+      },
+      "metrics": {
+        "complete_accuracy": {
+          "numerator": 15,
+          "denominator": 15,
+          "rate": 1.0
+        },
+        "per_field_accuracy": {
+          "overall": {
+            "numerator": 45,
+            "denominator": 45,
+            "rate": 1.0
+          },
+          "by_field": {
+            "street": {
+              "numerator": 15,
+              "denominator": 15,
+              "rate": 1.0
+            },
+            "ward": {
+              "numerator": 15,
+              "denominator": 15,
+              "rate": 1.0
+            },
+            "province": {
+              "numerator": 15,
+              "denominator": 15,
+              "rate": 1.0
+            }
+          }
+        },
+        "false_non_null": {
+          "overall": {
+            "numerator": 0,
+            "denominator": 18,
+            "rate": 0.0
+          },
+          "by_field": {
+            "street": {
+              "numerator": 0,
+              "denominator": 7,
+              "rate": 0.0
+            },
+            "ward": {
+              "numerator": 0,
+              "denominator": 5,
+              "rate": 0.0
+            },
+            "province": {
+              "numerator": 0,
+              "denominator": 6,
+              "rate": 0.0
+            }
+          }
+        },
+        "wrong_label": {
+          "overall": {
+            "numerator": 0,
+            "denominator": 27,
+            "rate": 0.0
+          },
+          "by_field": {
+            "street": {
+              "numerator": 0,
+              "denominator": 8,
+              "rate": 0.0
+            },
+            "ward": {
+              "numerator": 0,
+              "denominator": 10,
+              "rate": 0.0
+            },
+            "province": {
+              "numerator": 0,
+              "denominator": 9,
+              "rate": 0.0
+            }
+          }
+        },
+        "missed_nonnull": {
+          "overall": {
+            "numerator": 0,
+            "denominator": 27,
+            "rate": 0.0
+          },
+          "by_field": {
+            "street": {
+              "numerator": 0,
+              "denominator": 8,
+              "rate": 0.0
+            },
+            "ward": {
+              "numerator": 0,
+              "denominator": 10,
+              "rate": 0.0
+            },
+            "province": {
+              "numerator": 0,
+              "denominator": 9,
+              "rate": 0.0
+            }
+          }
+        },
+        "missed_recoverable": {
+          "overall": {
+            "numerator": 0,
+            "denominator": 25,
+            "rate": 0.0
+          },
+          "by_field": {
+            "street": {
+              "numerator": 0,
+              "denominator": 8,
+              "rate": 0.0
+            },
+            "ward": {
+              "numerator": 0,
+              "denominator": 8,
+              "rate": 0.0
+            },
+            "province": {
+              "numerator": 0,
+              "denominator": 9,
+              "rate": 0.0
+            }
+          }
+        },
+        "ambiguity_abstention": {
+          "case_level": {
+            "numerator": 2,
+            "denominator": 2,
+            "rate": 1.0
+          },
+          "field_level": {
+            "numerator": 4,
+            "denominator": 4,
+            "rate": 1.0
+          }
+        },
+        "category_counts": {
+          "total_cases": 15,
+          "by_expectation_kind": {
+            "recoverable": 10,
+            "unsupported": 3,
+            "ambiguous": 2
+          },
+          "by_tag": {
+            "exact": 2,
+            "full": 1,
+            "nfd": 1,
+            "unicode": 1,
+            "empty": 1,
+            "negative": 3,
+            "punctuation": 1,
+            "numeric": 2,
+            "boundary": 1,
+            "street-name": 1,
+            "unsupported": 1,
+            "collision": 2,
+            "same-field": 1,
+            "ambiguity": 2,
+            "cross-field": 1,
+            "partial": 3,
+            "missing-ward": 1,
+            "ward-only": 1,
+            "province-only": 1,
+            "folded": 1,
+            "accentless": 1,
+            "alias": 1,
+            "acronym": 1,
+            "alt-province": 1
+          }
+        },
+        "per_case_failures": [],
+        "retrieval": {
+          "status": "unavailable",
+          "message": "Matcher trace API not yet available in Stage B",
+          "recall_before_verification": null,
+          "recall_after_verification": null,
+          "recall_after_top_k": null
+        }
+      },
+      "predictions": {
+        "case-001": {
+          "street": "Nam Kỳ Khởi Nghĩa",
+          "ward": "Phường Bến Thành",
+          "province": "Thành phố Hồ Chí Minh"
+        },
+        "case-002": {
+          "street": "Nam Kỳ Khởi Nghĩa",
+          "ward": "Phường Bến Thành",
+          "province": "Thành phố Hồ Chí Minh"
+        },
+        "case-003": {
+          "street": null,
+          "ward": null,
+          "province": null
+        },
+        "case-004": {
+          "street": null,
+          "ward": null,
+          "province": null
+        },
+        "case-005": {
+          "street": "Nam Kỳ Khởi Nghĩa",
+          "ward": "Phường Bến Thành",
+          "province": "Thành phố Hồ Chí Minh"
+        },
+        "case-006": {
+          "street": "3/2",
+          "ward": "Phường 1",
+          "province": "Thành phố Hồ Chí Minh"
+        },
+        "case-007": {
+          "street": null,
+          "ward": null,
+          "province": null
+        },
+        "case-008": {
+          "street": null,
+          "ward": "Phường 1",
+          "province": null
+        },
+        "case-009": {
+          "street": null,
+          "ward": "Phường 1",
+          "province": null
+        },
+        "case-010": {
+          "street": "Lê Lợi",
+          "ward": null,
+          "province": "Thành phố Hà Nội"
+        },
+        "case-011": {
+          "street": null,
+          "ward": "Phường Bến Thành",
+          "province": null
+        },
+        "case-012": {
+          "street": null,
+          "ward": null,
+          "province": "Thành phố Đà Nẵng"
+        },
+        "case-013": {
+          "street": "Lê Lợi",
+          "ward": "Phường 1",
+          "province": "Thành phố Hà Nội"
+        },
+        "case-014": {
+          "street": "LTK",
+          "ward": "Phường 2",
+          "province": "Thành phố Hồ Chí Minh"
+        },
+        "case-015": {
+          "street": "Điện Biên Phủ",
+          "ward": "Phường 1",
+          "province": "TP. Hồ Chí Minh"
+        }
+      },
+      "per_case_failures": []
+    },
+    "fixture_timing": {
+      "metadata": {
+        "dictionary_path": "/home/orange/Code/address-segmentation/tests/fixtures/dictionary.json",
+        "dictionary_hash": "6b4bba30bef12b818c319e43263e31a9c1fa60bab09d84a1afca4ede1388b653",
+        "cases_path": "/home/orange/Code/address-segmentation/tests/fixtures/cases.jsonl",
+        "cases_hash": "5dfd6b0cd8c893df247780b7e09fd0d1088ffd99961bc2a111a20c9055fe89db",
+        "source_hash": "b2e732d67102f4a64a980a0c1c90facddc46a716a9a0d7f2b8748a1dd6be2f35",
+        "platform": {
+          "python_version": "3.14.4 (main, Aug 20 2026, 10:41:58) [GCC 15.2.0]",
+          "python_implementation": "CPython",
+          "platform": "Linux-7.0.0-42-generic-x86_64-with-glibc2.43",
+          "system": "Linux",
+          "release": "7.0.0-42-generic",
+          "machine": "x86_64",
+          "processor": "",
+          "cpu_count": 12
+        },
+        "processes": 5,
+        "warmup": 10,
+        "repetitions": 3,
+        "seed": 42,
+        "total_cases": 15,
+        "input_lengths": {
+          "min": 0,
+          "max": 74,
+          "mean": 37.06666666666667
+        }
+      },
+      "phases": {
+        "fresh_process_import": {
+          "count": 1,
+          "mean_ns": 17650078.0,
+          "mean_ms": 17.650078,
+          "min_ns": 17650078.0,
+          "min_ms": 17.650078,
+          "p50_ns": 17650078.0,
+          "p50_ms": 17.650078,
+          "p95_ns": 17650078.0,
+          "p95_ms": 17.650078,
+          "p99_ns": 17650078.0,
+          "p99_ms": 17.650078,
+          "max_ns": 17650078.0,
+          "max_ms": 17.650078
+        },
+        "interpreter_and_import_total": {
+          "count": 1,
+          "mean_ns": 31414782.0,
+          "mean_ms": 31.414782,
+          "min_ns": 31414782.0,
+          "min_ms": 31.414782,
+          "p50_ns": 31414782.0,
+          "p50_ms": 31.414782,
+          "p95_ns": 31414782.0,
+          "p95_ms": 31.414782,
+          "p99_ns": 31414782.0,
+          "p99_ms": 31.414782,
+          "max_ns": 31414782.0,
+          "max_ms": 31.414782
+        },
+        "dictionary_load": {
+          "count": 5,
+          "mean_ns": 98908.4,
+          "mean_ms": 0.0989084,
+          "min_ns": 94931.0,
+          "min_ms": 0.094931,
+          "p50_ns": 99200.0,
+          "p50_ms": 0.0992,
+          "p95_ns": 101941.0,
+          "p95_ms": 0.101941,
+          "p99_ns": 102193.0,
+          "p99_ms": 0.102193,
+          "max_ns": 102256.0,
+          "max_ms": 0.102256
+        },
+        "matcher_index": {
+          "count": 5,
+          "mean_ns": 438382.6,
+          "mean_ms": 0.43838259999999996,
+          "min_ns": 412024.0,
+          "min_ms": 0.412024,
+          "p50_ns": 423253.0,
+          "p50_ms": 0.423253,
+          "p95_ns": 482583.6,
+          "p95_ms": 0.4825836,
+          "p99_ns": 488779.12,
+          "p99_ms": 0.48877912,
+          "max_ns": 490328.0,
+          "max_ms": 0.490328
+        },
+        "first_request": {
+          "count": 5,
+          "mean_ns": 141008.0,
+          "mean_ms": 0.141008,
+          "min_ns": 138599.0,
+          "min_ms": 0.138599,
+          "p50_ns": 140096.0,
+          "p50_ms": 0.140096,
+          "p95_ns": 143833.6,
+          "p95_ms": 0.1438336,
+          "p99_ns": 143889.92,
+          "p99_ms": 0.14388992,
+          "max_ns": 143904.0,
+          "max_ms": 0.143904
+        },
+        "warmed_request": {
+          "count": 225,
+          "mean_ns": 63811.28888888889,
+          "mean_ms": 0.06381128888888889,
+          "min_ns": 458.0,
+          "min_ms": 0.000458,
+          "p50_ns": 72531.0,
+          "p50_ms": 0.072531,
+          "p95_ns": 111504.4,
+          "p95_ms": 0.11150439999999999,
+          "p99_ns": 120857.59999999995,
+          "p99_ms": 0.12085759999999995,
+          "max_ns": 165493.0,
+          "max_ms": 0.165493
+        },
+        "child_total_elapsed": {
+          "count": 5,
+          "mean_ns": 59154510.8,
+          "mean_ms": 59.1545108,
+          "min_ns": 58350967.0,
+          "min_ms": 58.350967,
+          "p50_ns": 58738180.0,
+          "p50_ms": 58.73818,
+          "p95_ns": 60776712.4,
+          "p95_ms": 60.7767124,
+          "p99_ns": 61132553.68,
+          "p99_ms": 61.13255368,
+          "max_ns": 61221514.0,
+          "max_ms": 61.221514
+        },
+        "full_jsonl_adapter": {
+          "count": 1,
+          "mean_ns": 46348192.0,
+          "mean_ms": 46.348192,
+          "min_ns": 46348192.0,
+          "min_ms": 46.348192,
+          "p50_ns": 46348192.0,
+          "p50_ms": 46.348192,
+          "p95_ns": 46348192.0,
+          "p95_ms": 46.348192,
+          "p99_ns": 46348192.0,
+          "p99_ms": 46.348192,
+          "max_ns": 46348192.0,
+          "max_ms": 46.348192
+        }
+      },
+      "memory": {
+        "tracemalloc_peak_bytes": 173385,
+        "tracemalloc_current_bytes": 26813,
+        "ru_maxrss": 22896,
+        "ru_maxrss_units": "kibibytes",
+        "platform": "linux",
+        "measurement_notes": "tracemalloc measures Python heap allocations; ru_maxrss measures OS peak resident set size and includes tracemalloc overhead."
+      },
+      "thresholds": {
+        "mean_request_ms_target": 10.0,
+        "max_request_ms_target": 100.0,
+        "observed_warmed_mean_ms": 0.06381128888888889,
+        "observed_warmed_max_ms": 0.165493,
+        "observed_first_request_max_ms": 0.143904,
+        "observed_overall_max_ms": 0.165493,
+        "mean_target_met": true,
+        "warm_max_target_met": true,
+        "all_requests_within_target": true,
+        "cold_request_case_ids": [
+          "case-001",
+          "case-001",
+          "case-001",
+          "case-001",
+          "case-001"
+        ],
+        "observation_note": "Local observation only; not a universal guarantee under unknown official grader environment."
+      }
+    },
+    "scale_timing": {
+      "metadata": {
+        "dictionary_path": "/home/orange/Code/address-segmentation/reports/scale/dictionary.json",
+        "dictionary_hash": "8671122784f5d810267545ec0b76ba8f9caea6e5eaebb7613989a7ca67a5a09c",
+        "cases_path": "/home/orange/Code/address-segmentation/reports/scale/cases.jsonl",
+        "cases_hash": "ceb9e2159b68787215ada14a45d64eff3ea1b10ac4b8315eecf8e104ee28b27d",
+        "source_hash": "b2e732d67102f4a64a980a0c1c90facddc46a716a9a0d7f2b8748a1dd6be2f35",
+        "platform": {
+          "python_version": "3.14.4 (main, Aug 20 2026, 10:41:58) [GCC 15.2.0]",
+          "python_implementation": "CPython",
+          "platform": "Linux-7.0.0-42-generic-x86_64-with-glibc2.43",
+          "system": "Linux",
+          "release": "7.0.0-42-generic",
+          "machine": "x86_64",
+          "processor": "",
+          "cpu_count": 12
+        },
+        "processes": 5,
+        "warmup": 10,
+        "repetitions": 3,
+        "seed": 42,
+        "total_cases": 100,
+        "input_lengths": {
+          "min": 22,
+          "max": 201,
+          "mean": 63.83
+        }
+      },
+      "phases": {
+        "fresh_process_import": {
+          "count": 1,
+          "mean_ns": 16897364.0,
+          "mean_ms": 16.897364,
+          "min_ns": 16897364.0,
+          "min_ms": 16.897364,
+          "p50_ns": 16897364.0,
+          "p50_ms": 16.897364,
+          "p95_ns": 16897364.0,
+          "p95_ms": 16.897364,
+          "p99_ns": 16897364.0,
+          "p99_ms": 16.897364,
+          "max_ns": 16897364.0,
+          "max_ms": 16.897364
+        },
+        "interpreter_and_import_total": {
+          "count": 1,
+          "mean_ns": 30886137.0,
+          "mean_ms": 30.886137,
+          "min_ns": 30886137.0,
+          "min_ms": 30.886137,
+          "p50_ns": 30886137.0,
+          "p50_ms": 30.886137,
+          "p95_ns": 30886137.0,
+          "p95_ms": 30.886137,
+          "p99_ns": 30886137.0,
+          "p99_ms": 30.886137,
+          "max_ns": 30886137.0,
+          "max_ms": 30.886137
+        },
+        "dictionary_load": {
+          "count": 5,
+          "mean_ns": 5621089.8,
+          "mean_ms": 5.6210898,
+          "min_ns": 5491508.0,
+          "min_ms": 5.491508,
+          "p50_ns": 5536693.0,
+          "p50_ms": 5.536693,
+          "p95_ns": 5837443.8,
+          "p95_ms": 5.8374438,
+          "p99_ns": 5869745.5600000005,
+          "p99_ms": 5.86974556,
+          "max_ns": 5877821.0,
+          "max_ms": 5.877821
+        },
+        "matcher_index": {
+          "count": 5,
+          "mean_ns": 825188983.6,
+          "mean_ms": 825.1889836,
+          "min_ns": 766828909.0,
+          "min_ms": 766.828909,
+          "p50_ns": 800130207.0,
+          "p50_ms": 800.130207,
+          "p95_ns": 897598625.8,
+          "p95_ms": 897.5986257999999,
+          "p99_ns": 904656908.3599999,
+          "p99_ms": 904.6569083599999,
+          "max_ns": 906421479.0,
+          "max_ms": 906.421479
+        },
+        "first_request": {
+          "count": 5,
+          "mean_ns": 183330.4,
+          "mean_ms": 0.1833304,
+          "min_ns": 179673.0,
+          "min_ms": 0.179673,
+          "p50_ns": 182241.0,
+          "p50_ms": 0.182241,
+          "p95_ns": 187519.6,
+          "p95_ms": 0.1875196,
+          "p99_ns": 187786.32,
+          "p99_ms": 0.18778632,
+          "max_ns": 187853.0,
+          "max_ms": 0.187853
+        },
+        "warmed_request": {
+          "count": 1500,
+          "mean_ns": 126295.192,
+          "mean_ms": 0.126295192,
+          "min_ns": 39395.0,
+          "min_ms": 0.039395,
+          "p50_ns": 115968.5,
+          "p50_ms": 0.1159685,
+          "p95_ns": 346723.35,
+          "p95_ms": 0.34672335,
+          "p99_ns": 400312.26,
+          "p99_ms": 0.40031226000000003,
+          "max_ns": 449774.0,
+          "max_ms": 0.449774
+        },
+        "child_total_elapsed": {
+          "count": 5,
+          "mean_ns": 935551544.2,
+          "mean_ms": 935.5515442000001,
+          "min_ns": 874403816.0,
+          "min_ms": 874.403816,
+          "p50_ns": 908116370.0,
+          "p50_ms": 908.11637,
+          "p95_ns": 1010908751.1999999,
+          "p95_ms": 1010.9087512,
+          "p99_ns": 1018189527.84,
+          "p99_ms": 1018.18952784,
+          "max_ns": 1020009722.0,
+          "max_ms": 1020.009722
+        },
+        "full_jsonl_adapter": {
+          "count": 1,
+          "mean_ns": 964978228.0,
+          "mean_ms": 964.978228,
+          "min_ns": 964978228.0,
+          "min_ms": 964.978228,
+          "p50_ns": 964978228.0,
+          "p50_ms": 964.978228,
+          "p95_ns": 964978228.0,
+          "p95_ms": 964.978228,
+          "p99_ns": 964978228.0,
+          "p99_ms": 964.978228,
+          "max_ns": 964978228.0,
+          "max_ms": 964.978228
+        }
+      },
+      "memory": {
+        "tracemalloc_peak_bytes": 34680407,
+        "tracemalloc_current_bytes": 26905108,
+        "ru_maxrss": 104776,
+        "ru_maxrss_units": "kibibytes",
+        "platform": "linux",
+        "measurement_notes": "tracemalloc measures Python heap allocations; ru_maxrss measures OS peak resident set size and includes tracemalloc overhead."
+      },
+      "thresholds": {
+        "mean_request_ms_target": 10.0,
+        "max_request_ms_target": 100.0,
+        "observed_warmed_mean_ms": 0.126295192,
+        "observed_warmed_max_ms": 0.449774,
+        "observed_first_request_max_ms": 0.187853,
+        "observed_overall_max_ms": 0.449774,
+        "mean_target_met": true,
+        "warm_max_target_met": true,
+        "all_requests_within_target": true,
+        "cold_request_case_ids": [
+          "synth-case-00001",
+          "synth-case-00001",
+          "synth-case-00001",
+          "synth-case-00001",
+          "synth-case-00001"
+        ],
+        "observation_note": "Local observation only; not a universal guarantee under unknown official grader environment."
+      }
+    },
+    "limitations": "Synthetic fixture results only; official protocol, data and timing scope remain unknown."
+  }
+}
