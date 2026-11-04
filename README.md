@@ -1,6 +1,6 @@
-# Vietnamese Address Segmentation (Stage A Foundation)
+# Vietnamese Address Segmentation (Stages A–C)
 
-This package implements **Stage A Foundation** of the address segmentation architecture specified in [docs/architecture.md](docs/architecture.md) and [docs/address-segmentation-plan.md](docs/address-segmentation-plan.md).
+This package implements **stages A–C** of the address segmentation architecture specified in [docs/architecture.md](docs/architecture.md) and [docs/address-segmentation-plan.md](docs/address-segmentation-plan.md).
 
 It provides an exact-only, dictionary-constrained baseline implemented strictly in the Python standard library for CPython 3.14.
 
@@ -75,7 +75,7 @@ Evaluation reports separate wrong labels, false non-null assignments, and missed
 
 ---
 
-## 3. Component Boundaries (Stage A)
+## 3. Component Boundaries
 
 - [`address_segmentation/__init__.py`](address_segmentation/__init__.py): Exports `AddressMatcher` as the stable application interface.
 - [`address_segmentation/catalog.py`](address_segmentation/catalog.py): Validates label sequences, deduplicates identical labels, assigns stable deterministic IDs sorted lexicographically by `(field, canonical_label)`, and freezes collision-safe exact and folded lookup indexes into immutable tuples and sets.
@@ -87,22 +87,16 @@ Evaluation reports separate wrong labels, false non-null assignments, and missed
 
 ---
 
-## 4. Stage A Scope and Limitations
+## 4. Joint selection and diagnostics
 
-Stage A deliberately establishes the exact-match foundation before approximate or heuristic algorithms are introduced:
+The matcher retrieves complete canonical forms and field-specific name bodies, recognizes administrative markers, and selects compatible candidates jointly. Different fields cannot reuse overlapping input spans. Distinct occurrences can support multiple fields. Unresolved label ties return null, preserving independently supported fields. Candidate pruning is conservative and reported explicitly.
 
-1. **Exact token window matching only**:
-   - Matches complete token windows against Unicode NFC casefolded forms and accent-folded forms.
-   - Exact accented matches strictly outrank accent-folded matches.
-   - Punctuation-delimited tokens preserve slash numbers (e.g. `3/2`); street `3/2` will not match inside house number `53/2`.
-2. **Conservative ambiguity and collision rejection**:
-   - Multiple distinct canonical labels competing in the same field return `null` (`None`) for that field.
-   - Overlapping names and repeated cross-field occurrences: when evidence spans conflict across fields (e.g. `Hòa Bình` appearing as both street and province at the same address span), affected fields are conservatively set to `null` while preserving non-conflicting fields.
-   - Full joint selection and contextual disambiguation are deferred to Stage C.
-3. **No fuzzy or typing-aware recovery**:
-   - Edit-distance matching, character n-gram approximate retrieval, and keyboard error corrections are deferred to later stages.
-   - Telex/VNI residual modifier processing (`cungx`, `Đuơcj`, `cung4`) is deferred to Stage E.
-4. **No automatic prefix manipulation**:
-   - Administrative prefixes (`Phường`, `Thành phố`, `Đường`) are preserved from canonical labels; automatic stripping or synthetic insertion is not performed in Stage A.
-5. **No geographic database inference**:
-   - Unmentioned fields are emitted as `null` (`None`). Missing components are never hallucinated from outside map data.
+```python
+from address_segmentation.model import MatcherConfig
+matcher = AddressMatcher(streets=["Hòa Bình"], provinces=["Hòa Bình"], config=MatcherConfig(top_k=8))
+result, trace = matcher.identify_with_trace("Hòa Bình")
+```
+
+The trace shows candidates before and after verification and selection pruning, plus rejection reasons. Public `identify` results always contain only the three address fields. Evaluation reports measure candidate recall and identify the first stage that loses each recoverable expected label. Use `--config path.json` with the development CLI, evaluator, or benchmark to supply explicit `MatcherConfig` values; reports record the configuration.
+
+Approximate matching, Telex/VNI recovery, and compact-word matching are not yet enabled. There is no geographic inference. The development JSONL protocol is provisional until the instructor supplies the grader contract.

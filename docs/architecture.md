@@ -140,7 +140,7 @@ Each feature experiment compares identical cases/configuration except the featur
 
 ## Execution stages and delegation boundaries
 
-Current status: stages A and B are implemented and verified on CPython 3.14.4 (64 tests). Stage B adds strict evaluation cases and prediction validation, baseline comparisons, cold/warm subprocess benchmarks, memory measurements, and deterministic synthetic scale data. The 15-case baseline fixture passes completely; measurements and hashes are recorded in `stage-results.json`. Stages C–F are in progress. Official grader compatibility remains unverified.
+Current status: stages A–C are implemented and verified on CPython 3.14.4 (88 tests). Stage C adds field-marker/body evidence, compatible joint selection, conservative pruning, and diagnostic traces consumed by the evaluator. The 15-case baseline remains fully correct; stage measurements and hashes are recorded in `stage-results.json`. Stages D–F remain in progress. Official grader compatibility remains unverified.
 
 | Stage | Owned deliverables | Exit gate |
 | --- | --- | --- |

@@ -17,7 +17,8 @@ import tempfile
 import time
 from typing import Any
 
-from address_segmentation.io import load_dictionary
+from address_segmentation.io import load_dictionary, load_config
+from dataclasses import asdict
 from address_segmentation.matcher import AddressMatcher
 from tools.datasets import (
     _resolve_repo_root,
@@ -92,6 +93,7 @@ def _run_worker(
     repetitions: int,
     seed: int,
     worker_out_path: str,
+    config_path: str | None = None,
 ) -> int:
     """Private worker process: load, index, cold request, warm up, and measure latency."""
     rng = random.Random(seed)
@@ -107,6 +109,7 @@ def _run_worker(
         streets=dict_data["streets"],
         wards=dict_data["wards"],
         provinces=dict_data["provinces"],
+        **({"config": load_config(config_path)} if config_path else {}),
     )
     index_ns = time.perf_counter_ns() - t0
 
@@ -177,7 +180,7 @@ def _run_worker(
     return 0
 
 
-def _run_memory_worker(dict_path: str, cases_path: str, worker_out_path: str) -> int:
+def _run_memory_worker(dict_path: str, cases_path: str, worker_out_path: str, config_path: str | None = None) -> int:
     """Private memory measurement process using tracemalloc and getrusage."""
     import tracemalloc
 
@@ -188,6 +191,7 @@ def _run_memory_worker(dict_path: str, cases_path: str, worker_out_path: str) ->
         streets=dict_data["streets"],
         wards=dict_data["wards"],
         provinces=dict_data["provinces"],
+        **({"config": load_config(config_path)} if config_path else {}),
     )
     cases = load_cases(cases_path, dict_data)
     for case in cases:
@@ -268,7 +272,10 @@ def run_benchmark(argv: list[str] | None = None) -> int:
     parser.add_argument("--_memory_worker", action="store_true", help=argparse.SUPPRESS)
     parser.add_argument("--_worker_output", default=None, help=argparse.SUPPRESS)
 
+    parser.add_argument("--config", help="Optional MatcherConfig JSON file")
     args = parser.parse_args(argv)
+    config_path = str(Path(args.config).resolve()) if args.config else None
+    config_args = ["--config", config_path] if config_path else []
 
     if args._worker:
         return _run_worker(
@@ -278,6 +285,7 @@ def run_benchmark(argv: list[str] | None = None) -> int:
             repetitions=args.repetitions,
             seed=args.seed,
             worker_out_path=args._worker_output,
+            config_path=config_path,
         )
 
     if args._memory_worker:
@@ -285,6 +293,7 @@ def run_benchmark(argv: list[str] | None = None) -> int:
             dict_path=args.dictionary,
             cases_path=args.cases,
             worker_out_path=args._worker_output,
+            config_path=config_path,
         )
 
     # Validate arguments
@@ -361,6 +370,7 @@ def run_benchmark(argv: list[str] | None = None) -> int:
                 "address_segmentation.io",
                 "--dictionary",
                 str(dict_path),
+                *config_args,
             ],
             input=adapter_input,
             capture_output=True,
@@ -395,6 +405,7 @@ def run_benchmark(argv: list[str] | None = None) -> int:
                 str(output_path),
                 "--_worker_output",
                 str(tmp_mem_path),
+                *config_args,
             ],
             capture_output=True,
             text=True,
@@ -448,6 +459,7 @@ def run_benchmark(argv: list[str] | None = None) -> int:
                     str(child_seed),
                     "--_worker_output",
                     str(tmp_worker_path),
+                    *config_args,
                 ],
                 capture_output=True,
                 text=True,
@@ -495,6 +507,7 @@ def run_benchmark(argv: list[str] | None = None) -> int:
 
     report = {
         "metadata": {
+            "config": asdict(load_config(config_path)),
             "dictionary_path": str(dict_path),
             "dictionary_hash": sha256_file(dict_path),
             "cases_path": str(cases_path),

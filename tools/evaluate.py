@@ -6,6 +6,7 @@ dataset hash verification with zero stdout debug output.
 """
 
 import argparse
+from dataclasses import asdict
 from collections import Counter
 from collections.abc import Sequence
 import json
@@ -13,7 +14,7 @@ from pathlib import Path
 import sys
 from typing import Any
 
-from address_segmentation.io import load_dictionary
+from address_segmentation.io import load_dictionary, load_config
 from address_segmentation.matcher import AddressMatcher
 from tools.datasets import (
     EvaluationCase,
@@ -36,23 +37,38 @@ def make_rate(numerator: int, denominator: int) -> dict[str, Any]:
 
 
 def get_matcher_config(matcher: Any) -> dict[str, Any]:
-    """Inspect matcher configuration if future config API is provided."""
-    if hasattr(matcher, "get_config") and callable(matcher.get_config):
-        return dict(matcher.get_config())
-    return {
-        "matcher_class": type(matcher).__name__,
-        "trace_supported": False,
-    }
+    return asdict(matcher.config)
 
 
-def extract_matcher_trace(matcher: Any, address: str) -> dict[str, Any] | None:
-    """Extract execution trace for a single address if supported in future stages.
+def extract_matcher_trace(matcher: Any, address: str) -> dict[str, Any]:
+    return matcher.identify_with_trace(address)[1]
 
-    Stage B has no trace API; returns None without suppressing bugs.
-    """
-    if hasattr(matcher, "get_trace") and callable(matcher.get_trace):
-        return matcher.get_trace(address)
-    return None
+
+def score_retrieval(cases, predictions, traces):
+    counts = {stage: 0 for stage in ("retrieved", "verified", "retained")}
+    total = 0
+    failures = []
+    for case in cases:
+        if case.expectation_kind != "recoverable":
+            continue
+        trace = traces[case.id]
+        for field, label in case.expected.items():
+            if label is None:
+                continue
+            total += 1
+            first_loss = None
+            for stage in counts:
+                found = any(c["field"] == field and c["label"] == label for c in trace[stage])
+                counts[stage] += int(found)
+                if not found and first_loss is None:
+                    first_loss = stage
+            if predictions[case.id][field] != label:
+                failures.append({"id": case.id, "field": field,
+                                 "first_loss": first_loss or "selection"})
+    return {"status": "available", "recall_before_verification": make_rate(counts["retrieved"], total),
+            "recall_after_verification": make_rate(counts["verified"], total),
+            "recall_after_top_k": make_rate(counts["retained"], total), "failures": failures,
+            "budget_exhausted_cases": [cid for cid, trace in traces.items() if trace.get("budgets", {}).get("exhausted")]}
 
 
 def validate_prediction_mapping(
@@ -456,6 +472,7 @@ def run_evaluation(argv: list[str] | None = None) -> int:
         default=None,
         help="Optional path to baseline evaluation report for gains/regressions comparison.",
     )
+    parser.add_argument("--config", help="Optional MatcherConfig JSON file")
     args = parser.parse_args(argv)
 
     dict_path = Path(args.dictionary)
@@ -477,6 +494,7 @@ def run_evaluation(argv: list[str] | None = None) -> int:
             streets=dict_data["streets"],
             wards=dict_data["wards"],
             provinces=dict_data["provinces"],
+            config=load_config(args.config),
         )
     except (FileNotFoundError, ValueError, TypeError, json.JSONDecodeError, OSError) as exc:
         sys.stderr.write(f"Evaluation setup error: {exc}\n")
@@ -487,10 +505,12 @@ def run_evaluation(argv: list[str] | None = None) -> int:
 
     # Run predictions
     predictions: dict[str, dict[str, str | None]] = {}
+    traces = {}
     for case in cases:
-        predictions[case.id] = matcher.identify(case.address)
+        predictions[case.id], traces[case.id] = matcher.identify_with_trace(case.address)
 
     metrics = score_cases(cases, predictions)
+    metrics["retrieval"] = score_retrieval(cases, predictions, traces)
 
     report: dict[str, Any] = {
         "metadata": {
@@ -504,6 +524,7 @@ def run_evaluation(argv: list[str] | None = None) -> int:
             "total_cases": len(cases),
         },
         "metrics": metrics,
+        "traces": traces,
         "predictions": predictions,
         "per_case_failures": metrics["per_case_failures"],
     }

@@ -6,6 +6,7 @@ from pathlib import Path
 import sys
 
 from address_segmentation.matcher import AddressMatcher
+from address_segmentation.model import MatcherConfig
 
 EXPECTED_DICTIONARY_KEYS = frozenset({"streets", "wards", "provinces"})
 
@@ -45,6 +46,16 @@ def load_dictionary(path_str: str) -> dict[str, list[str]]:
     return data
 
 
+def load_config(path: str | None) -> MatcherConfig:
+    if path is None:
+        return MatcherConfig()
+    with open(path, encoding="utf-8") as stream:
+        values = json.load(stream)
+    if not isinstance(values, dict):
+        raise ValueError("Matcher configuration must be a JSON object")
+    return MatcherConfig(**values)
+
+
 def run_cli(argv: list[str] | None = None) -> int:
     """Run CLI streaming stdin JSON strings to stdout UTF-8 JSON objects.
 
@@ -59,6 +70,7 @@ def run_cli(argv: list[str] | None = None) -> int:
         required=True,
         help="Path to JSON dictionary file containing streets, wards, provinces lists.",
     )
+    parser.add_argument("--config", help="Optional MatcherConfig JSON file")
     args = parser.parse_args(argv)
 
     try:
@@ -67,6 +79,7 @@ def run_cli(argv: list[str] | None = None) -> int:
             streets=dict_data["streets"],
             wards=dict_data["wards"],
             provinces=dict_data["provinces"],
+            config=load_config(args.config),
         )
     except (FileNotFoundError, json.JSONDecodeError, ValueError, TypeError) as exc:
         sys.stderr.write(f"Dictionary error: {exc}\n")
