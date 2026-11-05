@@ -30,6 +30,23 @@ result = matcher.identify("56/33 Nam Kỳ Khởi Nghĩa, Phường Bến Thành,
 
 ### CLI Adapter
 
+For a dictionary fixed before submission, use the new
+[offline dictionary compiler and standalone runtime](docs/prepared-dictionary.md).
+It prepares dictionary lookups before submission and queries them on demand in
+each fresh process, retaining all matching features:
+
+```sh
+python3.14 -m tools.compile_dictionary --dictionary reports/user-1/dictionary.json --output-dir reports/prepared-user-1
+python3.14 -S reports/prepared-user-1/submission.py
+```
+
+The [prepared-dictionary review](docs/prepared-dictionary.md) records complete
+test-case-1 cold timings, default versus `-S` startup and source-only comparisons,
+packaging requirements and reproduction commands. The `reports/user-1` dictionary
+comes from the dataset preparation command below. Keep the complete generated
+bundle, including its source and prepared bytecode. This path targets CPython 3.14;
+the instructor's launch and packaging contract still determines applicability.
+
 The development CLI loads a JSON dictionary once, reads one JSON string per line from `stdin`, and writes one UTF-8 JSON object per line to `stdout`.
 
 To run the CLI from the repository root:
@@ -71,7 +88,46 @@ python3.14 -m benchmarks.generate --output-dir reports/scale --seed 42
 python3.14 -m tools.benchmark --dictionary reports/scale/dictionary.json --cases reports/scale/cases.jsonl --output reports/scale-timing.json
 ```
 
-Evaluation reports separate wrong labels, false non-null assignments, and missed matches. Use `--baseline PATH` on the evaluation command to compare case-level gains and regressions against a report for the same dictionary and cases. Benchmarks separate import, loading, indexing, first request, warm requests, and JSONL process costs; memory runs in a separate process. Synthetic datasets exercise scale and controlled behaviors and do not establish accuracy on instructor data. Generated reports are ignored by Git; reviewed stage measurements are recorded under `docs/`.
+Evaluation reports separate wrong labels, false non-null assignments, and missed matches. Use `--baseline PATH` on the evaluation command to compare case-level gains and regressions against a report for the same dictionary and cases. Synthetic datasets exercise scale and controlled behaviors and do not establish accuracy on instructor data. Generated reports are ignored by Git; reviewed stage measurements are recorded under `docs/`.
+
+The benchmark's primary timing assumes **a new script process for every address**.
+The parent measures launch through receipt of the complete stdout result line, including interpreter/imports,
+dictionary reads, all indexing, matching, and JSONL output captured from stdout.
+The measured program writes no prediction file. Report JSON is written by the
+harness after measurement. Launch-to-exit time is recorded separately; cleanup
+after output is available does not inflate the primary timing. Each CLI process
+must still exit successfully within the timeout.
+
+By default every case runs in a separate process in each of five rounds, with
+no cold-process warmup. This can take hours for a large dictionary: 1,000 cases
+mean 5,000 index builds. For a shorter, explicitly sampled assessment use:
+
+```bash
+python3.14 -m tools.benchmark --dictionary reports/scale/dictionary.json --cases reports/scale/cases.jsonl --cold-cases 20 --output reports/scale-cold-timing.json
+```
+
+`--cold-cases N` selects a seeded uniform sample without replacement, reused
+across rounds. `--cold-cases 0` (the default) covers all cases. Reports retain
+case IDs, individual timings, predictions and sample coverage; a sampled maximum
+cannot certify the full dataset. `--processes` controls rounds; `--warmup` and
+`--repetitions` affect only warm diagnostics. A CLI failure, malformed stdout or
+`--cli-timeout` expiry aborts measurement. A successful benchmark command means
+the report was produced; check its printed PASS/FAIL and `thresholds` for timing.
+
+Schema-v2 `thresholds` apply the 10 ms mean and 100 ms maximum limits to
+`phases.cold_process_request`. `first_request` means the first **identify call
+after indexing** and remains diagnostic, as do warm calls and shared-process
+batch throughput. Import/load/index phases are measured independently and must
+not be added to the already inclusive cold time. Memory is isolated from latency.
+Fresh processes do not clear OS page caches or Python bytecode caches. See the
+[updated timing review](docs/user-dataset-review.md#performance-against-the-documented-limits)
+for measured results under this grading assumption.
+
+The [construction optimization review](docs/cold-start-optimization.md) records
+the subsequent removal of repeated dictionary normalization, new cold timings,
+startup overhead probes and alternatives. Construction is faster with all
+features preserved, but **the fresh-process mean and maximum still fail**.
+Removing recovery indexes alone does not meet the limits.
 
 ---
 

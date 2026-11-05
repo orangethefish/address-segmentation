@@ -1,5 +1,6 @@
 """Text normalization, accent folding, and tokenization with source offsets."""
 
+from collections.abc import Iterator
 from dataclasses import dataclass
 import unicodedata
 
@@ -44,14 +45,8 @@ def normalize_nfc(text: str) -> str:
     return unicodedata.normalize("NFC", text)
 
 
-def tokenize(text: str) -> list[Token]:
-    """Tokenize original text into tokens with accurate source character offsets.
-
-    Attaches combining marks to base letters in decomposed Unicode (NFD).
-    Preserves slash-connected tokens (e.g. 3/2, 56/33) while preventing 3/2 from
-    matching within house numbers like 53/2.
-    """
-    tokens: list[Token] = []
+def _token_spans(text: str) -> Iterator[tuple[int, int]]:
+    """Scan shared address/label boundaries without allocating normalized tokens."""
     n = len(text)
     i = 0
 
@@ -74,26 +69,39 @@ def tokenize(text: str) -> list[Token]:
             else:
                 break
 
-        token_end = i
+        yield token_start, i
+
+
+def tokenize(text: str) -> list[Token]:
+    """Tokenize original text with accurate source offsets, including NFD marks.
+
+    Slash-connected forms remain whole (3/2 cannot match inside 53/2).
+    """
+    tokens: list[Token] = []
+    for token_start, token_end in _token_spans(text):
         raw = text[token_start:token_end]
         nfc = unicodedata.normalize("NFC", raw).casefold()
-        folded = fold_accents(nfc)
-        tokens.append(
-            Token(
-                text=raw,
-                nfc=nfc,
-                folded=folded,
-                start=token_start,
-                end=token_end,
-            )
-        )
-
+        tokens.append(Token(raw, nfc, fold_accents(nfc), token_start, token_end))
     return tokens
 
 
-def tokenize_label(label: str) -> tuple[tuple[str, ...], tuple[str, ...]]:
-    """Tokenize a canonical label into tuples of NFC casefold tokens and accent-folded tokens."""
-    tokens = tokenize(label)
-    nfc_tokens = tuple(t.nfc for t in tokens)
-    folded_tokens = tuple(t.folded for t in tokens)
-    return nfc_tokens, folded_tokens
+def tokenize_label(
+    label: str, *, token_cache: dict[str, tuple[str, str]] | None = None,
+) -> tuple[tuple[str, ...], tuple[str, ...]]:
+    """Normalize labels without allocating source-offset Token objects.
+
+    A catalog-local cache reuses repeated words while building one dictionary;
+    it is discarded after construction and never caches request results.
+    """
+    nfc_words, folded_words = [], []
+    for start, end in _token_spans(label):
+        raw = label[start:end]
+        forms = token_cache.get(raw) if token_cache is not None else None
+        if forms is None:
+            nfc = unicodedata.normalize("NFC", raw).casefold()
+            forms = (nfc, fold_accents(nfc))
+            if token_cache is not None:
+                token_cache[raw] = forms
+        nfc_words.append(forms[0])
+        folded_words.append(forms[1])
+    return tuple(nfc_words), tuple(folded_words)

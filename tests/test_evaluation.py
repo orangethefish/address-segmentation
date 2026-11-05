@@ -17,7 +17,7 @@ from benchmarks.generate import (
     generate_benchmark_dataset,
     generate_synthetic_cases,
 )
-from tools.benchmark import _run_worker, compute_percentile, compute_stats
+from tools.benchmark import _run_worker, compute_percentile, compute_stats, measure_cli
 from tools.datasets import (
     EvaluationCase,
     canonical_json_hash,
@@ -614,6 +614,45 @@ class TestDeterministicGenerator(unittest.TestCase):
 class TestColdAndWarmExecution(unittest.TestCase):
     """Test cold request isolation before warmup and timer verification."""
 
+    def test_cli_timer_includes_startup_and_stdout_but_separates_exit(self):
+        command = [sys.executable, "-c", (
+            "import json, sys, time; "
+            "time.sleep(0.06); "
+            "address = json.loads(sys.stdin.readline()); "
+            "print(json.dumps(dict(street=address, ward=None, province=None)), flush=True); "
+            "time.sleep(0.15)"
+        )]
+        elapsed, exit_elapsed, predictions = measure_cli(command, ["Lê Lợi"], get_cli_env(), 5)
+        self.assertGreaterEqual(elapsed, 60_000_000)
+        self.assertGreaterEqual(exit_elapsed - elapsed, 100_000_000)
+        self.assertEqual(predictions, [{"street": "Lê Lợi", "ward": None, "province": None}])
+
+    def test_cli_rejects_missing_extra_or_malformed_console_results(self):
+        for output in ("", "{}", "debug log", '{"street": 2, "ward": null, "province": null}',
+                       '{"street": null, "ward": null, "province": null}\\n{}'):
+            with self.subTest(output=output), self.assertRaises(ValueError):
+                measure_cli([sys.executable, "-c", f"print({output!r})"],
+                            ["address"], get_cli_env(), 5)
+
+    def test_cli_failure_and_timeout_cannot_be_reported_as_fast_success(self):
+        with self.assertRaises(subprocess.CalledProcessError):
+            measure_cli([sys.executable, "-c", "raise SystemExit(1)"],
+                        ["address"], get_cli_env(), 5)
+        with self.assertRaises(subprocess.TimeoutExpired):
+            measure_cli([sys.executable, "-c", "import time; time.sleep(5)"],
+                        ["address"], get_cli_env(), 0.05)
+
+    def test_cli_drains_large_input_stdout_and_stderr_without_deadlock(self):
+        command = [sys.executable, "-c", (
+            "import json, sys\n"
+            "for line in sys.stdin:\n"
+            "    sys.stderr.write('diagnostic' * 100)\n"
+            "    print(json.dumps(dict(street=json.loads(line), ward=None, province=None)), flush=True)\n"
+        )]
+        addresses = ["Lê Lợi " * 300 for _ in range(100)]
+        _, _, predictions = measure_cli(command, addresses, get_cli_env(), 5)
+        self.assertEqual([prediction["street"] for prediction in predictions], addresses)
+
     def test_cold_request_occurs_before_warmup(self):
         with tempfile.NamedTemporaryFile("w", suffix=".json", delete=False) as out_f:
             out_path = out_f.name
@@ -800,6 +839,39 @@ class TestCLIIntegration(unittest.TestCase):
             self.assertIn("fresh_process_import", report["phases"])
             self.assertIn("interpreter_and_import_total", report["phases"])
             self.assertIn("full_jsonl_adapter", report["phases"])
+            self.assertEqual(report["thresholds"]["scope"], "cold_process_request")
+            cold = report["phases"]["cold_process_request"]
+            self.assertEqual(cold["count"], report["metadata"]["total_cases"])
+            self.assertTrue(report["cold_coverage"]["full_dataset"])
+            self.assertEqual(report["cold_coverage"]["warmup"], 0)
+            self.assertEqual(len(report["raw_cold_process_timings"]), cold["count"])
+            self.assertEqual(report["thresholds"]["observed_overall_max_ms"], cold["max_ms"])
+            self.assertEqual(report["thresholds"]["mean_target_met"], cold["mean_ms"] <= 10)
+            self.assertEqual(report["thresholds"]["max_target_met"], cold["max_ms"] <= 100)
+            self.assertAlmostEqual(report["batch_process"]["amortized_per_case"]["mean_ms"],
+                                   report["phases"]["full_jsonl_adapter"]["mean_ms"] / cold["count"])
+            self.assertIn("Cold process per address:", proc.stdout)
+
+    def test_benchmark_sample_retains_coverage_and_independent_rounds(self):
+        with tempfile.TemporaryDirectory(prefix="bench_sample_") as tmp_dir:
+            out_timing = Path(tmp_dir) / "timing.json"
+            proc = subprocess.run(
+                [sys.executable, "-m", "tools.benchmark", "--dictionary", str(FIXTURE_DICT_PATH),
+                 "--cases", str(FIXTURE_CASES_PATH), "--output", str(out_timing),
+                 "--processes", "2", "--cold-cases", "1", "--warmup", "0", "--repetitions", "1"],
+                capture_output=True, text=True, env=get_cli_env(), check=False)
+            self.assertEqual(proc.returncode, 0, proc.stderr)
+            report = json.loads(out_timing.read_text())
+            coverage = report["cold_coverage"]
+            self.assertFalse(coverage["full_dataset"])
+            self.assertEqual(coverage["selection"], "seeded_uniform_sample_without_replacement")
+            cases = load_cases(FIXTURE_CASES_PATH, load_dictionary(str(FIXTURE_DICT_PATH)))
+            self.assertEqual(coverage["selected_case_ids"], [random.Random(42).sample(cases, 1)[0].id])
+            records = report["raw_cold_process_timings"]
+            self.assertEqual(len(records), 2)
+            self.assertEqual([record["round"] for record in records], [0, 1])
+            self.assertEqual(records[0]["case_id"], records[1]["case_id"])
+            self.assertEqual(report["phases"]["full_jsonl_adapter"]["count"], 2)
 
 
 if __name__ == "__main__":

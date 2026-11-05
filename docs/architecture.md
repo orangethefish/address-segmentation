@@ -87,6 +87,23 @@ Diagnostic mode returns a separate trace alongside the result through an interna
 
 Index build complexity and memory are reported against total dictionary characters and postings. Exact scanning depends on input tokens and maximum name length; approximate verification depends on explicit operation budgets. These bounds describe work, not guaranteed wall-clock time.
 
+Catalog construction validates and retains label forms in one pass, sharing
+normalized word forms within that build. Label tokenization uses the same
+boundary scanner as address tokenization without allocating source-offset token
+objects. Typing/compact indexes reuse catalog folded forms. These changes retain
+all candidate collisions and matching capabilities; they do not establish cold
+runtime compliance. See the [construction review](cold-start-optimization.md)
+for measured results and the conditional offline-compilation design.
+
+The dictionary is now confirmed fixed before submission. The implemented
+[prepared-dictionary bundle](prepared-dictionary.md) moves catalog and recovery
+index construction into an offline compiler. A read-only mapped table serves
+individual entries/postings through the same matcher pipeline; a generated
+standalone runtime avoids development imports and dynamic dataclass setup.
+`tools.benchmark_prepared` measures its actual fresh-process launch, with default
+startup, explicit `-S`, and missing-bytecode modes reported separately. The
+build-at-launch API and its measurements remain available for comparison.
+
 ## Selection and ambiguity
 
 Keep up to K candidates per field plus null, with deterministic sorting. Start experiments at K = 8 (at most 729 triples); sweep 4, 8, and 16 while measuring recall before and after pruning. K is a benchmark parameter, not a correctness guarantee. Deduplicate label/span evidence before pruning and preserve multiple source spans where compatibility differs.
@@ -130,11 +147,15 @@ When official examples arrive, freeze a deterministic 80/20 development/validati
 
 Accuracy reports include complete-object accuracy, per-field accuracy, false non-null rate among expected-null fields, wrong-label rate among expected-non-null fields, missed recoverable rate, and ambiguity abstention rate. State denominators and counts, especially when zero. Report retrieval recall for recoverable non-null fields before verification, after verification, and after top-K pruning. Classify errors by the first stage losing the gold candidate and separately identify ranking/rejection failures.
 
-Latency runs use monotonic high-resolution timers, logging outside the timed region, and no prediction cache. Record interpreter/platform/CPU, dictionary and case hashes, configuration, seed, version or source hash, process mode, warmup count, repetitions, and GC policy. Measure separately: subprocess startup/import, loading, index construction, first identify, warm identify, and end-to-end JSONL. Run at least five fresh processes; each uses a fixed warmup and seeded case ordering. Preserve per-request timings, with mean, p50/p95/p99 and maximum; never average away a bad maximum. Include unique noisy misses, repeated tokens, long strings, and frequent-posting queries.
+Latency runs use monotonic high-resolution timers, logging outside the timed region, and no prediction cache. Record interpreter/platform/CPU, dictionary and case hashes, configuration, seed, runtime and harness source hashes, process mode, warmup count, repetitions, and GC policy. The primary grading assumption is a new CLI process per address: time launch until the parent receives the complete JSONL result line through a pipe. Include interpreter/imports, dictionary/config reads, full index construction, input parsing, matching, output serialization/flush/transfer. Predictions do not go to a file; harness report writes and output validation happen after timing. Record launch-to-exit timing separately so teardown after output is available does not inflate the primary latency. Every CLI must still exit successfully within its timeout. A parent reader thread timestamps complete lines; pipe/thread setup happens before timing, and reader scheduling overhead is included. Do not subtract startup or amortize indexing across separate runs.
+
+Use at least five rounds with zero cold-process warmup and seeded case order. By default every case gets its own process per round. `--cold-cases N` explicitly opts into a seeded uniform sample without replacement, reused across rounds; report the selection, coverage and raw case timings and do not infer a dataset-wide mean or maximum from a sample. Fresh interpreters do not imply cleared OS page caches or bytecode caches. CLI errors, invalid stdout and timeouts fail measurement. Benchmark exit status zero means a valid report, whose timing gates may still fail.
+
+Measure subprocess startup/import, loading, index construction, first identify after indexing, warm identify, and shared-process JSONL batch throughput separately as diagnostics. Warm workers use fixed warmup and seeded ordering. The worker total includes fixture loading and diagnostic file I/O and is not a grading metric. Dividing batch time by case count describes throughput, not single-request maximum latency. Schema-v2 threshold gates use only the inclusive cold-process distribution. Preserve per-request mean, p50/p95/p99 and maximum; never average away a bad maximum. Include unique noisy misses, repeated tokens, long strings, and frequent-posting queries.
 
 Measure memory in separate processes/runs so tracing overhead cannot contaminate latency. Report traced Python peak and platform-specific process peak RSS with units and method; do not present them as equivalent measurements. Profile slow cases separately from the timing run.
 
-Official target gates are mean <= 10 ms and every observed request <= 100 ms under the eventual official timing scope. A local observed maximum is evidence, not a universal guarantee. Use provisional engineering goals of mean <= 5 ms and observed maximum <= 50 ms to reserve headroom. Report both small-fixture and scale-fixture measurements, and mark official timing compliance unknown until environment and lifecycle are settled.
+Official numeric targets are mean <= 10 ms and every observed request <= 100 ms. Apply them locally to the cold-process scope above until the official contract says otherwise. A local observed maximum is evidence, not a universal guarantee. Use provisional engineering goals of mean <= 5 ms and observed maximum <= 50 ms to reserve headroom. Report both small-fixture and scale-fixture measurements. Explicitly report failure under this assumption when observed; official environment and protocol compatibility remain unverified.
 
 Each feature experiment compares identical cases/configuration except the feature switch. Save improvements AND regressions by case ID, false non-null changes, recall changes, latency changes and budget exhaustion. Require all established correctness tests to pass. Require improvement in the targeted challenge family and no unexplained new false positives in the negative-control suite; real-data tradeoffs await scoring details. No unsupported overall accuracy threshold is invented.
 

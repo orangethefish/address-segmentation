@@ -4,13 +4,16 @@ The matcher now passes all 1,000 reviewed user cases and all 1,000 seeded scale
 cases. On the unchanged original user expectations it improves from 233/1,000 to
 994/1,000, with 761 gains and zero regressions. The remaining six differences are
 irreducible accent collisions covered by the documented null-on-ambiguity policy.
-All 144 tests and compilation checks pass on CPython 3.14.4.
+The original accuracy review passed 144 tests on CPython 3.14.4. The timing
+correction below passes 149 tests and compilation checks with the matcher unchanged.
 
 This review uses the authoritative [requirements](address-segmentation-plan.md)
-and [architecture](architecture.md). [Machine-readable evidence](user-dataset-results.json)
-retains source/dataset hashes, baseline identity, metric denominators, timing
-phases, memory and the long-input probes. These measurements supersede earlier
-stage measurements for the updated implementation; historical evidence is retained.
+and [architecture](architecture.md). [Historical evidence](user-dataset-results.json)
+retains source/dataset hashes, baseline identity, metric denominators, warm timing,
+memory and the long-input probes. The [cold-process evidence](cold-start-results.json)
+and timing correction below supersede the earlier runtime conclusions. The
+historical warm measurements excluded initialization and cannot establish compliance
+when each address is graded in a separate process.
 
 ## Data and expectations
 
@@ -81,38 +84,85 @@ user cases. The previous 128 tests continue to pass unchanged.
 
 ## Performance against the documented limits
 
-Latency was measured sequentially with tracing disabled, five fresh worker
-processes, ten warmup calls, three seeded repetitions per case and no prediction
-cache: 15,000 warm requests per dataset. Memory ran in a separate process.
+The measurements in this section precede the construction optimizations. See
+the [subsequent construction review](cold-start-optimization.md) for current
+timings, validation and alternatives; the cold timing contract is unchanged.
 
-| Measurement | User fixture | Scale fixture | Request target |
+With the dictionary subsequently confirmed fixed, the
+[prepared-dictionary review](prepared-dictionary.md) records a new submission
+path and exhaustive test-case-1 cold measurements. The historical timings below
+still describe the CLI that rebuilds from JSON on every launch.
+
+**The current implementation fails the fresh-process grading assumption.** The
+scale fixture fails both the 10 ms average and 100 ms maximum limits. The small
+user fixture also fails the average limit; only its sampled maximum is below
+100 ms. Earlier sub-millisecond timings covered `identify` after indexing and
+could not support a runtime-compliance conclusion for isolated script launches.
+
+The constructor creates the catalog, approximate index and typing/compact index
+for every matcher. The CLI constructs a matcher on every launch, before reading
+stdin. Thus every separately graded run rebuilds the full dictionary. Moving
+that work into imports or dividing a batch duration by its address count would
+not remove the cost from a fresh-process request.
+
+The corrected benchmark invokes the real `address_segmentation.io` CLI with one
+JSON address on stdin and captures its result from stdout through an OS pipe.
+The parent starts a monotonic timer immediately before process launch and stops
+when it receives the complete result line. This includes interpreter startup,
+imports, dictionary/config reads, validation and indexing, input parsing,
+matching, output serialization, flushing and pipe transfer. A parent reader
+thread drains stdout and timestamps complete lines; pipe/thread setup happens
+before timing, while reader scheduling overhead is included. Process exit is
+recorded separately, and each CLI must finish successfully within its timeout.
+There is no prediction file in the measured program. Harness fixture parsing,
+input encoding, output scoring and report-file writes are outside the timer.
+
+Both datasets ran sequentially on CPython 3.14.4, with tracing disabled for
+latency. Each uses **20 unique uniformly sampled addresses, seed 42, repeated in
+five seeded rounds: 100 fresh interpreters and full index builds per dataset**.
+There are zero cold-process warmup calls. This is an explicitly sampled timing
+assessment, not a measurement of all 1,000 cold cases. Selected IDs, every cold
+measurement and prediction, source/dataset hashes, platform, configuration,
+phase summaries and memory are retained in [the reviewed evidence](cold-start-results.json).
+All 100 cold outputs and all 1,000 outputs in each of five batch rounds match
+the reviewed expectations for each dataset. Warm diagnostics separately cover
+15,000 calls per dataset (ten warmups, three repetitions, five workers). Memory
+runs in a separate process.
+
+| Measurement | User fixture | Scale fixture | Scope / target |
 | --- | --- | --- | --- |
-| Warm mean | 0.107 ms | 0.347 ms | ≤ 10 ms |
-| Warm p95 | 0.136 ms | 1.160 ms | — |
-| Maximum, first or warm request | 0.285 ms | 3.106 ms | ≤ 100 ms |
-| Mean index preparation | 22.8 ms | 1,534.0 ms | Timing scope unresolved |
-| Full JSONL process, all 1,000 requests | 199.9 ms | 1,949.7 ms | Separate lifecycle measurement |
-| Traced Python allocation peak | 2,747,526 bytes | 98,229,609 bytes | No specified memory cap |
-| Process peak RSS, including tracing overhead | 29,960 KiB | 275,732 KiB | No specified memory cap |
+| Dictionary labels | 515 | 24,174 | Full dictionary in every process |
+| **Cold launch-to-stdout mean** | **68.284 ms** | **1,797.262 ms** | **≤ 10 ms; both fail** |
+| Cold launch-to-stdout p95 | 77.545 ms | 2,050.084 ms | Sampled distribution |
+| **Cold launch-to-stdout maximum** | **87.194 ms** | **2,537.044 ms** | **≤ 100 ms; scale fails** |
+| Launch-to-exit mean | 75.662 ms | 1,835.245 ms | Separate diagnostic |
+| Mean index preparation | 24.701 ms | 1,647.994 ms | Independently measured; already included in cold time |
+| Warm identify mean | 0.112 ms | 0.387 ms | Excludes startup; diagnostic only |
+| Shared-process batch mean, all 1,000 addresses | 203.551 ms | 2,461.066 ms | Launch through last stdout line |
+| Batch elapsed / 1,000 | 0.204 ms | 2.461 ms | Throughput; not per-request maximum latency |
 
-The scale fixture contains the specified 23,800 streets, 340 wards, 34 provinces
-and 1,000 cases. Both measured request workloads meet the official numeric targets
-and provisional engineering goals of mean ≤ 5 ms and maximum ≤ 50 ms locally.
+The scale dictionary is 23,800 streets + 340 wards + 34 provinces. Index
+preparation alone averages about 1.65 seconds. Capturing stdout instead of writing
+predictions to JSON files does not remove this initialization cost. Phase
+summaries come from separate diagnostic processes; do not sum them into the
+already inclusive cold timing.
 
-Additional single-process probes repeated `qzxv `, `Lê Lợi, ` and `Hòa Bình, `
-20, 200 and 1,000 times, with noisy suffixes on the two longest named inputs.
-Five timed calls per input covered 100–10,004 characters; the largest observed
-request was **40.150 ms**. Before the scan fixes, exploratory collision probes
-exceeded 250 ms. These long-input probes test maximum latency separately from
-the representative dataset averages. Repeated candidates may intentionally
-trigger conservative top-K abstention, which remains visible in traces.
+The default benchmark measures every case separately in each of five rounds.
+For this 1,000-case scale dataset that means 5,000 index builds and can take
+hours. `--cold-cases 20` explicitly chooses the shorter sampled assessment above;
+it does not choose the fastest cases. A sampled maximum is only the largest
+observed sample, not a bound for unmeasured inputs, and the repeated sample does
+not become 100 unique cases. Fresh processes do not clear OS page caches or
+Python bytecode caches. These limitations do not rescue the observed scale
+failures. The actual instructor environment and protocol still require
+verification; under the requested local timing assumption the result is a fail.
 
-These are local development measurements. **Official timing compliance remains
-unverified**: the instructor runtime, maximum input length and initialization
-scope are unknown. Scale index preparation alone exceeds 100 ms if charged to
-each request. No input is silently truncated, and no universal time guarantee is
-made for unlimited input. The implementation remains offline and standard-library
-Python; official protocol integration and release packaging remain pending.
+Historical single-process long-input probes covered 100–10,004 characters with
+a largest observed matching call of 40.150 ms. They remain diagnostic evidence
+in `user-dataset-results.json`; they excluded initialization and are not part of
+this cold-process sample. No input is silently truncated. The matcher remains
+unchanged, offline and standard-library Python. All 149 tests, compilation and
+whitespace checks pass after the timing correction.
 
 ## Reproduction
 
@@ -122,10 +172,10 @@ Run from the repository root, with timing commands sequentially:
 python3.14 -m tools.prepare_dataset --source-dir testcases/1 --review testcases/1/review.json --output-dir reports/user-1
 python3.14 -m tools.evaluate --dictionary reports/user-1/dictionary.json --cases reports/user-1/raw-cases.jsonl --output reports/user-1/raw-evaluation.json
 python3.14 -m tools.evaluate --dictionary reports/user-1/dictionary.json --cases reports/user-1/cases.jsonl --output reports/user-1/reviewed-evaluation.json
-python3.14 -m tools.benchmark --dictionary reports/user-1/dictionary.json --cases reports/user-1/cases.jsonl --output reports/user-1/timing.json
+python3.14 -m tools.benchmark --dictionary reports/user-1/dictionary.json --cases reports/user-1/cases.jsonl --cold-cases 20 --output reports/user-1/cold-timing.json
 python3.14 -m benchmarks.generate --output-dir reports/review-scale --seed 42
 python3.14 -m tools.evaluate --dictionary reports/review-scale/dictionary.json --cases reports/review-scale/cases.jsonl --output reports/review-scale/evaluation.json
-python3.14 -m tools.benchmark --dictionary reports/review-scale/dictionary.json --cases reports/review-scale/cases.jsonl --output reports/review-scale/timing.json
+python3.14 -m tools.benchmark --dictionary reports/review-scale/dictionary.json --cases reports/review-scale/cases.jsonl --cold-cases 20 --output reports/review-scale/cold-timing.json
 python3.14 -m unittest discover -s tests
 python3.14 -m compileall -q address_segmentation tools benchmarks tests
 git diff --check
@@ -137,4 +187,6 @@ The user and scale benchmarks share the recorded final matcher source hash.
 The JSONL CLI also produced all 1,000 reviewed results correctly from an external
 working directory with a dictionary path containing spaces and empty stderr.
 Generated full reports remain under ignored `reports/`; compact reviewed evidence
-is retained here and in `user-dataset-results.json`.
+is retained in `cold-start-results.json`; historical accuracy and warm diagnostics
+remain in `user-dataset-results.json`. Omit `--cold-cases 20` (or use
+`--cold-cases 0`) for full cold-process coverage of every case.

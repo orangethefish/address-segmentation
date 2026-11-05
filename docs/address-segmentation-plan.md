@@ -272,6 +272,27 @@ The ideal process lifecycle is **initialize indexes once, match many strings**. 
 - subsequent requests;
 - mean, upper percentiles, and worst observed latency.
 
+**[USER, 2026-11-05]** Until the official timing mechanism is supplied, assume
+each address is graded by launching a fresh script and reading its console
+output. The primary benchmark includes interpreter startup, imports, dictionary
+I/O, reindexing, matching and stdout, measured externally until the complete
+result line is received. Record process exit separately. Compare this inclusive distribution
+to both limits. Shared-process warm calls and amortized batch throughput are
+diagnostics and cannot establish compliance under this assumption. Use all cases
+by default; explicitly label any sampled run and retain its case IDs and timings.
+
+The [construction review](cold-start-optimization.md) records removal of repeated
+normalization, current cold measurements, feature-removal controls and startup
+probes. Both scale limits still fail. Offline compilation into queryable
+dictionary data is a conditional next design if the submission contract permits
+it; it must not be assumed to exclude timed preparation or solve Python startup.
+
+**[USER, subsequent confirmation]** The dictionary is fixed before submission.
+The [prepared-dictionary implementation](prepared-dictionary.md) now compiles it
+offline and measures a standalone runtime on test case 1. Report launch-flag and
+bytecode-packaging dependencies explicitly; a passing prepared-bundle result
+does not change the documented failure of the original build-at-launch CLI.
+
 Do not assume moving initialization into module import excludes it from grading time. An unconstrained input length also makes a universal wall-clock bound unprovable without additional contractual limits; test long adversarial inputs rather than silently truncating them.
 
 ## 9. Python implementation and compilation-safe packaging

@@ -89,16 +89,18 @@ class TypingIndex:
         self.words = {}
         self.max_length = 0
         for entry in catalog.entries:
-            for words in dict.fromkeys((entry.nfc_tokens, entry.body_nfc_tokens)):
+            forms = {entry.nfc_tokens: entry.folded_tokens,
+                     entry.body_nfc_tokens: entry.body_folded_tokens}
+            for words, folded_words in forms.items():
                 if not words:
                     continue
-                key = ''.join(fold_accents(w) for w in words)
+                key = ''.join(folded_words)
                 if len(key) < 4 or not key.isalpha():
                     continue
                 self.max_length = max(self.max_length, len(key))
                 record = (entry, words)
                 self.compact.setdefault(key, []).append(record)
-                self.words.setdefault(tuple(fold_accents(w) for w in words), []).append(record)
+                self.words.setdefault(folded_words, []).append(record)
 
 
 def recover_typing(

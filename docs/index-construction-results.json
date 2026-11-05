@@ -1,0 +1,6262 @@
+{
+  "review_date": "2026-11-05",
+  "scope": "Cold launch through complete console stdout, fresh interpreter and dictionary per address; no prediction files or cross-run caches.",
+  "source_hash": "13f36c4a44178e487a6ebfe61c5fadc22f6c9de76a69dfc56f46a9a23edc6c3f",
+  "platform": {
+    "python_version": "3.14.4 (main, Aug 20 2026, 10:41:58) [GCC 15.2.0]",
+    "python_implementation": "CPython",
+    "platform": "Linux-7.0.0-42-generic-x86_64-with-glibc2.43",
+    "system": "Linux",
+    "release": "7.0.0-42-generic",
+    "machine": "x86_64",
+    "processor": "",
+    "cpu_count": 12
+  },
+  "validation": {
+    "unittest_tests_passed": 153,
+    "compileall_passed": true,
+    "diff_check_passed": true,
+    "accuracy": {
+      "source_hash": "13f36c4a44178e487a6ebfe61c5fadc22f6c9de76a69dfc56f46a9a23edc6c3f",
+      "datasets": {
+        "user_reviewed": {
+          "total_cases": 1000,
+          "dictionary_hash": "a05b9251f8dc3c8008431ca0c2b2f9840ef49be4378f0dc8ebffe9e5aff90b48",
+          "cases_hash": "2455269105c7d9448cfb9828d1b386374c428a7992ef52934bfefc650badd4a7",
+          "variants": {
+            "all_features": {
+              "config": {
+                "top_k": 8,
+                "ambiguity_margin": 0.0,
+                "min_score": 10.0,
+                "enable_fuzzy": true,
+                "enable_compact": true,
+                "enable_typing": true,
+                "max_fuzzy_spans": 128,
+                "max_candidates_per_span": 64,
+                "max_verifications": 2048,
+                "max_postings": 12000,
+                "max_edits": 2
+              },
+              "complete_correct": 1000,
+              "false_non_null": 0
+            },
+            "exact_only": {
+              "config": {
+                "top_k": 8,
+                "ambiguity_margin": 0.0,
+                "min_score": 10.0,
+                "enable_fuzzy": false,
+                "enable_compact": false,
+                "enable_typing": false,
+                "max_fuzzy_spans": 128,
+                "max_candidates_per_span": 64,
+                "max_verifications": 2048,
+                "max_postings": 12000,
+                "max_edits": 2
+              },
+              "complete_correct": 1000,
+              "false_non_null": 0
+            }
+          }
+        },
+        "user_original": {
+          "total_cases": 1000,
+          "dictionary_hash": "a05b9251f8dc3c8008431ca0c2b2f9840ef49be4378f0dc8ebffe9e5aff90b48",
+          "cases_hash": "ae6f9da816587c6e47ddfee1ace105d60bf3868cfd1446f14d04e408a6670627",
+          "variants": {
+            "all_features": {
+              "config": {
+                "top_k": 8,
+                "ambiguity_margin": 0.0,
+                "min_score": 10.0,
+                "enable_fuzzy": true,
+                "enable_compact": true,
+                "enable_typing": true,
+                "max_fuzzy_spans": 128,
+                "max_candidates_per_span": 64,
+                "max_verifications": 2048,
+                "max_postings": 12000,
+                "max_edits": 2
+              },
+              "complete_correct": 994,
+              "false_non_null": 0
+            },
+            "exact_only": {
+              "config": {
+                "top_k": 8,
+                "ambiguity_margin": 0.0,
+                "min_score": 10.0,
+                "enable_fuzzy": false,
+                "enable_compact": false,
+                "enable_typing": false,
+                "max_fuzzy_spans": 128,
+                "max_candidates_per_span": 64,
+                "max_verifications": 2048,
+                "max_postings": 12000,
+                "max_edits": 2
+              },
+              "complete_correct": 994,
+              "false_non_null": 0
+            }
+          }
+        },
+        "scale": {
+          "total_cases": 1000,
+          "dictionary_hash": "8671122784f5d810267545ec0b76ba8f9caea6e5eaebb7613989a7ca67a5a09c",
+          "cases_hash": "94e4d886b773503224f12e0a6251f70f23428a25e68dc48c94704414a9a9082e",
+          "variants": {
+            "all_features": {
+              "config": {
+                "top_k": 8,
+                "ambiguity_margin": 0.0,
+                "min_score": 10.0,
+                "enable_fuzzy": true,
+                "enable_compact": true,
+                "enable_typing": true,
+                "max_fuzzy_spans": 128,
+                "max_candidates_per_span": 64,
+                "max_verifications": 2048,
+                "max_postings": 12000,
+                "max_edits": 2
+              },
+              "complete_correct": 1000,
+              "false_non_null": 0
+            },
+            "exact_only": {
+              "config": {
+                "top_k": 8,
+                "ambiguity_margin": 0.0,
+                "min_score": 10.0,
+                "enable_fuzzy": false,
+                "enable_compact": false,
+                "enable_typing": false,
+                "max_fuzzy_spans": 128,
+                "max_candidates_per_span": 64,
+                "max_verifications": 2048,
+                "max_postings": 12000,
+                "max_edits": 2
+              },
+              "complete_correct": 1000,
+              "false_non_null": 0
+            }
+          }
+        },
+        "foundation": {
+          "total_cases": 15,
+          "dictionary_hash": "6b4bba30bef12b818c319e43263e31a9c1fa60bab09d84a1afca4ede1388b653",
+          "cases_hash": "5dfd6b0cd8c893df247780b7e09fd0d1088ffd99961bc2a111a20c9055fe89db",
+          "variants": {
+            "all_features": {
+              "config": {
+                "top_k": 8,
+                "ambiguity_margin": 0.0,
+                "min_score": 10.0,
+                "enable_fuzzy": true,
+                "enable_compact": true,
+                "enable_typing": true,
+                "max_fuzzy_spans": 128,
+                "max_candidates_per_span": 64,
+                "max_verifications": 2048,
+                "max_postings": 12000,
+                "max_edits": 2
+              },
+              "complete_correct": 15,
+              "false_non_null": 0
+            },
+            "exact_only": {
+              "config": {
+                "top_k": 8,
+                "ambiguity_margin": 0.0,
+                "min_score": 10.0,
+                "enable_fuzzy": false,
+                "enable_compact": false,
+                "enable_typing": false,
+                "max_fuzzy_spans": 128,
+                "max_candidates_per_span": 64,
+                "max_verifications": 2048,
+                "max_postings": 12000,
+                "max_edits": 2
+              },
+              "complete_correct": 15,
+              "false_non_null": 0
+            }
+          }
+        },
+        "recovery": {
+          "total_cases": 14,
+          "dictionary_hash": "1ee7037bba6c82f69864e6470c8507d85a7ca08c12f2341f4b3c099b00e3bdb8",
+          "cases_hash": "d6c0d39bd54095ec055dc3b9cf6a2d7949fa7cfe75091b39a738663779d01e15",
+          "variants": {
+            "all_features": {
+              "config": {
+                "top_k": 8,
+                "ambiguity_margin": 0.0,
+                "min_score": 10.0,
+                "enable_fuzzy": true,
+                "enable_compact": true,
+                "enable_typing": true,
+                "max_fuzzy_spans": 128,
+                "max_candidates_per_span": 64,
+                "max_verifications": 2048,
+                "max_postings": 12000,
+                "max_edits": 2
+              },
+              "complete_correct": 14,
+              "false_non_null": 0
+            },
+            "exact_only": {
+              "config": {
+                "top_k": 8,
+                "ambiguity_margin": 0.0,
+                "min_score": 10.0,
+                "enable_fuzzy": false,
+                "enable_compact": false,
+                "enable_typing": false,
+                "max_fuzzy_spans": 128,
+                "max_candidates_per_span": 64,
+                "max_verifications": 2048,
+                "max_postings": 12000,
+                "max_edits": 2
+              },
+              "complete_correct": 5,
+              "false_non_null": 0
+            }
+          }
+        },
+        "typing": {
+          "total_cases": 36,
+          "dictionary_hash": "d9ae7f9d71cb2191fcc8ed4737907102bd45a3985c570c38bbf3e17397e28493",
+          "cases_hash": "564adb1461b5ced28e1269218cb08d13d916b518368de093f4e466ca0a6d6701",
+          "variants": {
+            "all_features": {
+              "config": {
+                "top_k": 8,
+                "ambiguity_margin": 0.0,
+                "min_score": 10.0,
+                "enable_fuzzy": true,
+                "enable_compact": true,
+                "enable_typing": true,
+                "max_fuzzy_spans": 128,
+                "max_candidates_per_span": 64,
+                "max_verifications": 2048,
+                "max_postings": 12000,
+                "max_edits": 2
+              },
+              "complete_correct": 36,
+              "false_non_null": 0
+            },
+            "exact_only": {
+              "config": {
+                "top_k": 8,
+                "ambiguity_margin": 0.0,
+                "min_score": 10.0,
+                "enable_fuzzy": false,
+                "enable_compact": false,
+                "enable_typing": false,
+                "max_fuzzy_spans": 128,
+                "max_candidates_per_span": 64,
+                "max_verifications": 2048,
+                "max_postings": 12000,
+                "max_edits": 2
+              },
+              "complete_correct": 14,
+              "false_non_null": 0
+            }
+          }
+        }
+      }
+    }
+  },
+  "historical_baseline": {
+    "source": "docs/cold-start-results.json",
+    "note": "Measured earlier on this machine, same seeded sample and five rounds. This is not an interleaved before/after experiment.",
+    "datasets": {
+      "user": {
+        "metadata": {
+          "measured_at_utc": "2026-11-05T03:00:14Z",
+          "config": {
+            "top_k": 8,
+            "ambiguity_margin": 0.0,
+            "min_score": 10.0,
+            "enable_fuzzy": true,
+            "enable_compact": true,
+            "enable_typing": true,
+            "max_fuzzy_spans": 128,
+            "max_candidates_per_span": 64,
+            "max_verifications": 2048,
+            "max_postings": 12000,
+            "max_edits": 2
+          },
+          "dictionary_path": "/home/orange/Code/address-segmentation/reports/user-1/dictionary.json",
+          "dictionary_hash": "a05b9251f8dc3c8008431ca0c2b2f9840ef49be4378f0dc8ebffe9e5aff90b48",
+          "cases_path": "/home/orange/Code/address-segmentation/reports/user-1/cases.jsonl",
+          "cases_hash": "2455269105c7d9448cfb9828d1b386374c428a7992ef52934bfefc650badd4a7",
+          "source_hash": "a7347d10044ba8471c5af0f4d87b8eee7ab0c5d995a092f0a8f2e33cf8c55841",
+          "benchmark_source_hash": "1599cc11d66fd7da8c9d9eff83d9f7b4a866735518dac414e97809931f60f7ee",
+          "platform": {
+            "python_version": "3.14.4 (main, Aug 20 2026, 10:41:58) [GCC 15.2.0]",
+            "python_implementation": "CPython",
+            "platform": "Linux-7.0.0-42-generic-x86_64-with-glibc2.43",
+            "system": "Linux",
+            "release": "7.0.0-42-generic",
+            "machine": "x86_64",
+            "processor": "",
+            "cpu_count": 12
+          },
+          "processes": 5,
+          "warmup": 10,
+          "repetitions": 3,
+          "seed": 42,
+          "cli_timeout_seconds": 30.0,
+          "total_cases": 1000,
+          "dictionary_entries": {
+            "streets": 162,
+            "wards": 319,
+            "provinces": 34
+          },
+          "input_lengths": {
+            "min": 26,
+            "max": 61,
+            "mean": 40.168
+          }
+        },
+        "phases": {
+          "cold_process_request": {
+            "count": 100,
+            "mean_ns": 68283667.33,
+            "mean_ms": 68.28366733,
+            "min_ns": 63651033.0,
+            "min_ms": 63.651033,
+            "p50_ns": 66713933.0,
+            "p50_ms": 66.713933,
+            "p95_ns": 77544735.44999999,
+            "p95_ms": 77.54473544999999,
+            "p99_ns": 83715088.40000002,
+            "p99_ms": 83.71508840000003,
+            "max_ns": 87194186.0,
+            "max_ms": 87.194186
+          },
+          "cold_process_exit": {
+            "count": 100,
+            "mean_ns": 75662298.88,
+            "mean_ms": 75.66229888,
+            "min_ns": 70607899.0,
+            "min_ms": 70.607899,
+            "p50_ns": 73880119.5,
+            "p50_ms": 73.8801195,
+            "p95_ns": 87108124.35,
+            "p95_ms": 87.10812435,
+            "p99_ns": 92030553.21000001,
+            "p99_ms": 92.03055321000001,
+            "max_ns": 95394990.0,
+            "max_ms": 95.39499
+          },
+          "fresh_process_import": {
+            "count": 1,
+            "mean_ns": 21358355.0,
+            "mean_ms": 21.358355,
+            "min_ns": 21358355.0,
+            "min_ms": 21.358355,
+            "p50_ns": 21358355.0,
+            "p50_ms": 21.358355,
+            "p95_ns": 21358355.0,
+            "p95_ms": 21.358355,
+            "p99_ns": 21358355.0,
+            "p99_ms": 21.358355,
+            "max_ns": 21358355.0,
+            "max_ms": 21.358355
+          },
+          "interpreter_and_import_total": {
+            "count": 1,
+            "mean_ns": 35678421.0,
+            "mean_ms": 35.678421,
+            "min_ns": 35678421.0,
+            "min_ms": 35.678421,
+            "p50_ns": 35678421.0,
+            "p50_ms": 35.678421,
+            "p95_ns": 35678421.0,
+            "p95_ms": 35.678421,
+            "p99_ns": 35678421.0,
+            "p99_ms": 35.678421,
+            "max_ns": 35678421.0,
+            "max_ms": 35.678421
+          },
+          "dictionary_load": {
+            "count": 5,
+            "mean_ns": 188903.0,
+            "mean_ms": 0.188903,
+            "min_ns": 176295.0,
+            "min_ms": 0.176295,
+            "p50_ns": 183789.0,
+            "p50_ms": 0.183789,
+            "p95_ns": 206140.2,
+            "p95_ms": 0.20614020000000002,
+            "p99_ns": 208180.84,
+            "p99_ms": 0.20818084,
+            "max_ns": 208691.0,
+            "max_ms": 0.208691
+          },
+          "matcher_index": {
+            "count": 5,
+            "mean_ns": 24701291.0,
+            "mean_ms": 24.701291,
+            "min_ns": 21806334.0,
+            "min_ms": 21.806334,
+            "p50_ns": 24837869.0,
+            "p50_ms": 24.837869,
+            "p95_ns": 27894103.0,
+            "p95_ms": 27.894103,
+            "p99_ns": 28414311.0,
+            "p99_ms": 28.414311,
+            "max_ns": 28544363.0,
+            "max_ms": 28.544363
+          },
+          "first_request": {
+            "count": 5,
+            "mean_ns": 250926.4,
+            "mean_ms": 0.2509264,
+            "min_ns": 216910.0,
+            "min_ms": 0.21691,
+            "p50_ns": 250933.0,
+            "p50_ms": 0.250933,
+            "p95_ns": 288625.19999999995,
+            "p95_ms": 0.28862519999999997,
+            "p99_ns": 295003.44,
+            "p99_ms": 0.29500344,
+            "max_ns": 296598.0,
+            "max_ms": 0.296598
+          },
+          "warmed_request": {
+            "count": 15000,
+            "mean_ns": 111639.3618,
+            "mean_ms": 0.1116393618,
+            "min_ns": 77811.0,
+            "min_ms": 0.077811,
+            "p50_ns": 108682.0,
+            "p50_ms": 0.108682,
+            "p95_ns": 140890.09999999998,
+            "p95_ms": 0.1408901,
+            "p99_ns": 199411.9800000001,
+            "p99_ms": 0.1994119800000001,
+            "max_ns": 566209.0,
+            "max_ms": 0.566209
+          },
+          "child_total_elapsed": {
+            "count": 5,
+            "mean_ns": 445477477.4,
+            "mean_ms": 445.4774774,
+            "min_ns": 411142188.0,
+            "min_ms": 411.142188,
+            "p50_ns": 424929934.0,
+            "p50_ms": 424.929934,
+            "p95_ns": 496405993.79999995,
+            "p95_ms": 496.4059938,
+            "p99_ns": 502603319.56,
+            "p99_ms": 502.60331956,
+            "max_ns": 504152651.0,
+            "max_ms": 504.152651
+          },
+          "full_jsonl_adapter": {
+            "count": 5,
+            "mean_ns": 203550818.2,
+            "mean_ms": 203.55081819999998,
+            "min_ns": 183934592.0,
+            "min_ms": 183.934592,
+            "p50_ns": 208916294.0,
+            "p50_ms": 208.916294,
+            "p95_ns": 220261697.4,
+            "p95_ms": 220.2616974,
+            "p99_ns": 222431170.68,
+            "p99_ms": 222.43117068,
+            "max_ns": 222973539.0,
+            "max_ms": 222.973539
+          }
+        },
+        "cold_coverage": {
+          "selection": "seeded_uniform_sample_without_replacement",
+          "selected_case_ids": [
+            "user-1-0655",
+            "user-1-0115",
+            "user-1-0026",
+            "user-1-0760",
+            "user-1-0282",
+            "user-1-0251",
+            "user-1-0229",
+            "user-1-0143",
+            "user-1-0755",
+            "user-1-0105",
+            "user-1-0693",
+            "user-1-0759",
+            "user-1-0914",
+            "user-1-0559",
+            "user-1-0090",
+            "user-1-0605",
+            "user-1-0433",
+            "user-1-0033",
+            "user-1-0031",
+            "user-1-0096"
+          ],
+          "unique_cases": 20,
+          "total_cases": 1000,
+          "full_dataset": false,
+          "rounds": 5,
+          "warmup": 0,
+          "matches_expected": 100
+        },
+        "thresholds": {
+          "scope": "cold_process_request",
+          "mean_request_ms_target": 10.0,
+          "max_request_ms_target": 100.0,
+          "observed_warmed_mean_ms": 0.1116393618,
+          "observed_warmed_max_ms": 0.566209,
+          "observed_first_request_max_ms": 0.296598,
+          "observed_mean_ms": 68.28366733,
+          "observed_overall_max_ms": 87.194186,
+          "mean_target_met": false,
+          "max_target_met": true,
+          "warm_max_target_met": true,
+          "all_requests_within_target": true,
+          "cold_request_case_ids": [
+            "user-1-0655",
+            "user-1-0115",
+            "user-1-0026",
+            "user-1-0760",
+            "user-1-0282",
+            "user-1-0251",
+            "user-1-0229",
+            "user-1-0143",
+            "user-1-0755",
+            "user-1-0105",
+            "user-1-0693",
+            "user-1-0759",
+            "user-1-0914",
+            "user-1-0559",
+            "user-1-0090",
+            "user-1-0605",
+            "user-1-0433",
+            "user-1-0033",
+            "user-1-0031",
+            "user-1-0096"
+          ],
+          "first_identify_case_ids": [
+            "user-1-0001",
+            "user-1-0001",
+            "user-1-0001",
+            "user-1-0001",
+            "user-1-0001"
+          ],
+          "observation_note": "Local observed cold-process limits only; sampled runs cannot certify full-dataset mean or maximum. Primary timing stops when the parent receives the complete result line; process exit is measured separately."
+        }
+      },
+      "scale": {
+        "metadata": {
+          "measured_at_utc": "2026-11-05T03:04:13Z",
+          "config": {
+            "top_k": 8,
+            "ambiguity_margin": 0.0,
+            "min_score": 10.0,
+            "enable_fuzzy": true,
+            "enable_compact": true,
+            "enable_typing": true,
+            "max_fuzzy_spans": 128,
+            "max_candidates_per_span": 64,
+            "max_verifications": 2048,
+            "max_postings": 12000,
+            "max_edits": 2
+          },
+          "dictionary_path": "/home/orange/Code/address-segmentation/reports/review-scale/dictionary.json",
+          "dictionary_hash": "8671122784f5d810267545ec0b76ba8f9caea6e5eaebb7613989a7ca67a5a09c",
+          "cases_path": "/home/orange/Code/address-segmentation/reports/review-scale/cases.jsonl",
+          "cases_hash": "94e4d886b773503224f12e0a6251f70f23428a25e68dc48c94704414a9a9082e",
+          "source_hash": "a7347d10044ba8471c5af0f4d87b8eee7ab0c5d995a092f0a8f2e33cf8c55841",
+          "benchmark_source_hash": "1599cc11d66fd7da8c9d9eff83d9f7b4a866735518dac414e97809931f60f7ee",
+          "platform": {
+            "python_version": "3.14.4 (main, Aug 20 2026, 10:41:58) [GCC 15.2.0]",
+            "python_implementation": "CPython",
+            "platform": "Linux-7.0.0-42-generic-x86_64-with-glibc2.43",
+            "system": "Linux",
+            "release": "7.0.0-42-generic",
+            "machine": "x86_64",
+            "processor": "",
+            "cpu_count": 12
+          },
+          "processes": 5,
+          "warmup": 10,
+          "repetitions": 3,
+          "seed": 42,
+          "cli_timeout_seconds": 30.0,
+          "total_cases": 1000,
+          "dictionary_entries": {
+            "streets": 23800,
+            "wards": 340,
+            "provinces": 34
+          },
+          "input_lengths": {
+            "min": 22,
+            "max": 201,
+            "mean": 63.909
+          }
+        },
+        "phases": {
+          "cold_process_request": {
+            "count": 100,
+            "mean_ns": 1797262215.66,
+            "mean_ms": 1797.26221566,
+            "min_ns": 1589266792.0,
+            "min_ms": 1589.266792,
+            "p50_ns": 1813739395.5,
+            "p50_ms": 1813.7393955,
+            "p95_ns": 2050083975.4999998,
+            "p95_ms": 2050.0839754999997,
+            "p99_ns": 2429759848.660001,
+            "p99_ms": 2429.759848660001,
+            "max_ns": 2537043541.0,
+            "max_ms": 2537.043541
+          },
+          "cold_process_exit": {
+            "count": 100,
+            "mean_ns": 1835244873.81,
+            "mean_ms": 1835.24487381,
+            "min_ns": 1628430482.0,
+            "min_ms": 1628.430482,
+            "p50_ns": 1852287455.0,
+            "p50_ms": 1852.287455,
+            "p95_ns": 2114073854.1999998,
+            "p95_ms": 2114.0738542,
+            "p99_ns": 2465914018.750001,
+            "p99_ms": 2465.914018750001,
+            "max_ns": 2576595202.0,
+            "max_ms": 2576.595202
+          },
+          "fresh_process_import": {
+            "count": 1,
+            "mean_ns": 20101166.0,
+            "mean_ms": 20.101166,
+            "min_ns": 20101166.0,
+            "min_ms": 20.101166,
+            "p50_ns": 20101166.0,
+            "p50_ms": 20.101166,
+            "p95_ns": 20101166.0,
+            "p95_ms": 20.101166,
+            "p99_ns": 20101166.0,
+            "p99_ms": 20.101166,
+            "max_ns": 20101166.0,
+            "max_ms": 20.101166
+          },
+          "interpreter_and_import_total": {
+            "count": 1,
+            "mean_ns": 33998287.0,
+            "mean_ms": 33.998287,
+            "min_ns": 33998287.0,
+            "min_ms": 33.998287,
+            "p50_ns": 33998287.0,
+            "p50_ms": 33.998287,
+            "p95_ns": 33998287.0,
+            "p95_ms": 33.998287,
+            "p99_ns": 33998287.0,
+            "p99_ms": 33.998287,
+            "max_ns": 33998287.0,
+            "max_ms": 33.998287
+          },
+          "dictionary_load": {
+            "count": 5,
+            "mean_ns": 5698516.2,
+            "mean_ms": 5.6985162,
+            "min_ns": 5481020.0,
+            "min_ms": 5.48102,
+            "p50_ns": 5715747.0,
+            "p50_ms": 5.715747,
+            "p95_ns": 5874678.600000001,
+            "p95_ms": 5.8746786,
+            "p99_ns": 5905650.920000001,
+            "p99_ms": 5.905650920000001,
+            "max_ns": 5913394.0,
+            "max_ms": 5.913394
+          },
+          "matcher_index": {
+            "count": 5,
+            "mean_ns": 1647993519.8,
+            "mean_ms": 1647.9935198,
+            "min_ns": 1620907722.0,
+            "min_ms": 1620.907722,
+            "p50_ns": 1639158625.0,
+            "p50_ms": 1639.158625,
+            "p95_ns": 1674614404.8,
+            "p95_ms": 1674.6144047999999,
+            "p99_ns": 1674723405.76,
+            "p99_ms": 1674.7234057599999,
+            "max_ns": 1674750656.0,
+            "max_ms": 1674.750656
+          },
+          "first_request": {
+            "count": 5,
+            "mean_ns": 416621.4,
+            "mean_ms": 0.41662140000000003,
+            "min_ns": 344814.0,
+            "min_ms": 0.344814,
+            "p50_ns": 358202.0,
+            "p50_ms": 0.358202,
+            "p95_ns": 602099.9999999999,
+            "p95_ms": 0.6020999999999999,
+            "p99_ns": 650651.2,
+            "p99_ms": 0.6506512,
+            "max_ns": 662789.0,
+            "max_ms": 0.662789
+          },
+          "warmed_request": {
+            "count": 15000,
+            "mean_ns": 387250.6096,
+            "mean_ms": 0.3872506096,
+            "min_ns": 82922.0,
+            "min_ms": 0.082922,
+            "p50_ns": 233670.0,
+            "p50_ms": 0.23367,
+            "p95_ns": 1232745.0999999999,
+            "p95_ms": 1.2327450999999998,
+            "p99_ns": 1375380.6400000008,
+            "p99_ms": 1.3753806400000008,
+            "max_ns": 3775239.0,
+            "max_ms": 3.775239
+          },
+          "child_total_elapsed": {
+            "count": 5,
+            "mean_ns": 2936301564.4,
+            "mean_ms": 2936.3015644,
+            "min_ns": 2836790862.0,
+            "min_ms": 2836.790862,
+            "p50_ns": 2856470141.0,
+            "p50_ms": 2856.470141,
+            "p95_ns": 3170590914.0,
+            "p95_ms": 3170.590914,
+            "p99_ns": 3222978944.4,
+            "p99_ms": 3222.9789444000003,
+            "max_ns": 3236075952.0,
+            "max_ms": 3236.075952
+          },
+          "full_jsonl_adapter": {
+            "count": 5,
+            "mean_ns": 2461065727.2,
+            "mean_ms": 2461.0657272,
+            "min_ns": 2017789232.0,
+            "min_ms": 2017.789232,
+            "p50_ns": 2338974963.0,
+            "p50_ms": 2338.974963,
+            "p95_ns": 2847654042.3999996,
+            "p95_ms": 2847.6540423999995,
+            "p99_ns": 2867256687.6800003,
+            "p99_ms": 2867.25668768,
+            "max_ns": 2872157349.0,
+            "max_ms": 2872.157349
+          }
+        },
+        "cold_coverage": {
+          "selection": "seeded_uniform_sample_without_replacement",
+          "selected_case_ids": [
+            "synth-case-00655",
+            "synth-case-00115",
+            "synth-case-00026",
+            "synth-case-00760",
+            "synth-case-00282",
+            "synth-case-00251",
+            "synth-case-00229",
+            "synth-case-00143",
+            "synth-case-00755",
+            "synth-case-00105",
+            "synth-case-00693",
+            "synth-case-00759",
+            "synth-case-00914",
+            "synth-case-00559",
+            "synth-case-00090",
+            "synth-case-00605",
+            "synth-case-00433",
+            "synth-case-00033",
+            "synth-case-00031",
+            "synth-case-00096"
+          ],
+          "unique_cases": 20,
+          "total_cases": 1000,
+          "full_dataset": false,
+          "rounds": 5,
+          "warmup": 0,
+          "matches_expected": 100
+        },
+        "thresholds": {
+          "scope": "cold_process_request",
+          "mean_request_ms_target": 10.0,
+          "max_request_ms_target": 100.0,
+          "observed_warmed_mean_ms": 0.3872506096,
+          "observed_warmed_max_ms": 3.775239,
+          "observed_first_request_max_ms": 0.662789,
+          "observed_mean_ms": 1797.26221566,
+          "observed_overall_max_ms": 2537.043541,
+          "mean_target_met": false,
+          "max_target_met": false,
+          "warm_max_target_met": true,
+          "all_requests_within_target": false,
+          "cold_request_case_ids": [
+            "synth-case-00655",
+            "synth-case-00115",
+            "synth-case-00026",
+            "synth-case-00760",
+            "synth-case-00282",
+            "synth-case-00251",
+            "synth-case-00229",
+            "synth-case-00143",
+            "synth-case-00755",
+            "synth-case-00105",
+            "synth-case-00693",
+            "synth-case-00759",
+            "synth-case-00914",
+            "synth-case-00559",
+            "synth-case-00090",
+            "synth-case-00605",
+            "synth-case-00433",
+            "synth-case-00033",
+            "synth-case-00031",
+            "synth-case-00096"
+          ],
+          "first_identify_case_ids": [
+            "synth-case-00001",
+            "synth-case-00001",
+            "synth-case-00001",
+            "synth-case-00001",
+            "synth-case-00001"
+          ],
+          "observation_note": "Local observed cold-process limits only; sampled runs cannot certify full-dataset mean or maximum. Primary timing stops when the parent receives the complete result line; process exit is measured separately."
+        }
+      }
+    }
+  },
+  "experiments": {
+    "optimized_scale": {
+      "schema_version": 2,
+      "metadata": {
+        "measured_at_utc": "2026-11-05T03:30:47Z",
+        "config": {
+          "top_k": 8,
+          "ambiguity_margin": 0.0,
+          "min_score": 10.0,
+          "enable_fuzzy": true,
+          "enable_compact": true,
+          "enable_typing": true,
+          "max_fuzzy_spans": 128,
+          "max_candidates_per_span": 64,
+          "max_verifications": 2048,
+          "max_postings": 12000,
+          "max_edits": 2
+        },
+        "dictionary_path": "/home/orange/Code/address-segmentation/reports/scale/dictionary.json",
+        "dictionary_hash": "8671122784f5d810267545ec0b76ba8f9caea6e5eaebb7613989a7ca67a5a09c",
+        "cases_path": "/home/orange/Code/address-segmentation/reports/scale/cases.jsonl",
+        "cases_hash": "94e4d886b773503224f12e0a6251f70f23428a25e68dc48c94704414a9a9082e",
+        "source_hash": "13f36c4a44178e487a6ebfe61c5fadc22f6c9de76a69dfc56f46a9a23edc6c3f",
+        "benchmark_source_hash": "1599cc11d66fd7da8c9d9eff83d9f7b4a866735518dac414e97809931f60f7ee",
+        "platform": {
+          "python_version": "3.14.4 (main, Aug 20 2026, 10:41:58) [GCC 15.2.0]",
+          "python_implementation": "CPython",
+          "platform": "Linux-7.0.0-42-generic-x86_64-with-glibc2.43",
+          "system": "Linux",
+          "release": "7.0.0-42-generic",
+          "machine": "x86_64",
+          "processor": "",
+          "cpu_count": 12
+        },
+        "processes": 5,
+        "warmup": 10,
+        "repetitions": 3,
+        "seed": 42,
+        "cli_timeout_seconds": 30.0,
+        "total_cases": 1000,
+        "dictionary_entries": {
+          "streets": 23800,
+          "wards": 340,
+          "provinces": 34
+        },
+        "input_lengths": {
+          "min": 22,
+          "max": 201,
+          "mean": 63.909
+        }
+      },
+      "gc_policy": {
+        "is_enabled": true,
+        "thresholds": [
+          2000,
+          10,
+          0
+        ],
+        "counts": [
+          27,
+          0,
+          0
+        ]
+      },
+      "measurement_contract": {
+        "primary": "cold_process_request",
+        "timer": "parent perf_counter_ns immediately before Popen until the complete JSONL result line is read from stdout",
+        "command": [
+          "/usr/bin/python3.14",
+          "-m",
+          "address_segmentation.io",
+          "--dictionary",
+          "/home/orange/Code/address-segmentation/reports/scale/dictionary.json"
+        ],
+        "includes": [
+          "process launch",
+          "interpreter startup",
+          "imports",
+          "dictionary/config I/O",
+          "index construction",
+          "stdin pipe transfer",
+          "input JSON parsing",
+          "identify",
+          "output JSON serialization",
+          "stdout pipe capture/flush"
+        ],
+        "excludes": [
+          "harness fixture loading",
+          "harness input encoding",
+          "harness output validation/scoring",
+          "report file writes",
+          "memory tracing",
+          "process teardown after output"
+        ],
+        "stdout": "UTF-8 JSONL captured through an OS pipe; no prediction file or terminal rendering",
+        "cold_definition": "fresh interpreter and matcher for every address; no persistent index or prediction cache",
+        "filesystem_cache": "OS file/page caches and Python bytecode caches are uncontrolled; not a cold-machine measurement",
+        "stdout_observer": "parent reader thread timestamps complete lines; pipe/thread setup precedes timing; scheduling overhead is included",
+        "process_exit": "cold_process_exit separately records launch through communicate/wait; every CLI must exit successfully",
+        "first_request": "identify only, after index construction; diagnostic, excludes startup",
+        "child_total_elapsed": "diagnostic worker including case loading, warmups and report-file I/O; not grading latency",
+        "batch": "one process for the entire dataset; elapsed / case count is throughput, not maximum request latency"
+      },
+      "cold_coverage": {
+        "selection": "seeded_uniform_sample_without_replacement",
+        "selected_case_ids": [
+          "synth-case-00655",
+          "synth-case-00115",
+          "synth-case-00026",
+          "synth-case-00760",
+          "synth-case-00282",
+          "synth-case-00251",
+          "synth-case-00229",
+          "synth-case-00143",
+          "synth-case-00755",
+          "synth-case-00105",
+          "synth-case-00693",
+          "synth-case-00759",
+          "synth-case-00914",
+          "synth-case-00559",
+          "synth-case-00090",
+          "synth-case-00605",
+          "synth-case-00433",
+          "synth-case-00033",
+          "synth-case-00031",
+          "synth-case-00096"
+        ],
+        "unique_cases": 20,
+        "total_cases": 1000,
+        "full_dataset": false,
+        "rounds": 5,
+        "warmup": 0,
+        "matches_expected": 100
+      },
+      "phases": {
+        "cold_process_request": {
+          "count": 100,
+          "mean_ns": 610324788.4,
+          "mean_ms": 610.3247884,
+          "min_ns": 530040658.0,
+          "min_ms": 530.040658,
+          "p50_ns": 605261342.0,
+          "p50_ms": 605.261342,
+          "p95_ns": 651654037.8499999,
+          "p95_ms": 651.6540378499999,
+          "p99_ns": 1289785004.6700006,
+          "p99_ms": 1289.7850046700005,
+          "max_ns": 1378698951.0,
+          "max_ms": 1378.698951
+        },
+        "cold_process_exit": {
+          "count": 100,
+          "mean_ns": 643460653.57,
+          "mean_ms": 643.4606535700001,
+          "min_ns": 559356478.0,
+          "min_ms": 559.356478,
+          "p50_ns": 637420176.0,
+          "p50_ms": 637.420176,
+          "p95_ns": 684150274.1,
+          "p95_ms": 684.1502741,
+          "p99_ns": 1321814023.2100005,
+          "p99_ms": 1321.8140232100004,
+          "max_ns": 1412386174.0,
+          "max_ms": 1412.386174
+        },
+        "fresh_process_import": {
+          "count": 1,
+          "mean_ns": 30389387.0,
+          "mean_ms": 30.389387,
+          "min_ns": 30389387.0,
+          "min_ms": 30.389387,
+          "p50_ns": 30389387.0,
+          "p50_ms": 30.389387,
+          "p95_ns": 30389387.0,
+          "p95_ms": 30.389387,
+          "p99_ns": 30389387.0,
+          "p99_ms": 30.389387,
+          "max_ns": 30389387.0,
+          "max_ms": 30.389387
+        },
+        "interpreter_and_import_total": {
+          "count": 1,
+          "mean_ns": 51794152.0,
+          "mean_ms": 51.794152,
+          "min_ns": 51794152.0,
+          "min_ms": 51.794152,
+          "p50_ns": 51794152.0,
+          "p50_ms": 51.794152,
+          "p95_ns": 51794152.0,
+          "p95_ms": 51.794152,
+          "p99_ns": 51794152.0,
+          "p99_ms": 51.794152,
+          "max_ns": 51794152.0,
+          "max_ms": 51.794152
+        },
+        "dictionary_load": {
+          "count": 5,
+          "mean_ns": 5853341.6,
+          "mean_ms": 5.853341599999999,
+          "min_ns": 5390474.0,
+          "min_ms": 5.390474,
+          "p50_ns": 5968473.0,
+          "p50_ms": 5.968473,
+          "p95_ns": 6218111.4,
+          "p95_ms": 6.218111400000001,
+          "p99_ns": 6262930.28,
+          "p99_ms": 6.26293028,
+          "max_ns": 6274135.0,
+          "max_ms": 6.274135
+        },
+        "matcher_index": {
+          "count": 5,
+          "mean_ns": 555178124.0,
+          "mean_ms": 555.178124,
+          "min_ns": 516696190.0,
+          "min_ms": 516.69619,
+          "p50_ns": 560423517.0,
+          "p50_ms": 560.423517,
+          "p95_ns": 578262225.8,
+          "p95_ms": 578.2622257999999,
+          "p99_ns": 579411911.56,
+          "p99_ms": 579.4119115599999,
+          "max_ns": 579699333.0,
+          "max_ms": 579.699333
+        },
+        "first_request": {
+          "count": 5,
+          "mean_ns": 372765.8,
+          "mean_ms": 0.3727658,
+          "min_ns": 353240.0,
+          "min_ms": 0.35324,
+          "p50_ns": 379210.0,
+          "p50_ms": 0.37921,
+          "p95_ns": 387457.2,
+          "p95_ms": 0.3874572,
+          "p99_ns": 387558.64,
+          "p99_ms": 0.38755864,
+          "max_ns": 387584.0,
+          "max_ms": 0.387584
+        },
+        "warmed_request": {
+          "count": 15000,
+          "mean_ns": 419347.0613333333,
+          "mean_ms": 0.4193470613333333,
+          "min_ns": 81943.0,
+          "min_ms": 0.081943,
+          "p50_ns": 243156.0,
+          "p50_ms": 0.243156,
+          "p95_ns": 1290723.1999999997,
+          "p95_ms": 1.2907231999999997,
+          "p99_ns": 2263956.41,
+          "p99_ms": 2.26395641,
+          "max_ns": 12852111.0,
+          "max_ms": 12.852111
+        },
+        "child_total_elapsed": {
+          "count": 5,
+          "mean_ns": 1947496749.0,
+          "mean_ms": 1947.496749,
+          "min_ns": 1689002560.0,
+          "min_ms": 1689.00256,
+          "p50_ns": 1880649350.0,
+          "p50_ms": 1880.64935,
+          "p95_ns": 2417003735.6,
+          "p95_ms": 2417.0037356,
+          "p99_ns": 2516826838.32,
+          "p99_ms": 2516.82683832,
+          "max_ns": 2541782614.0,
+          "max_ms": 2541.782614
+        },
+        "full_jsonl_adapter": {
+          "count": 5,
+          "mean_ns": 955768843.2,
+          "mean_ms": 955.7688432,
+          "min_ns": 907190316.0,
+          "min_ms": 907.190316,
+          "p50_ns": 935969211.0,
+          "p50_ms": 935.969211,
+          "p95_ns": 1018173001.1999999,
+          "p95_ms": 1018.1730011999999,
+          "p99_ns": 1026069837.84,
+          "p99_ms": 1026.06983784,
+          "max_ns": 1028044047.0,
+          "max_ms": 1028.044047
+        }
+      },
+      "batch_process": {
+        "cases_per_process": 1000,
+        "amortized_per_case": {
+          "count": 5,
+          "mean_ns": 955768.8432,
+          "mean_ms": 0.9557688432,
+          "min_ns": 907190.316,
+          "min_ms": 0.907190316,
+          "p50_ns": 935969.211,
+          "p50_ms": 0.935969211,
+          "p95_ns": 1018173.0012,
+          "p95_ms": 1.0181730012,
+          "p99_ns": 1026069.83784,
+          "p99_ms": 1.02606983784,
+          "max_ns": 1028044.047,
+          "max_ms": 1.028044047
+        },
+        "process_exit": {
+          "count": 5,
+          "mean_ns": 988011829.8,
+          "mean_ms": 988.0118298,
+          "min_ns": 938328168.0,
+          "min_ms": 938.328168,
+          "p50_ns": 968232483.0,
+          "p50_ms": 968.232483,
+          "p95_ns": 1052216814.2,
+          "p95_ms": 1052.2168142,
+          "p99_ns": 1060368959.64,
+          "p99_ms": 1060.36895964,
+          "max_ns": 1062406996.0,
+          "max_ms": 1062.406996
+        },
+        "raw_elapsed_ns": [
+          907190316,
+          928951824,
+          978688818,
+          1028044047,
+          935969211
+        ],
+        "raw_process_exit_ns": [
+          938328168,
+          959635415,
+          1011456087,
+          1062406996,
+          968232483
+        ],
+        "matches_expected_per_round": [
+          1000,
+          1000,
+          1000,
+          1000,
+          1000
+        ]
+      },
+      "memory": {
+        "tracemalloc_peak_bytes": 79636248,
+        "tracemalloc_current_bytes": 77355033,
+        "ru_maxrss": 228956,
+        "ru_maxrss_units": "kibibytes",
+        "platform": "linux",
+        "measurement_notes": "tracemalloc measures Python heap allocations; ru_maxrss measures OS peak resident set size and includes tracemalloc overhead."
+      },
+      "thresholds": {
+        "scope": "cold_process_request",
+        "mean_request_ms_target": 10.0,
+        "max_request_ms_target": 100.0,
+        "observed_warmed_mean_ms": 0.4193470613333333,
+        "observed_warmed_max_ms": 12.852111,
+        "observed_first_request_max_ms": 0.387584,
+        "observed_mean_ms": 610.3247884,
+        "observed_overall_max_ms": 1378.698951,
+        "mean_target_met": false,
+        "max_target_met": false,
+        "warm_max_target_met": true,
+        "all_requests_within_target": false,
+        "cold_request_case_ids": [
+          "synth-case-00655",
+          "synth-case-00115",
+          "synth-case-00026",
+          "synth-case-00760",
+          "synth-case-00282",
+          "synth-case-00251",
+          "synth-case-00229",
+          "synth-case-00143",
+          "synth-case-00755",
+          "synth-case-00105",
+          "synth-case-00693",
+          "synth-case-00759",
+          "synth-case-00914",
+          "synth-case-00559",
+          "synth-case-00090",
+          "synth-case-00605",
+          "synth-case-00433",
+          "synth-case-00033",
+          "synth-case-00031",
+          "synth-case-00096"
+        ],
+        "first_identify_case_ids": [
+          "synth-case-00001",
+          "synth-case-00001",
+          "synth-case-00001",
+          "synth-case-00001",
+          "synth-case-00001"
+        ],
+        "observation_note": "Local observed cold-process limits only; sampled runs cannot certify full-dataset mean or maximum. Primary timing stops when the parent receives the complete result line; process exit is measured separately."
+      },
+      "raw_cold_process_timings": [
+        {
+          "case_id": "synth-case-00096",
+          "input_len": 45,
+          "round": 0,
+          "elapsed_ns": 793830877,
+          "process_exit_ns": 824516893,
+          "prediction": {
+            "street": "Phố Nguyễn Duy Trí Tây",
+            "ward": "Phường 57",
+            "province": null
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00251",
+          "input_len": 24,
+          "round": 0,
+          "elapsed_ns": 575222251,
+          "process_exit_ns": 606102346,
+          "prediction": {
+            "street": null,
+            "ward": "Phường 90",
+            "province": "Tỉnh Hà Giang"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00090",
+          "input_len": 54,
+          "round": 0,
+          "elapsed_ns": 545233599,
+          "process_exit_ns": 575758853,
+          "prediction": {
+            "street": "Phố Nguyễn Hùng Quang Đông",
+            "ward": null,
+            "province": "Tỉnh Điện Biên"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00282",
+          "input_len": 55,
+          "round": 0,
+          "elapsed_ns": 546538137,
+          "process_exit_ns": 577281492,
+          "prediction": {
+            "street": "Phố Nguyễn Hồng Tài Nối Dài",
+            "ward": null,
+            "province": "Tỉnh Cao Bằng"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00105",
+          "input_len": 62,
+          "round": 0,
+          "elapsed_ns": 593466323,
+          "process_exit_ns": 629795820,
+          "prediction": {
+            "street": "Phố Nguyễn Bảo Minh Bắc",
+            "ward": "Phường 77",
+            "province": "Tỉnh Đắk Nông"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00559",
+          "input_len": 60,
+          "round": 0,
+          "elapsed_ns": 631091943,
+          "process_exit_ns": 673345917,
+          "prediction": {
+            "street": "Phố Nguyễn Ngọc Hải",
+            "ward": "Phường 68",
+            "province": "Thành phố Đà Nẵng"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00605",
+          "input_len": 67,
+          "round": 0,
+          "elapsed_ns": 611144766,
+          "process_exit_ns": 642369231,
+          "prediction": {
+            "street": null,
+            "ward": null,
+            "province": null
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00031",
+          "input_len": 24,
+          "round": 0,
+          "elapsed_ns": 530040658,
+          "process_exit_ns": 559356478,
+          "prediction": {
+            "street": null,
+            "ward": "Phường 83",
+            "province": "Tỉnh Bắc Ninh"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00229",
+          "input_len": 56,
+          "round": 0,
+          "elapsed_ns": 553708145,
+          "process_exit_ns": 583055870,
+          "prediction": {
+            "street": "Phố Nguyễn Công Lâm",
+            "ward": "Phường 84",
+            "province": "Tỉnh Kon Tum"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00914",
+          "input_len": 79,
+          "round": 0,
+          "elapsed_ns": 564208385,
+          "process_exit_ns": 595371014,
+          "prediction": {
+            "street": "Phố Nguyễn Duy Thuận Tây",
+            "ward": "Phường 47",
+            "province": "Tỉnh Hà Nam"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00033",
+          "input_len": 60,
+          "round": 0,
+          "elapsed_ns": 545429243,
+          "process_exit_ns": 577538950,
+          "prediction": {
+            "street": "Phố Nguyễn Hải Thông Tây",
+            "ward": "Phường 13",
+            "province": "Tỉnh Hà Nam"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00693",
+          "input_len": 68,
+          "round": 0,
+          "elapsed_ns": 546484202,
+          "process_exit_ns": 576129909,
+          "prediction": {
+            "street": null,
+            "ward": null,
+            "province": null
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00115",
+          "input_len": 24,
+          "round": 0,
+          "elapsed_ns": 589778428,
+          "process_exit_ns": 621657590,
+          "prediction": {
+            "street": null,
+            "ward": "Phường 4",
+            "province": "Tỉnh Khánh Hòa"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00759",
+          "input_len": 26,
+          "round": 0,
+          "elapsed_ns": 536417916,
+          "process_exit_ns": 566784507,
+          "prediction": {
+            "street": null,
+            "ward": "Phường 92",
+            "province": null
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00026",
+          "input_len": 46,
+          "round": 0,
+          "elapsed_ns": 537817913,
+          "process_exit_ns": 567688272,
+          "prediction": {
+            "street": "Phố Nguyễn Ngọc Tiến",
+            "ward": null,
+            "province": "Tỉnh Bắc Kạn"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00433",
+          "input_len": 67,
+          "round": 0,
+          "elapsed_ns": 604866470,
+          "process_exit_ns": 636821684,
+          "prediction": {
+            "street": "Phố Nguyễn Tuấn Thắng Bắc",
+            "ward": "Phường 35",
+            "province": "Thành phố Đà Nẵng"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00143",
+          "input_len": 30,
+          "round": 0,
+          "elapsed_ns": 535645763,
+          "process_exit_ns": 565439372,
+          "prediction": {
+            "street": null,
+            "ward": "Phường 24",
+            "province": "Thành phố Hải Phòng"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00755",
+          "input_len": 25,
+          "round": 0,
+          "elapsed_ns": 588817937,
+          "process_exit_ns": 620813519,
+          "prediction": {
+            "street": null,
+            "ward": "Phường 8",
+            "province": null
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00655",
+          "input_len": 68,
+          "round": 0,
+          "elapsed_ns": 531602100,
+          "process_exit_ns": 560603216,
+          "prediction": {
+            "street": null,
+            "ward": null,
+            "province": null
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00760",
+          "input_len": 26,
+          "round": 0,
+          "elapsed_ns": 605656214,
+          "process_exit_ns": 638018668,
+          "prediction": {
+            "street": null,
+            "ward": "Phường 42",
+            "province": null
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00251",
+          "input_len": 24,
+          "round": 1,
+          "elapsed_ns": 600263162,
+          "process_exit_ns": 631704265,
+          "prediction": {
+            "street": null,
+            "ward": "Phường 90",
+            "province": "Tỉnh Hà Giang"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00655",
+          "input_len": 68,
+          "round": 1,
+          "elapsed_ns": 606855591,
+          "process_exit_ns": 638370053,
+          "prediction": {
+            "street": null,
+            "ward": null,
+            "province": null
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00605",
+          "input_len": 67,
+          "round": 1,
+          "elapsed_ns": 565604047,
+          "process_exit_ns": 595276608,
+          "prediction": {
+            "street": null,
+            "ward": null,
+            "province": null
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00760",
+          "input_len": 26,
+          "round": 1,
+          "elapsed_ns": 627556091,
+          "process_exit_ns": 659112623,
+          "prediction": {
+            "street": null,
+            "ward": "Phường 42",
+            "province": null
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00033",
+          "input_len": 60,
+          "round": 1,
+          "elapsed_ns": 600155059,
+          "process_exit_ns": 636658070,
+          "prediction": {
+            "street": "Phố Nguyễn Hải Thông Tây",
+            "ward": "Phường 13",
+            "province": "Tỉnh Hà Nam"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00105",
+          "input_len": 62,
+          "round": 1,
+          "elapsed_ns": 616593699,
+          "process_exit_ns": 651620650,
+          "prediction": {
+            "street": "Phố Nguyễn Bảo Minh Bắc",
+            "ward": "Phường 77",
+            "province": "Tỉnh Đắk Nông"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00433",
+          "input_len": 67,
+          "round": 1,
+          "elapsed_ns": 609016145,
+          "process_exit_ns": 650839791,
+          "prediction": {
+            "street": "Phố Nguyễn Tuấn Thắng Bắc",
+            "ward": "Phường 35",
+            "province": "Thành phố Đà Nẵng"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00755",
+          "input_len": 25,
+          "round": 1,
+          "elapsed_ns": 653559260,
+          "process_exit_ns": 694528471,
+          "prediction": {
+            "street": null,
+            "ward": "Phường 8",
+            "province": null
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00914",
+          "input_len": 79,
+          "round": 1,
+          "elapsed_ns": 544908054,
+          "process_exit_ns": 576290424,
+          "prediction": {
+            "street": "Phố Nguyễn Duy Thuận Tây",
+            "ward": "Phường 47",
+            "province": "Tỉnh Hà Nam"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00026",
+          "input_len": 46,
+          "round": 1,
+          "elapsed_ns": 545771681,
+          "process_exit_ns": 577250681,
+          "prediction": {
+            "street": "Phố Nguyễn Ngọc Tiến",
+            "ward": null,
+            "province": "Tỉnh Bắc Kạn"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00559",
+          "input_len": 60,
+          "round": 1,
+          "elapsed_ns": 618158711,
+          "process_exit_ns": 651102349,
+          "prediction": {
+            "street": "Phố Nguyễn Ngọc Hải",
+            "ward": "Phường 68",
+            "province": "Thành phố Đà Nẵng"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00229",
+          "input_len": 56,
+          "round": 1,
+          "elapsed_ns": 559904125,
+          "process_exit_ns": 590342431,
+          "prediction": {
+            "street": "Phố Nguyễn Công Lâm",
+            "ward": "Phường 84",
+            "province": "Tỉnh Kon Tum"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00096",
+          "input_len": 45,
+          "round": 1,
+          "elapsed_ns": 647652245,
+          "process_exit_ns": 680163190,
+          "prediction": {
+            "street": "Phố Nguyễn Duy Trí Tây",
+            "ward": "Phường 57",
+            "province": null
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00031",
+          "input_len": 24,
+          "round": 1,
+          "elapsed_ns": 605716258,
+          "process_exit_ns": 638875462,
+          "prediction": {
+            "street": null,
+            "ward": "Phường 83",
+            "province": "Tỉnh Bắc Ninh"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00090",
+          "input_len": 54,
+          "round": 1,
+          "elapsed_ns": 592609571,
+          "process_exit_ns": 624742906,
+          "prediction": {
+            "street": "Phố Nguyễn Hùng Quang Đông",
+            "ward": null,
+            "province": "Tỉnh Điện Biên"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00693",
+          "input_len": 68,
+          "round": 1,
+          "elapsed_ns": 616929424,
+          "process_exit_ns": 669091105,
+          "prediction": {
+            "street": null,
+            "ward": null,
+            "province": null
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00115",
+          "input_len": 24,
+          "round": 1,
+          "elapsed_ns": 1378698951,
+          "process_exit_ns": 1412386174,
+          "prediction": {
+            "street": null,
+            "ward": "Phường 4",
+            "province": "Tỉnh Khánh Hòa"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00759",
+          "input_len": 26,
+          "round": 1,
+          "elapsed_ns": 632285239,
+          "process_exit_ns": 665923080,
+          "prediction": {
+            "street": null,
+            "ward": "Phường 92",
+            "province": null
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00282",
+          "input_len": 55,
+          "round": 1,
+          "elapsed_ns": 614639508,
+          "process_exit_ns": 647631902,
+          "prediction": {
+            "street": "Phố Nguyễn Hồng Tài Nối Dài",
+            "ward": null,
+            "province": "Tỉnh Cao Bằng"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00143",
+          "input_len": 30,
+          "round": 1,
+          "elapsed_ns": 641075448,
+          "process_exit_ns": 674528737,
+          "prediction": {
+            "street": null,
+            "ward": "Phường 24",
+            "province": "Thành phố Hải Phòng"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00096",
+          "input_len": 45,
+          "round": 2,
+          "elapsed_ns": 609713733,
+          "process_exit_ns": 643204252,
+          "prediction": {
+            "street": "Phố Nguyễn Duy Trí Tây",
+            "ward": "Phường 57",
+            "province": null
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00605",
+          "input_len": 67,
+          "round": 2,
+          "elapsed_ns": 631410808,
+          "process_exit_ns": 667154894,
+          "prediction": {
+            "street": null,
+            "ward": null,
+            "province": null
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00251",
+          "input_len": 24,
+          "round": 2,
+          "elapsed_ns": 629268223,
+          "process_exit_ns": 662168935,
+          "prediction": {
+            "street": null,
+            "ward": "Phường 90",
+            "province": "Tỉnh Hà Giang"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00026",
+          "input_len": 46,
+          "round": 2,
+          "elapsed_ns": 654655956,
+          "process_exit_ns": 687794780,
+          "prediction": {
+            "street": "Phố Nguyễn Ngọc Tiến",
+            "ward": null,
+            "province": "Tỉnh Bắc Kạn"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00033",
+          "input_len": 60,
+          "round": 2,
+          "elapsed_ns": 614401259,
+          "process_exit_ns": 648943149,
+          "prediction": {
+            "street": "Phố Nguyễn Hải Thông Tây",
+            "ward": "Phường 13",
+            "province": "Tỉnh Hà Nam"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00755",
+          "input_len": 25,
+          "round": 2,
+          "elapsed_ns": 556946756,
+          "process_exit_ns": 587679717,
+          "prediction": {
+            "street": null,
+            "ward": "Phường 8",
+            "province": null
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00914",
+          "input_len": 79,
+          "round": 2,
+          "elapsed_ns": 569456087,
+          "process_exit_ns": 600480966,
+          "prediction": {
+            "street": "Phố Nguyễn Duy Thuận Tây",
+            "ward": "Phường 47",
+            "province": "Tỉnh Hà Nam"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00031",
+          "input_len": 24,
+          "round": 2,
+          "elapsed_ns": 561253977,
+          "process_exit_ns": 592888045,
+          "prediction": {
+            "street": null,
+            "ward": "Phường 83",
+            "province": "Tỉnh Bắc Ninh"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00760",
+          "input_len": 26,
+          "round": 2,
+          "elapsed_ns": 620799247,
+          "process_exit_ns": 654129231,
+          "prediction": {
+            "street": null,
+            "ward": "Phường 42",
+            "province": null
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00090",
+          "input_len": 54,
+          "round": 2,
+          "elapsed_ns": 550219935,
+          "process_exit_ns": 581422596,
+          "prediction": {
+            "street": "Phố Nguyễn Hùng Quang Đông",
+            "ward": null,
+            "province": "Tỉnh Điện Biên"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00655",
+          "input_len": 68,
+          "round": 2,
+          "elapsed_ns": 546391004,
+          "process_exit_ns": 576823038,
+          "prediction": {
+            "street": null,
+            "ward": null,
+            "province": null
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00229",
+          "input_len": 56,
+          "round": 2,
+          "elapsed_ns": 637821608,
+          "process_exit_ns": 670340314,
+          "prediction": {
+            "street": "Phố Nguyễn Công Lâm",
+            "ward": "Phường 84",
+            "province": "Tỉnh Kon Tum"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00759",
+          "input_len": 26,
+          "round": 2,
+          "elapsed_ns": 619619125,
+          "process_exit_ns": 653232226,
+          "prediction": {
+            "street": null,
+            "ward": "Phường 92",
+            "province": null
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00559",
+          "input_len": 60,
+          "round": 2,
+          "elapsed_ns": 612389671,
+          "process_exit_ns": 644395423,
+          "prediction": {
+            "street": "Phố Nguyễn Ngọc Hải",
+            "ward": "Phường 68",
+            "province": "Thành phố Đà Nẵng"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00115",
+          "input_len": 24,
+          "round": 2,
+          "elapsed_ns": 634407579,
+          "process_exit_ns": 667671471,
+          "prediction": {
+            "street": null,
+            "ward": "Phường 4",
+            "province": "Tỉnh Khánh Hòa"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00105",
+          "input_len": 62,
+          "round": 2,
+          "elapsed_ns": 615432143,
+          "process_exit_ns": 647856235,
+          "prediction": {
+            "street": "Phố Nguyễn Bảo Minh Bắc",
+            "ward": "Phường 77",
+            "province": "Tỉnh Đắk Nông"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00282",
+          "input_len": 55,
+          "round": 2,
+          "elapsed_ns": 634862184,
+          "process_exit_ns": 668125704,
+          "prediction": {
+            "street": "Phố Nguyễn Hồng Tài Nối Dài",
+            "ward": null,
+            "province": "Tỉnh Cao Bằng"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00433",
+          "input_len": 67,
+          "round": 2,
+          "elapsed_ns": 547548824,
+          "process_exit_ns": 577830746,
+          "prediction": {
+            "street": "Phố Nguyễn Tuấn Thắng Bắc",
+            "ward": "Phường 35",
+            "province": "Thành phố Đà Nẵng"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00143",
+          "input_len": 30,
+          "round": 2,
+          "elapsed_ns": 562531986,
+          "process_exit_ns": 593897850,
+          "prediction": {
+            "street": null,
+            "ward": "Phường 24",
+            "province": "Thành phố Hải Phòng"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00693",
+          "input_len": 68,
+          "round": 2,
+          "elapsed_ns": 559869815,
+          "process_exit_ns": 591120802,
+          "prediction": {
+            "street": null,
+            "ward": null,
+            "province": null
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00229",
+          "input_len": 56,
+          "round": 3,
+          "elapsed_ns": 623173121,
+          "process_exit_ns": 656791305,
+          "prediction": {
+            "street": "Phố Nguyễn Công Lâm",
+            "ward": "Phường 84",
+            "province": "Tỉnh Kon Tum"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00105",
+          "input_len": 62,
+          "round": 3,
+          "elapsed_ns": 638258592,
+          "process_exit_ns": 671524011,
+          "prediction": {
+            "street": "Phố Nguyễn Bảo Minh Bắc",
+            "ward": "Phường 77",
+            "province": "Tỉnh Đắk Nông"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00026",
+          "input_len": 46,
+          "round": 3,
+          "elapsed_ns": 632326257,
+          "process_exit_ns": 666183859,
+          "prediction": {
+            "street": "Phố Nguyễn Ngọc Tiến",
+            "ward": null,
+            "province": "Tỉnh Bắc Kạn"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00760",
+          "input_len": 26,
+          "round": 3,
+          "elapsed_ns": 627056481,
+          "process_exit_ns": 661077681,
+          "prediction": {
+            "street": null,
+            "ward": "Phường 42",
+            "province": null
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00251",
+          "input_len": 24,
+          "round": 3,
+          "elapsed_ns": 649138992,
+          "process_exit_ns": 681895560,
+          "prediction": {
+            "street": null,
+            "ward": "Phường 90",
+            "province": "Tỉnh Hà Giang"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00282",
+          "input_len": 55,
+          "round": 3,
+          "elapsed_ns": 549536382,
+          "process_exit_ns": 579567259,
+          "prediction": {
+            "street": "Phố Nguyễn Hồng Tài Nối Dài",
+            "ward": null,
+            "province": "Tỉnh Cao Bằng"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00115",
+          "input_len": 24,
+          "round": 3,
+          "elapsed_ns": 616358818,
+          "process_exit_ns": 650354153,
+          "prediction": {
+            "street": null,
+            "ward": "Phường 4",
+            "province": "Tỉnh Khánh Hòa"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00693",
+          "input_len": 68,
+          "round": 3,
+          "elapsed_ns": 651553763,
+          "process_exit_ns": 683958458,
+          "prediction": {
+            "street": null,
+            "ward": null,
+            "province": null
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00914",
+          "input_len": 79,
+          "round": 3,
+          "elapsed_ns": 646581173,
+          "process_exit_ns": 679961973,
+          "prediction": {
+            "street": "Phố Nguyễn Duy Thuận Tây",
+            "ward": "Phường 47",
+            "province": "Tỉnh Hà Nam"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00655",
+          "input_len": 68,
+          "round": 3,
+          "elapsed_ns": 555795310,
+          "process_exit_ns": 587366229,
+          "prediction": {
+            "street": null,
+            "ward": null,
+            "province": null
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00031",
+          "input_len": 24,
+          "round": 3,
+          "elapsed_ns": 564570152,
+          "process_exit_ns": 595997062,
+          "prediction": {
+            "street": null,
+            "ward": "Phường 83",
+            "province": "Tỉnh Bắc Ninh"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00096",
+          "input_len": 45,
+          "round": 3,
+          "elapsed_ns": 610981492,
+          "process_exit_ns": 646070249,
+          "prediction": {
+            "street": "Phố Nguyễn Duy Trí Tây",
+            "ward": "Phường 57",
+            "province": null
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00559",
+          "input_len": 60,
+          "round": 3,
+          "elapsed_ns": 633064212,
+          "process_exit_ns": 668117744,
+          "prediction": {
+            "street": "Phố Nguyễn Ngọc Hải",
+            "ward": "Phường 68",
+            "province": "Thành phố Đà Nẵng"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00755",
+          "input_len": 25,
+          "round": 3,
+          "elapsed_ns": 560569300,
+          "process_exit_ns": 592498056,
+          "prediction": {
+            "street": null,
+            "ward": "Phường 8",
+            "province": null
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00433",
+          "input_len": 67,
+          "round": 3,
+          "elapsed_ns": 619202378,
+          "process_exit_ns": 653138085,
+          "prediction": {
+            "street": "Phố Nguyễn Tuấn Thắng Bắc",
+            "ward": "Phường 35",
+            "province": "Thành phố Đà Nẵng"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00033",
+          "input_len": 60,
+          "round": 3,
+          "elapsed_ns": 559086912,
+          "process_exit_ns": 597086809,
+          "prediction": {
+            "street": "Phố Nguyễn Hải Thông Tây",
+            "ward": "Phường 13",
+            "province": "Tỉnh Hà Nam"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00759",
+          "input_len": 26,
+          "round": 3,
+          "elapsed_ns": 595724679,
+          "process_exit_ns": 627162954,
+          "prediction": {
+            "street": null,
+            "ward": "Phường 92",
+            "province": null
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00090",
+          "input_len": 54,
+          "round": 3,
+          "elapsed_ns": 592494149,
+          "process_exit_ns": 624802150,
+          "prediction": {
+            "street": "Phố Nguyễn Hùng Quang Đông",
+            "ward": null,
+            "province": "Tỉnh Điện Biên"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00143",
+          "input_len": 30,
+          "round": 3,
+          "elapsed_ns": 620485142,
+          "process_exit_ns": 653396635,
+          "prediction": {
+            "street": null,
+            "ward": "Phường 24",
+            "province": "Thành phố Hải Phòng"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00605",
+          "input_len": 67,
+          "round": 3,
+          "elapsed_ns": 623277133,
+          "process_exit_ns": 657054160,
+          "prediction": {
+            "street": null,
+            "ward": null,
+            "province": null
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00914",
+          "input_len": 79,
+          "round": 4,
+          "elapsed_ns": 637946175,
+          "process_exit_ns": 671706342,
+          "prediction": {
+            "street": "Phố Nguyễn Duy Thuận Tây",
+            "ward": "Phường 47",
+            "province": "Tỉnh Hà Nam"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00090",
+          "input_len": 54,
+          "round": 4,
+          "elapsed_ns": 562818937,
+          "process_exit_ns": 594384807,
+          "prediction": {
+            "street": "Phố Nguyễn Hùng Quang Đông",
+            "ward": null,
+            "province": "Tỉnh Điện Biên"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00755",
+          "input_len": 25,
+          "round": 4,
+          "elapsed_ns": 616930650,
+          "process_exit_ns": 651503988,
+          "prediction": {
+            "street": null,
+            "ward": "Phường 8",
+            "province": null
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00026",
+          "input_len": 46,
+          "round": 4,
+          "elapsed_ns": 555630871,
+          "process_exit_ns": 590308501,
+          "prediction": {
+            "street": "Phố Nguyễn Ngọc Tiến",
+            "ward": null,
+            "province": "Tỉnh Bắc Kạn"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00559",
+          "input_len": 60,
+          "round": 4,
+          "elapsed_ns": 629101608,
+          "process_exit_ns": 666688291,
+          "prediction": {
+            "street": "Phố Nguyễn Ngọc Hải",
+            "ward": "Phường 68",
+            "province": "Thành phố Đà Nẵng"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00143",
+          "input_len": 30,
+          "round": 4,
+          "elapsed_ns": 642498401,
+          "process_exit_ns": 675849738,
+          "prediction": {
+            "street": null,
+            "ward": "Phường 24",
+            "province": "Thành phố Hải Phòng"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00605",
+          "input_len": 67,
+          "round": 4,
+          "elapsed_ns": 1288886884,
+          "process_exit_ns": 1320899153,
+          "prediction": {
+            "street": null,
+            "ward": null,
+            "province": null
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00282",
+          "input_len": 55,
+          "round": 4,
+          "elapsed_ns": 588440581,
+          "process_exit_ns": 635237958,
+          "prediction": {
+            "street": "Phố Nguyễn Hồng Tài Nối Dài",
+            "ward": null,
+            "province": "Tỉnh Cao Bằng"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00096",
+          "input_len": 45,
+          "round": 4,
+          "elapsed_ns": 639912699,
+          "process_exit_ns": 671295879,
+          "prediction": {
+            "street": "Phố Nguyễn Duy Trí Tây",
+            "ward": "Phường 57",
+            "province": null
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00760",
+          "input_len": 26,
+          "round": 4,
+          "elapsed_ns": 565438839,
+          "process_exit_ns": 596519685,
+          "prediction": {
+            "street": null,
+            "ward": "Phường 42",
+            "province": null
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00229",
+          "input_len": 56,
+          "round": 4,
+          "elapsed_ns": 609509647,
+          "process_exit_ns": 642529830,
+          "prediction": {
+            "street": "Phố Nguyễn Công Lâm",
+            "ward": "Phường 84",
+            "province": "Tỉnh Kon Tum"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00759",
+          "input_len": 26,
+          "round": 4,
+          "elapsed_ns": 558130118,
+          "process_exit_ns": 589800703,
+          "prediction": {
+            "street": null,
+            "ward": "Phường 92",
+            "province": null
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00105",
+          "input_len": 62,
+          "round": 4,
+          "elapsed_ns": 562593416,
+          "process_exit_ns": 595009244,
+          "prediction": {
+            "street": "Phố Nguyễn Bảo Minh Bắc",
+            "ward": "Phường 77",
+            "province": "Tỉnh Đắk Nông"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00693",
+          "input_len": 68,
+          "round": 4,
+          "elapsed_ns": 575141446,
+          "process_exit_ns": 606231898,
+          "prediction": {
+            "street": null,
+            "ward": null,
+            "province": null
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00655",
+          "input_len": 68,
+          "round": 4,
+          "elapsed_ns": 554905521,
+          "process_exit_ns": 585067032,
+          "prediction": {
+            "street": null,
+            "ward": null,
+            "province": null
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00033",
+          "input_len": 60,
+          "round": 4,
+          "elapsed_ns": 555223084,
+          "process_exit_ns": 586384809,
+          "prediction": {
+            "street": "Phố Nguyễn Hải Thông Tây",
+            "ward": "Phường 13",
+            "province": "Tỉnh Hà Nam"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00251",
+          "input_len": 24,
+          "round": 4,
+          "elapsed_ns": 561174210,
+          "process_exit_ns": 591483312,
+          "prediction": {
+            "street": null,
+            "ward": "Phường 90",
+            "province": "Tỉnh Hà Giang"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00433",
+          "input_len": 67,
+          "round": 4,
+          "elapsed_ns": 577483493,
+          "process_exit_ns": 628283821,
+          "prediction": {
+            "street": "Phố Nguyễn Tuấn Thắng Bắc",
+            "ward": "Phường 35",
+            "province": "Thành phố Đà Nẵng"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00115",
+          "input_len": 24,
+          "round": 4,
+          "elapsed_ns": 555280865,
+          "process_exit_ns": 585442287,
+          "prediction": {
+            "street": null,
+            "ward": "Phường 4",
+            "province": "Tỉnh Khánh Hòa"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00031",
+          "input_len": 24,
+          "round": 4,
+          "elapsed_ns": 612243498,
+          "process_exit_ns": 645384740,
+          "prediction": {
+            "street": null,
+            "ward": "Phường 83",
+            "province": "Tỉnh Bắc Ninh"
+          },
+          "matches_expected": true
+        }
+      ],
+      "full_report_sha256": "6f36b9da658d98c5667bca37f9871ffeb8a10c08d45b7051fb3fd3aab705fff1",
+      "full_report_path": "reports/index-review/optimized-scale-timing.json"
+    },
+    "optimized_user": {
+      "schema_version": 2,
+      "metadata": {
+        "measured_at_utc": "2026-11-05T03:31:54Z",
+        "config": {
+          "top_k": 8,
+          "ambiguity_margin": 0.0,
+          "min_score": 10.0,
+          "enable_fuzzy": true,
+          "enable_compact": true,
+          "enable_typing": true,
+          "max_fuzzy_spans": 128,
+          "max_candidates_per_span": 64,
+          "max_verifications": 2048,
+          "max_postings": 12000,
+          "max_edits": 2
+        },
+        "dictionary_path": "/home/orange/Code/address-segmentation/reports/user-1/dictionary.json",
+        "dictionary_hash": "a05b9251f8dc3c8008431ca0c2b2f9840ef49be4378f0dc8ebffe9e5aff90b48",
+        "cases_path": "/home/orange/Code/address-segmentation/reports/user-1/cases.jsonl",
+        "cases_hash": "2455269105c7d9448cfb9828d1b386374c428a7992ef52934bfefc650badd4a7",
+        "source_hash": "13f36c4a44178e487a6ebfe61c5fadc22f6c9de76a69dfc56f46a9a23edc6c3f",
+        "benchmark_source_hash": "1599cc11d66fd7da8c9d9eff83d9f7b4a866735518dac414e97809931f60f7ee",
+        "platform": {
+          "python_version": "3.14.4 (main, Aug 20 2026, 10:41:58) [GCC 15.2.0]",
+          "python_implementation": "CPython",
+          "platform": "Linux-7.0.0-42-generic-x86_64-with-glibc2.43",
+          "system": "Linux",
+          "release": "7.0.0-42-generic",
+          "machine": "x86_64",
+          "processor": "",
+          "cpu_count": 12
+        },
+        "processes": 5,
+        "warmup": 10,
+        "repetitions": 3,
+        "seed": 42,
+        "cli_timeout_seconds": 30.0,
+        "total_cases": 1000,
+        "dictionary_entries": {
+          "streets": 162,
+          "wards": 319,
+          "provinces": 34
+        },
+        "input_lengths": {
+          "min": 26,
+          "max": 61,
+          "mean": 40.168
+        }
+      },
+      "gc_policy": {
+        "is_enabled": true,
+        "thresholds": [
+          2000,
+          10,
+          0
+        ],
+        "counts": [
+          27,
+          0,
+          0
+        ]
+      },
+      "measurement_contract": {
+        "primary": "cold_process_request",
+        "timer": "parent perf_counter_ns immediately before Popen until the complete JSONL result line is read from stdout",
+        "command": [
+          "/usr/bin/python3.14",
+          "-m",
+          "address_segmentation.io",
+          "--dictionary",
+          "/home/orange/Code/address-segmentation/reports/user-1/dictionary.json"
+        ],
+        "includes": [
+          "process launch",
+          "interpreter startup",
+          "imports",
+          "dictionary/config I/O",
+          "index construction",
+          "stdin pipe transfer",
+          "input JSON parsing",
+          "identify",
+          "output JSON serialization",
+          "stdout pipe capture/flush"
+        ],
+        "excludes": [
+          "harness fixture loading",
+          "harness input encoding",
+          "harness output validation/scoring",
+          "report file writes",
+          "memory tracing",
+          "process teardown after output"
+        ],
+        "stdout": "UTF-8 JSONL captured through an OS pipe; no prediction file or terminal rendering",
+        "cold_definition": "fresh interpreter and matcher for every address; no persistent index or prediction cache",
+        "filesystem_cache": "OS file/page caches and Python bytecode caches are uncontrolled; not a cold-machine measurement",
+        "stdout_observer": "parent reader thread timestamps complete lines; pipe/thread setup precedes timing; scheduling overhead is included",
+        "process_exit": "cold_process_exit separately records launch through communicate/wait; every CLI must exit successfully",
+        "first_request": "identify only, after index construction; diagnostic, excludes startup",
+        "child_total_elapsed": "diagnostic worker including case loading, warmups and report-file I/O; not grading latency",
+        "batch": "one process for the entire dataset; elapsed / case count is throughput, not maximum request latency"
+      },
+      "cold_coverage": {
+        "selection": "seeded_uniform_sample_without_replacement",
+        "selected_case_ids": [
+          "user-1-0655",
+          "user-1-0115",
+          "user-1-0026",
+          "user-1-0760",
+          "user-1-0282",
+          "user-1-0251",
+          "user-1-0229",
+          "user-1-0143",
+          "user-1-0755",
+          "user-1-0105",
+          "user-1-0693",
+          "user-1-0759",
+          "user-1-0914",
+          "user-1-0559",
+          "user-1-0090",
+          "user-1-0605",
+          "user-1-0433",
+          "user-1-0033",
+          "user-1-0031",
+          "user-1-0096"
+        ],
+        "unique_cases": 20,
+        "total_cases": 1000,
+        "full_dataset": false,
+        "rounds": 5,
+        "warmup": 0,
+        "matches_expected": 100
+      },
+      "phases": {
+        "cold_process_request": {
+          "count": 100,
+          "mean_ns": 57325366.74,
+          "mean_ms": 57.32536674,
+          "min_ns": 50524094.0,
+          "min_ms": 50.524094,
+          "p50_ns": 53841301.0,
+          "p50_ms": 53.841301,
+          "p95_ns": 91133285.2,
+          "p95_ms": 91.1332852,
+          "p99_ns": 95574726.88000003,
+          "p99_ms": 95.57472688000003,
+          "max_ns": 98320975.0,
+          "max_ms": 98.320975
+        },
+        "cold_process_exit": {
+          "count": 100,
+          "mean_ns": 64802963.01,
+          "mean_ms": 64.80296301,
+          "min_ns": 56809338.0,
+          "min_ms": 56.809338,
+          "p50_ns": 61083693.0,
+          "p50_ms": 61.083693,
+          "p95_ns": 102342816.55,
+          "p95_ms": 102.34281655,
+          "p99_ns": 106322376.2,
+          "p99_ms": 106.32237620000001,
+          "max_ns": 106344968.0,
+          "max_ms": 106.344968
+        },
+        "fresh_process_import": {
+          "count": 1,
+          "mean_ns": 20370142.0,
+          "mean_ms": 20.370142,
+          "min_ns": 20370142.0,
+          "min_ms": 20.370142,
+          "p50_ns": 20370142.0,
+          "p50_ms": 20.370142,
+          "p95_ns": 20370142.0,
+          "p95_ms": 20.370142,
+          "p99_ns": 20370142.0,
+          "p99_ms": 20.370142,
+          "max_ns": 20370142.0,
+          "max_ms": 20.370142
+        },
+        "interpreter_and_import_total": {
+          "count": 1,
+          "mean_ns": 34965464.0,
+          "mean_ms": 34.965464,
+          "min_ns": 34965464.0,
+          "min_ms": 34.965464,
+          "p50_ns": 34965464.0,
+          "p50_ms": 34.965464,
+          "p95_ns": 34965464.0,
+          "p95_ms": 34.965464,
+          "p99_ns": 34965464.0,
+          "p99_ms": 34.965464,
+          "max_ns": 34965464.0,
+          "max_ms": 34.965464
+        },
+        "dictionary_load": {
+          "count": 5,
+          "mean_ns": 199447.2,
+          "mean_ms": 0.19944720000000002,
+          "min_ns": 183549.0,
+          "min_ms": 0.183549,
+          "p50_ns": 200990.0,
+          "p50_ms": 0.20099,
+          "p95_ns": 212111.4,
+          "p95_ms": 0.2121114,
+          "p99_ns": 212395.08,
+          "p99_ms": 0.21239507999999999,
+          "max_ns": 212466.0,
+          "max_ms": 0.212466
+        },
+        "matcher_index": {
+          "count": 5,
+          "mean_ns": 10357120.8,
+          "mean_ms": 10.3571208,
+          "min_ns": 9244637.0,
+          "min_ms": 9.244637,
+          "p50_ns": 10615644.0,
+          "p50_ms": 10.615644,
+          "p95_ns": 10986069.399999999,
+          "p95_ms": 10.986069399999998,
+          "p99_ns": 10998141.079999998,
+          "p99_ms": 10.998141079999998,
+          "max_ns": 11001159.0,
+          "max_ms": 11.001159
+        },
+        "first_request": {
+          "count": 5,
+          "mean_ns": 254330.8,
+          "mean_ms": 0.25433079999999997,
+          "min_ns": 225096.0,
+          "min_ms": 0.225096,
+          "p50_ns": 266396.0,
+          "p50_ms": 0.266396,
+          "p95_ns": 279022.39999999997,
+          "p95_ms": 0.27902239999999995,
+          "p99_ns": 281518.88,
+          "p99_ms": 0.28151888,
+          "max_ns": 282143.0,
+          "max_ms": 0.282143
+        },
+        "warmed_request": {
+          "count": 15000,
+          "mean_ns": 113862.68346666667,
+          "mean_ms": 0.11386268346666667,
+          "min_ns": 77326.0,
+          "min_ms": 0.077326,
+          "p50_ns": 111621.5,
+          "p50_ms": 0.1116215,
+          "p95_ns": 141097.15000000002,
+          "p95_ms": 0.14109715000000003,
+          "p99_ns": 183268.03000000012,
+          "p99_ms": 0.1832680300000001,
+          "max_ns": 383160.0,
+          "max_ms": 0.38316
+        },
+        "child_total_elapsed": {
+          "count": 5,
+          "mean_ns": 443953527.6,
+          "mean_ms": 443.95352760000003,
+          "min_ns": 406705846.0,
+          "min_ms": 406.705846,
+          "p50_ns": 453366213.0,
+          "p50_ms": 453.366213,
+          "p95_ns": 474272183.79999995,
+          "p95_ms": 474.27218379999994,
+          "p99_ns": 477333390.36,
+          "p99_ms": 477.33339036,
+          "max_ns": 478098692.0,
+          "max_ms": 478.098692
+        },
+        "full_jsonl_adapter": {
+          "count": 5,
+          "mean_ns": 232316888.8,
+          "mean_ms": 232.31688880000002,
+          "min_ns": 176142335.0,
+          "min_ms": 176.142335,
+          "p50_ns": 205381463.0,
+          "p50_ms": 205.381463,
+          "p95_ns": 342755971.4,
+          "p95_ms": 342.75597139999996,
+          "p99_ns": 368795705.48,
+          "p99_ms": 368.79570548000004,
+          "max_ns": 375305639.0,
+          "max_ms": 375.305639
+        }
+      },
+      "batch_process": {
+        "cases_per_process": 1000,
+        "amortized_per_case": {
+          "count": 5,
+          "mean_ns": 232316.88880000002,
+          "mean_ms": 0.2323168888,
+          "min_ns": 176142.335,
+          "min_ms": 0.17614233499999998,
+          "p50_ns": 205381.463,
+          "p50_ms": 0.205381463,
+          "p95_ns": 342755.9714,
+          "p95_ms": 0.34275597139999997,
+          "p99_ns": 368795.70548000006,
+          "p99_ms": 0.36879570548000007,
+          "max_ns": 375305.639,
+          "max_ms": 0.375305639
+        },
+        "process_exit": {
+          "count": 5,
+          "mean_ns": 241136673.8,
+          "mean_ms": 241.1366738,
+          "min_ns": 183273921.0,
+          "min_ms": 183.273921,
+          "p50_ns": 213370606.0,
+          "p50_ms": 213.370606,
+          "p95_ns": 354799227.2,
+          "p95_ms": 354.79922719999996,
+          "p99_ns": 381655297.44,
+          "p99_ms": 381.65529743999997,
+          "max_ns": 388369315.0,
+          "max_ms": 388.369315
+        },
+        "raw_elapsed_ns": [
+          176142335,
+          375305639,
+          212557301,
+          192197706,
+          205381463
+        ],
+        "raw_process_exit_ns": [
+          183273921,
+          388369315,
+          220518876,
+          200150651,
+          213370606
+        ],
+        "matches_expected_per_round": [
+          1000,
+          1000,
+          1000,
+          1000,
+          1000
+        ]
+      },
+      "memory": {
+        "tracemalloc_peak_bytes": 2518659,
+        "tracemalloc_current_bytes": 2299787,
+        "ru_maxrss": 29624,
+        "ru_maxrss_units": "kibibytes",
+        "platform": "linux",
+        "measurement_notes": "tracemalloc measures Python heap allocations; ru_maxrss measures OS peak resident set size and includes tracemalloc overhead."
+      },
+      "thresholds": {
+        "scope": "cold_process_request",
+        "mean_request_ms_target": 10.0,
+        "max_request_ms_target": 100.0,
+        "observed_warmed_mean_ms": 0.11386268346666667,
+        "observed_warmed_max_ms": 0.38316,
+        "observed_first_request_max_ms": 0.282143,
+        "observed_mean_ms": 57.32536674,
+        "observed_overall_max_ms": 98.320975,
+        "mean_target_met": false,
+        "max_target_met": true,
+        "warm_max_target_met": true,
+        "all_requests_within_target": true,
+        "cold_request_case_ids": [
+          "user-1-0655",
+          "user-1-0115",
+          "user-1-0026",
+          "user-1-0760",
+          "user-1-0282",
+          "user-1-0251",
+          "user-1-0229",
+          "user-1-0143",
+          "user-1-0755",
+          "user-1-0105",
+          "user-1-0693",
+          "user-1-0759",
+          "user-1-0914",
+          "user-1-0559",
+          "user-1-0090",
+          "user-1-0605",
+          "user-1-0433",
+          "user-1-0033",
+          "user-1-0031",
+          "user-1-0096"
+        ],
+        "first_identify_case_ids": [
+          "user-1-0001",
+          "user-1-0001",
+          "user-1-0001",
+          "user-1-0001",
+          "user-1-0001"
+        ],
+        "observation_note": "Local observed cold-process limits only; sampled runs cannot certify full-dataset mean or maximum. Primary timing stops when the parent receives the complete result line; process exit is measured separately."
+      },
+      "raw_cold_process_timings": [
+        {
+          "case_id": "user-1-0096",
+          "input_len": 40,
+          "round": 0,
+          "elapsed_ns": 50882897,
+          "process_exit_ns": 57428410,
+          "prediction": {
+            "street": "Nguyễn Văn Linh",
+            "ward": "Phường Ngọc Lâm",
+            "province": "Đà Nẵng"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "user-1-0251",
+          "input_len": 36,
+          "round": 0,
+          "elapsed_ns": 52044543,
+          "process_exit_ns": 59117235,
+          "prediction": {
+            "street": "Thành Thái",
+            "ward": "Phường Phú Lợi",
+            "province": "Lạng Sơn"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "user-1-0090",
+          "input_len": 44,
+          "round": 0,
+          "elapsed_ns": 52452057,
+          "process_exit_ns": 58966488,
+          "prediction": {
+            "street": "Nguyễn Văn Linh",
+            "ward": "Phường Quảng Thành",
+            "province": "Lâm Đồng"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "user-1-0282",
+          "input_len": 42,
+          "round": 0,
+          "elapsed_ns": 51690096,
+          "process_exit_ns": 58193029,
+          "prediction": {
+            "street": "Trương Vĩnh Ký",
+            "ward": "Xã Long Hưng",
+            "province": "Đồng Tháp"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "user-1-0105",
+          "input_len": 30,
+          "round": 0,
+          "elapsed_ns": 52287660,
+          "process_exit_ns": 59353225,
+          "prediction": {
+            "street": "Đặng Tất",
+            "ward": "Xã Đa Kao",
+            "province": "Sơn La"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "user-1-0559",
+          "input_len": 34,
+          "round": 0,
+          "elapsed_ns": 53077362,
+          "process_exit_ns": 60170625,
+          "prediction": {
+            "street": "Đồng Đen",
+            "ward": "Phường Phú Thịnh",
+            "province": "Lâm Đồng"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "user-1-0605",
+          "input_len": 37,
+          "round": 0,
+          "elapsed_ns": 53740661,
+          "process_exit_ns": 60811512,
+          "prediction": {
+            "street": "Nguyễn Du",
+            "ward": "Phường Bến Nghé",
+            "province": "Cà Mau"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "user-1-0031",
+          "input_len": 44,
+          "round": 0,
+          "elapsed_ns": 50524094,
+          "process_exit_ns": 56809338,
+          "prediction": {
+            "street": "Nguyễn Phong Sắc",
+            "ward": "Phường Nghĩa Tân",
+            "province": "Hưng Yên"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "user-1-0229",
+          "input_len": 42,
+          "round": 0,
+          "elapsed_ns": 51584076,
+          "process_exit_ns": 58271864,
+          "prediction": {
+            "street": "Vũ Tông Phan",
+            "ward": "Xã Đông Phú",
+            "province": "Quảng Ngãi"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "user-1-0914",
+          "input_len": 45,
+          "round": 0,
+          "elapsed_ns": 51287563,
+          "process_exit_ns": 57840353,
+          "prediction": {
+            "street": "Hoàng Văn Thụ",
+            "ward": "Xã Nam Sơn",
+            "province": "Thái Nguyên"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "user-1-0033",
+          "input_len": 35,
+          "round": 0,
+          "elapsed_ns": 54271618,
+          "process_exit_ns": 61433699,
+          "prediction": {
+            "street": "Võ Văn Kiệt",
+            "ward": "Xã An Nhơn",
+            "province": "Hưng Yên"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "user-1-0693",
+          "input_len": 39,
+          "round": 0,
+          "elapsed_ns": 57890276,
+          "process_exit_ns": 66095813,
+          "prediction": {
+            "street": "Tô Ngọc Vân",
+            "ward": "Xã Ninh Xá",
+            "province": "Lạng Sơn"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "user-1-0115",
+          "input_len": 35,
+          "round": 0,
+          "elapsed_ns": 51425319,
+          "process_exit_ns": 57838115,
+          "prediction": {
+            "street": "Nguyễn Huệ",
+            "ward": "Xã Bình An",
+            "province": "Hà Tĩnh"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "user-1-0759",
+          "input_len": 36,
+          "round": 0,
+          "elapsed_ns": 56038008,
+          "process_exit_ns": 63723244,
+          "prediction": {
+            "street": "Phạm Hùng",
+            "ward": "Xã Quan Hoa",
+            "province": "Lai Châu"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "user-1-0026",
+          "input_len": 47,
+          "round": 0,
+          "elapsed_ns": 52136708,
+          "process_exit_ns": 59358894,
+          "prediction": {
+            "street": "Võ Nguyên Giáp",
+            "ward": "Xã Nguyễn Trãi",
+            "province": "Đồng Tháp"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "user-1-0433",
+          "input_len": 44,
+          "round": 0,
+          "elapsed_ns": 54500529,
+          "process_exit_ns": 62020387,
+          "prediction": {
+            "street": "Tô Hiến Thành",
+            "ward": "Xã Vạn Thắng",
+            "province": "Lâm Đồng"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "user-1-0143",
+          "input_len": 43,
+          "round": 0,
+          "elapsed_ns": 53737462,
+          "process_exit_ns": 60554566,
+          "prediction": {
+            "street": "Ngô Thì Nhậm",
+            "ward": "Xã Minh Khai",
+            "province": "Đồng Nai"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "user-1-0755",
+          "input_len": 48,
+          "round": 0,
+          "elapsed_ns": 56767775,
+          "process_exit_ns": 64833059,
+          "prediction": {
+            "street": "Nguyễn Bỉnh Khiêm",
+            "ward": "Xã Hòa Bình",
+            "province": "Đồng Tháp"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "user-1-0655",
+          "input_len": 37,
+          "round": 0,
+          "elapsed_ns": 56214604,
+          "process_exit_ns": 64066411,
+          "prediction": {
+            "street": "Phó Đức Chính",
+            "ward": "Phường Minh Khai",
+            "province": "Thành phố Hồ Chí Minh"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "user-1-0760",
+          "input_len": 35,
+          "round": 0,
+          "elapsed_ns": 59458679,
+          "process_exit_ns": 68897722,
+          "prediction": {
+            "street": "Trường Sa",
+            "ward": "Xã An Cựu",
+            "province": "Nghệ An"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "user-1-0251",
+          "input_len": 36,
+          "round": 1,
+          "elapsed_ns": 51183497,
+          "process_exit_ns": 57606921,
+          "prediction": {
+            "street": "Thành Thái",
+            "ward": "Phường Phú Lợi",
+            "province": "Lạng Sơn"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "user-1-0655",
+          "input_len": 37,
+          "round": 1,
+          "elapsed_ns": 52090658,
+          "process_exit_ns": 58767492,
+          "prediction": {
+            "street": "Phó Đức Chính",
+            "ward": "Phường Minh Khai",
+            "province": "Thành phố Hồ Chí Minh"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "user-1-0605",
+          "input_len": 37,
+          "round": 1,
+          "elapsed_ns": 51649269,
+          "process_exit_ns": 58146762,
+          "prediction": {
+            "street": "Nguyễn Du",
+            "ward": "Phường Bến Nghé",
+            "province": "Cà Mau"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "user-1-0760",
+          "input_len": 35,
+          "round": 1,
+          "elapsed_ns": 52171408,
+          "process_exit_ns": 58660274,
+          "prediction": {
+            "street": "Trường Sa",
+            "ward": "Xã An Cựu",
+            "province": "Nghệ An"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "user-1-0033",
+          "input_len": 35,
+          "round": 1,
+          "elapsed_ns": 52275536,
+          "process_exit_ns": 58974723,
+          "prediction": {
+            "street": "Võ Văn Kiệt",
+            "ward": "Xã An Nhơn",
+            "province": "Hưng Yên"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "user-1-0105",
+          "input_len": 30,
+          "round": 1,
+          "elapsed_ns": 52013214,
+          "process_exit_ns": 58924761,
+          "prediction": {
+            "street": "Đặng Tất",
+            "ward": "Xã Đa Kao",
+            "province": "Sơn La"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "user-1-0433",
+          "input_len": 44,
+          "round": 1,
+          "elapsed_ns": 55971312,
+          "process_exit_ns": 63363583,
+          "prediction": {
+            "street": "Tô Hiến Thành",
+            "ward": "Xã Vạn Thắng",
+            "province": "Lâm Đồng"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "user-1-0755",
+          "input_len": 48,
+          "round": 1,
+          "elapsed_ns": 70789397,
+          "process_exit_ns": 80312855,
+          "prediction": {
+            "street": "Nguyễn Bỉnh Khiêm",
+            "ward": "Xã Hòa Bình",
+            "province": "Đồng Tháp"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "user-1-0914",
+          "input_len": 45,
+          "round": 1,
+          "elapsed_ns": 57848460,
+          "process_exit_ns": 65442860,
+          "prediction": {
+            "street": "Hoàng Văn Thụ",
+            "ward": "Xã Nam Sơn",
+            "province": "Thái Nguyên"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "user-1-0026",
+          "input_len": 47,
+          "round": 1,
+          "elapsed_ns": 59216760,
+          "process_exit_ns": 66741925,
+          "prediction": {
+            "street": "Võ Nguyên Giáp",
+            "ward": "Xã Nguyễn Trãi",
+            "province": "Đồng Tháp"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "user-1-0559",
+          "input_len": 34,
+          "round": 1,
+          "elapsed_ns": 58989963,
+          "process_exit_ns": 66819060,
+          "prediction": {
+            "street": "Đồng Đen",
+            "ward": "Phường Phú Thịnh",
+            "province": "Lâm Đồng"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "user-1-0229",
+          "input_len": 42,
+          "round": 1,
+          "elapsed_ns": 53752051,
+          "process_exit_ns": 60897016,
+          "prediction": {
+            "street": "Vũ Tông Phan",
+            "ward": "Xã Đông Phú",
+            "province": "Quảng Ngãi"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "user-1-0096",
+          "input_len": 40,
+          "round": 1,
+          "elapsed_ns": 57042104,
+          "process_exit_ns": 64710907,
+          "prediction": {
+            "street": "Nguyễn Văn Linh",
+            "ward": "Phường Ngọc Lâm",
+            "province": "Đà Nẵng"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "user-1-0031",
+          "input_len": 44,
+          "round": 1,
+          "elapsed_ns": 60480663,
+          "process_exit_ns": 71782974,
+          "prediction": {
+            "street": "Nguyễn Phong Sắc",
+            "ward": "Phường Nghĩa Tân",
+            "province": "Hưng Yên"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "user-1-0090",
+          "input_len": 44,
+          "round": 1,
+          "elapsed_ns": 94293863,
+          "process_exit_ns": 106344968,
+          "prediction": {
+            "street": "Nguyễn Văn Linh",
+            "ward": "Phường Quảng Thành",
+            "province": "Lâm Đồng"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "user-1-0693",
+          "input_len": 39,
+          "round": 1,
+          "elapsed_ns": 90966939,
+          "process_exit_ns": 102306093,
+          "prediction": {
+            "street": "Tô Ngọc Vân",
+            "ward": "Xã Ninh Xá",
+            "province": "Lạng Sơn"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "user-1-0115",
+          "input_len": 35,
+          "round": 1,
+          "elapsed_ns": 94482585,
+          "process_exit_ns": 105822767,
+          "prediction": {
+            "street": "Nguyễn Huệ",
+            "ward": "Xã Bình An",
+            "province": "Hà Tĩnh"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "user-1-0759",
+          "input_len": 36,
+          "round": 1,
+          "elapsed_ns": 94408936,
+          "process_exit_ns": 105824827,
+          "prediction": {
+            "street": "Phạm Hùng",
+            "ward": "Xã Quan Hoa",
+            "province": "Lai Châu"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "user-1-0282",
+          "input_len": 42,
+          "round": 1,
+          "elapsed_ns": 95546987,
+          "process_exit_ns": 103040564,
+          "prediction": {
+            "street": "Trương Vĩnh Ký",
+            "ward": "Xã Long Hưng",
+            "province": "Đồng Tháp"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "user-1-0143",
+          "input_len": 43,
+          "round": 1,
+          "elapsed_ns": 72479218,
+          "process_exit_ns": 83218123,
+          "prediction": {
+            "street": "Ngô Thì Nhậm",
+            "ward": "Xã Minh Khai",
+            "province": "Đồng Nai"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "user-1-0096",
+          "input_len": 40,
+          "round": 2,
+          "elapsed_ns": 98320975,
+          "process_exit_ns": 106322148,
+          "prediction": {
+            "street": "Nguyễn Văn Linh",
+            "ward": "Phường Ngọc Lâm",
+            "province": "Đà Nẵng"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "user-1-0605",
+          "input_len": 37,
+          "round": 2,
+          "elapsed_ns": 53210825,
+          "process_exit_ns": 60088436,
+          "prediction": {
+            "street": "Nguyễn Du",
+            "ward": "Phường Bến Nghé",
+            "province": "Cà Mau"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "user-1-0251",
+          "input_len": 36,
+          "round": 2,
+          "elapsed_ns": 56350128,
+          "process_exit_ns": 64167692,
+          "prediction": {
+            "street": "Thành Thái",
+            "ward": "Phường Phú Lợi",
+            "province": "Lạng Sơn"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "user-1-0026",
+          "input_len": 47,
+          "round": 2,
+          "elapsed_ns": 57856442,
+          "process_exit_ns": 64199322,
+          "prediction": {
+            "street": "Võ Nguyên Giáp",
+            "ward": "Xã Nguyễn Trãi",
+            "province": "Đồng Tháp"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "user-1-0033",
+          "input_len": 35,
+          "round": 2,
+          "elapsed_ns": 51711645,
+          "process_exit_ns": 58405907,
+          "prediction": {
+            "street": "Võ Văn Kiệt",
+            "ward": "Xã An Nhơn",
+            "province": "Hưng Yên"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "user-1-0755",
+          "input_len": 48,
+          "round": 2,
+          "elapsed_ns": 55491052,
+          "process_exit_ns": 62989725,
+          "prediction": {
+            "street": "Nguyễn Bỉnh Khiêm",
+            "ward": "Xã Hòa Bình",
+            "province": "Đồng Tháp"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "user-1-0914",
+          "input_len": 45,
+          "round": 2,
+          "elapsed_ns": 51589078,
+          "process_exit_ns": 58206054,
+          "prediction": {
+            "street": "Hoàng Văn Thụ",
+            "ward": "Xã Nam Sơn",
+            "province": "Thái Nguyên"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "user-1-0031",
+          "input_len": 44,
+          "round": 2,
+          "elapsed_ns": 53562450,
+          "process_exit_ns": 60819175,
+          "prediction": {
+            "street": "Nguyễn Phong Sắc",
+            "ward": "Phường Nghĩa Tân",
+            "province": "Hưng Yên"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "user-1-0760",
+          "input_len": 35,
+          "round": 2,
+          "elapsed_ns": 56476695,
+          "process_exit_ns": 65521555,
+          "prediction": {
+            "street": "Trường Sa",
+            "ward": "Xã An Cựu",
+            "province": "Nghệ An"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "user-1-0090",
+          "input_len": 44,
+          "round": 2,
+          "elapsed_ns": 73274969,
+          "process_exit_ns": 81623618,
+          "prediction": {
+            "street": "Nguyễn Văn Linh",
+            "ward": "Phường Quảng Thành",
+            "province": "Lâm Đồng"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "user-1-0655",
+          "input_len": 37,
+          "round": 2,
+          "elapsed_ns": 54304156,
+          "process_exit_ns": 60970738,
+          "prediction": {
+            "street": "Phó Đức Chính",
+            "ward": "Phường Minh Khai",
+            "province": "Thành phố Hồ Chí Minh"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "user-1-0229",
+          "input_len": 42,
+          "round": 2,
+          "elapsed_ns": 52323514,
+          "process_exit_ns": 59011329,
+          "prediction": {
+            "street": "Vũ Tông Phan",
+            "ward": "Xã Đông Phú",
+            "province": "Quảng Ngãi"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "user-1-0759",
+          "input_len": 36,
+          "round": 2,
+          "elapsed_ns": 53956168,
+          "process_exit_ns": 61295748,
+          "prediction": {
+            "street": "Phạm Hùng",
+            "ward": "Xã Quan Hoa",
+            "province": "Lai Châu"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "user-1-0559",
+          "input_len": 34,
+          "round": 2,
+          "elapsed_ns": 51462164,
+          "process_exit_ns": 58138159,
+          "prediction": {
+            "street": "Đồng Đen",
+            "ward": "Phường Phú Thịnh",
+            "province": "Lâm Đồng"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "user-1-0115",
+          "input_len": 35,
+          "round": 2,
+          "elapsed_ns": 52769368,
+          "process_exit_ns": 59567446,
+          "prediction": {
+            "street": "Nguyễn Huệ",
+            "ward": "Xã Bình An",
+            "province": "Hà Tĩnh"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "user-1-0105",
+          "input_len": 30,
+          "round": 2,
+          "elapsed_ns": 51234414,
+          "process_exit_ns": 58086485,
+          "prediction": {
+            "street": "Đặng Tất",
+            "ward": "Xã Đa Kao",
+            "province": "Sơn La"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "user-1-0282",
+          "input_len": 42,
+          "round": 2,
+          "elapsed_ns": 53195074,
+          "process_exit_ns": 60372108,
+          "prediction": {
+            "street": "Trương Vĩnh Ký",
+            "ward": "Xã Long Hưng",
+            "province": "Đồng Tháp"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "user-1-0433",
+          "input_len": 44,
+          "round": 2,
+          "elapsed_ns": 52109945,
+          "process_exit_ns": 58603963,
+          "prediction": {
+            "street": "Tô Hiến Thành",
+            "ward": "Xã Vạn Thắng",
+            "province": "Lâm Đồng"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "user-1-0143",
+          "input_len": 43,
+          "round": 2,
+          "elapsed_ns": 53305353,
+          "process_exit_ns": 60725087,
+          "prediction": {
+            "street": "Ngô Thì Nhậm",
+            "ward": "Xã Minh Khai",
+            "province": "Đồng Nai"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "user-1-0693",
+          "input_len": 39,
+          "round": 2,
+          "elapsed_ns": 57723628,
+          "process_exit_ns": 65196956,
+          "prediction": {
+            "street": "Tô Ngọc Vân",
+            "ward": "Xã Ninh Xá",
+            "province": "Lạng Sơn"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "user-1-0229",
+          "input_len": 42,
+          "round": 3,
+          "elapsed_ns": 54101580,
+          "process_exit_ns": 61579063,
+          "prediction": {
+            "street": "Vũ Tông Phan",
+            "ward": "Xã Đông Phú",
+            "province": "Quảng Ngãi"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "user-1-0105",
+          "input_len": 30,
+          "round": 3,
+          "elapsed_ns": 51687247,
+          "process_exit_ns": 58121407,
+          "prediction": {
+            "street": "Đặng Tất",
+            "ward": "Xã Đa Kao",
+            "province": "Sơn La"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "user-1-0026",
+          "input_len": 47,
+          "round": 3,
+          "elapsed_ns": 51653609,
+          "process_exit_ns": 58479317,
+          "prediction": {
+            "street": "Võ Nguyên Giáp",
+            "ward": "Xã Nguyễn Trãi",
+            "province": "Đồng Tháp"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "user-1-0760",
+          "input_len": 35,
+          "round": 3,
+          "elapsed_ns": 51015227,
+          "process_exit_ns": 57486488,
+          "prediction": {
+            "street": "Trường Sa",
+            "ward": "Xã An Cựu",
+            "province": "Nghệ An"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "user-1-0251",
+          "input_len": 36,
+          "round": 3,
+          "elapsed_ns": 54759560,
+          "process_exit_ns": 62215520,
+          "prediction": {
+            "street": "Thành Thái",
+            "ward": "Phường Phú Lợi",
+            "province": "Lạng Sơn"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "user-1-0282",
+          "input_len": 42,
+          "round": 3,
+          "elapsed_ns": 53872557,
+          "process_exit_ns": 61068041,
+          "prediction": {
+            "street": "Trương Vĩnh Ký",
+            "ward": "Xã Long Hưng",
+            "province": "Đồng Tháp"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "user-1-0115",
+          "input_len": 35,
+          "round": 3,
+          "elapsed_ns": 51922468,
+          "process_exit_ns": 58679364,
+          "prediction": {
+            "street": "Nguyễn Huệ",
+            "ward": "Xã Bình An",
+            "province": "Hà Tĩnh"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "user-1-0693",
+          "input_len": 39,
+          "round": 3,
+          "elapsed_ns": 53412837,
+          "process_exit_ns": 59830677,
+          "prediction": {
+            "street": "Tô Ngọc Vân",
+            "ward": "Xã Ninh Xá",
+            "province": "Lạng Sơn"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "user-1-0914",
+          "input_len": 45,
+          "round": 3,
+          "elapsed_ns": 74640887,
+          "process_exit_ns": 81429004,
+          "prediction": {
+            "street": "Hoàng Văn Thụ",
+            "ward": "Xã Nam Sơn",
+            "province": "Thái Nguyên"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "user-1-0655",
+          "input_len": 37,
+          "round": 3,
+          "elapsed_ns": 52150916,
+          "process_exit_ns": 59019920,
+          "prediction": {
+            "street": "Phó Đức Chính",
+            "ward": "Phường Minh Khai",
+            "province": "Thành phố Hồ Chí Minh"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "user-1-0031",
+          "input_len": 44,
+          "round": 3,
+          "elapsed_ns": 54334846,
+          "process_exit_ns": 62055098,
+          "prediction": {
+            "street": "Nguyễn Phong Sắc",
+            "ward": "Phường Nghĩa Tân",
+            "province": "Hưng Yên"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "user-1-0096",
+          "input_len": 40,
+          "round": 3,
+          "elapsed_ns": 52419032,
+          "process_exit_ns": 59332461,
+          "prediction": {
+            "street": "Nguyễn Văn Linh",
+            "ward": "Phường Ngọc Lâm",
+            "province": "Đà Nẵng"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "user-1-0559",
+          "input_len": 34,
+          "round": 3,
+          "elapsed_ns": 52204392,
+          "process_exit_ns": 59081461,
+          "prediction": {
+            "street": "Đồng Đen",
+            "ward": "Phường Phú Thịnh",
+            "province": "Lâm Đồng"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "user-1-0755",
+          "input_len": 48,
+          "round": 3,
+          "elapsed_ns": 54411957,
+          "process_exit_ns": 62005923,
+          "prediction": {
+            "street": "Nguyễn Bỉnh Khiêm",
+            "ward": "Xã Hòa Bình",
+            "province": "Đồng Tháp"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "user-1-0433",
+          "input_len": 44,
+          "round": 3,
+          "elapsed_ns": 52280108,
+          "process_exit_ns": 59443137,
+          "prediction": {
+            "street": "Tô Hiến Thành",
+            "ward": "Xã Vạn Thắng",
+            "province": "Lâm Đồng"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "user-1-0033",
+          "input_len": 35,
+          "round": 3,
+          "elapsed_ns": 54455539,
+          "process_exit_ns": 61931510,
+          "prediction": {
+            "street": "Võ Văn Kiệt",
+            "ward": "Xã An Nhơn",
+            "province": "Hưng Yên"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "user-1-0759",
+          "input_len": 36,
+          "round": 3,
+          "elapsed_ns": 53810045,
+          "process_exit_ns": 60587814,
+          "prediction": {
+            "street": "Phạm Hùng",
+            "ward": "Xã Quan Hoa",
+            "province": "Lai Châu"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "user-1-0090",
+          "input_len": 44,
+          "round": 3,
+          "elapsed_ns": 52996640,
+          "process_exit_ns": 59995467,
+          "prediction": {
+            "street": "Nguyễn Văn Linh",
+            "ward": "Phường Quảng Thành",
+            "province": "Lâm Đồng"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "user-1-0143",
+          "input_len": 43,
+          "round": 3,
+          "elapsed_ns": 54694417,
+          "process_exit_ns": 62244089,
+          "prediction": {
+            "street": "Ngô Thì Nhậm",
+            "ward": "Xã Minh Khai",
+            "province": "Đồng Nai"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "user-1-0605",
+          "input_len": 37,
+          "round": 3,
+          "elapsed_ns": 54850757,
+          "process_exit_ns": 62363138,
+          "prediction": {
+            "street": "Nguyễn Du",
+            "ward": "Phường Bến Nghé",
+            "province": "Cà Mau"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "user-1-0914",
+          "input_len": 45,
+          "round": 4,
+          "elapsed_ns": 54516664,
+          "process_exit_ns": 61756722,
+          "prediction": {
+            "street": "Hoàng Văn Thụ",
+            "ward": "Xã Nam Sơn",
+            "province": "Thái Nguyên"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "user-1-0090",
+          "input_len": 44,
+          "round": 4,
+          "elapsed_ns": 56729724,
+          "process_exit_ns": 64488554,
+          "prediction": {
+            "street": "Nguyễn Văn Linh",
+            "ward": "Phường Quảng Thành",
+            "province": "Lâm Đồng"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "user-1-0755",
+          "input_len": 48,
+          "round": 4,
+          "elapsed_ns": 51789153,
+          "process_exit_ns": 58467421,
+          "prediction": {
+            "street": "Nguyễn Bỉnh Khiêm",
+            "ward": "Xã Hòa Bình",
+            "province": "Đồng Tháp"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "user-1-0026",
+          "input_len": 47,
+          "round": 4,
+          "elapsed_ns": 52945580,
+          "process_exit_ns": 59762903,
+          "prediction": {
+            "street": "Võ Nguyên Giáp",
+            "ward": "Xã Nguyễn Trãi",
+            "province": "Đồng Tháp"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "user-1-0559",
+          "input_len": 34,
+          "round": 4,
+          "elapsed_ns": 52809477,
+          "process_exit_ns": 59728329,
+          "prediction": {
+            "street": "Đồng Đen",
+            "ward": "Phường Phú Thịnh",
+            "province": "Lâm Đồng"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "user-1-0143",
+          "input_len": 43,
+          "round": 4,
+          "elapsed_ns": 53989135,
+          "process_exit_ns": 61578641,
+          "prediction": {
+            "street": "Ngô Thì Nhậm",
+            "ward": "Xã Minh Khai",
+            "province": "Đồng Nai"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "user-1-0605",
+          "input_len": 37,
+          "round": 4,
+          "elapsed_ns": 51846637,
+          "process_exit_ns": 58567114,
+          "prediction": {
+            "street": "Nguyễn Du",
+            "ward": "Phường Bến Nghé",
+            "province": "Cà Mau"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "user-1-0282",
+          "input_len": 42,
+          "round": 4,
+          "elapsed_ns": 53256849,
+          "process_exit_ns": 61099345,
+          "prediction": {
+            "street": "Trương Vĩnh Ký",
+            "ward": "Xã Long Hưng",
+            "province": "Đồng Tháp"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "user-1-0096",
+          "input_len": 40,
+          "round": 4,
+          "elapsed_ns": 65040351,
+          "process_exit_ns": 73055742,
+          "prediction": {
+            "street": "Nguyễn Văn Linh",
+            "ward": "Phường Ngọc Lâm",
+            "province": "Đà Nẵng"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "user-1-0760",
+          "input_len": 35,
+          "round": 4,
+          "elapsed_ns": 57926284,
+          "process_exit_ns": 66035225,
+          "prediction": {
+            "street": "Trường Sa",
+            "ward": "Xã An Cựu",
+            "province": "Nghệ An"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "user-1-0229",
+          "input_len": 42,
+          "round": 4,
+          "elapsed_ns": 56597957,
+          "process_exit_ns": 64399896,
+          "prediction": {
+            "street": "Vũ Tông Phan",
+            "ward": "Xã Đông Phú",
+            "province": "Quảng Ngãi"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "user-1-0759",
+          "input_len": 36,
+          "round": 4,
+          "elapsed_ns": 59861079,
+          "process_exit_ns": 67669081,
+          "prediction": {
+            "street": "Phạm Hùng",
+            "ward": "Xã Quan Hoa",
+            "province": "Lai Châu"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "user-1-0105",
+          "input_len": 30,
+          "round": 4,
+          "elapsed_ns": 60180154,
+          "process_exit_ns": 67996374,
+          "prediction": {
+            "street": "Đặng Tất",
+            "ward": "Xã Đa Kao",
+            "province": "Sơn La"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "user-1-0693",
+          "input_len": 39,
+          "round": 4,
+          "elapsed_ns": 52283978,
+          "process_exit_ns": 58983726,
+          "prediction": {
+            "street": "Tô Ngọc Vân",
+            "ward": "Xã Ninh Xá",
+            "province": "Lạng Sơn"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "user-1-0655",
+          "input_len": 37,
+          "round": 4,
+          "elapsed_ns": 54272378,
+          "process_exit_ns": 61155499,
+          "prediction": {
+            "street": "Phó Đức Chính",
+            "ward": "Phường Minh Khai",
+            "province": "Thành phố Hồ Chí Minh"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "user-1-0033",
+          "input_len": 35,
+          "round": 4,
+          "elapsed_ns": 53713815,
+          "process_exit_ns": 61472635,
+          "prediction": {
+            "street": "Võ Văn Kiệt",
+            "ward": "Xã An Nhơn",
+            "province": "Hưng Yên"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "user-1-0251",
+          "input_len": 36,
+          "round": 4,
+          "elapsed_ns": 52599832,
+          "process_exit_ns": 59404858,
+          "prediction": {
+            "street": "Thành Thái",
+            "ward": "Phường Phú Lợi",
+            "province": "Lạng Sơn"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "user-1-0433",
+          "input_len": 44,
+          "round": 4,
+          "elapsed_ns": 56817155,
+          "process_exit_ns": 64600344,
+          "prediction": {
+            "street": "Tô Hiến Thành",
+            "ward": "Xã Vạn Thắng",
+            "province": "Lâm Đồng"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "user-1-0115",
+          "input_len": 35,
+          "round": 4,
+          "elapsed_ns": 53956536,
+          "process_exit_ns": 61410713,
+          "prediction": {
+            "street": "Nguyễn Huệ",
+            "ward": "Xã Bình An",
+            "province": "Hà Tĩnh"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "user-1-0031",
+          "input_len": 44,
+          "round": 4,
+          "elapsed_ns": 55836465,
+          "process_exit_ns": 63909185,
+          "prediction": {
+            "street": "Nguyễn Phong Sắc",
+            "ward": "Phường Nghĩa Tân",
+            "province": "Hưng Yên"
+          },
+          "matches_expected": true
+        }
+      ],
+      "full_report_sha256": "4b3cdbcb3979e8087ea1f7d7bdc63784a7cdf7d1ebfb32b4f72646f556e9abb2",
+      "full_report_path": "reports/index-review/optimized-user-timing.json"
+    },
+    "exact_only_scale": {
+      "schema_version": 2,
+      "metadata": {
+        "measured_at_utc": "2026-11-05T03:31:39Z",
+        "config": {
+          "top_k": 8,
+          "ambiguity_margin": 0.0,
+          "min_score": 10.0,
+          "enable_fuzzy": false,
+          "enable_compact": false,
+          "enable_typing": false,
+          "max_fuzzy_spans": 128,
+          "max_candidates_per_span": 64,
+          "max_verifications": 2048,
+          "max_postings": 12000,
+          "max_edits": 2
+        },
+        "dictionary_path": "/home/orange/Code/address-segmentation/reports/scale/dictionary.json",
+        "dictionary_hash": "8671122784f5d810267545ec0b76ba8f9caea6e5eaebb7613989a7ca67a5a09c",
+        "cases_path": "/home/orange/Code/address-segmentation/reports/scale/cases.jsonl",
+        "cases_hash": "94e4d886b773503224f12e0a6251f70f23428a25e68dc48c94704414a9a9082e",
+        "source_hash": "13f36c4a44178e487a6ebfe61c5fadc22f6c9de76a69dfc56f46a9a23edc6c3f",
+        "benchmark_source_hash": "1599cc11d66fd7da8c9d9eff83d9f7b4a866735518dac414e97809931f60f7ee",
+        "platform": {
+          "python_version": "3.14.4 (main, Aug 20 2026, 10:41:58) [GCC 15.2.0]",
+          "python_implementation": "CPython",
+          "platform": "Linux-7.0.0-42-generic-x86_64-with-glibc2.43",
+          "system": "Linux",
+          "release": "7.0.0-42-generic",
+          "machine": "x86_64",
+          "processor": "",
+          "cpu_count": 12
+        },
+        "processes": 5,
+        "warmup": 10,
+        "repetitions": 3,
+        "seed": 42,
+        "cli_timeout_seconds": 30.0,
+        "total_cases": 1000,
+        "dictionary_entries": {
+          "streets": 23800,
+          "wards": 340,
+          "provinces": 34
+        },
+        "input_lengths": {
+          "min": 22,
+          "max": 201,
+          "mean": 63.909
+        }
+      },
+      "gc_policy": {
+        "is_enabled": true,
+        "thresholds": [
+          2000,
+          10,
+          0
+        ],
+        "counts": [
+          27,
+          0,
+          0
+        ]
+      },
+      "measurement_contract": {
+        "primary": "cold_process_request",
+        "timer": "parent perf_counter_ns immediately before Popen until the complete JSONL result line is read from stdout",
+        "command": [
+          "/usr/bin/python3.14",
+          "-m",
+          "address_segmentation.io",
+          "--dictionary",
+          "/home/orange/Code/address-segmentation/reports/scale/dictionary.json",
+          "--config",
+          "/home/orange/Code/address-segmentation/reports/index-review/exact_only-config.json"
+        ],
+        "includes": [
+          "process launch",
+          "interpreter startup",
+          "imports",
+          "dictionary/config I/O",
+          "index construction",
+          "stdin pipe transfer",
+          "input JSON parsing",
+          "identify",
+          "output JSON serialization",
+          "stdout pipe capture/flush"
+        ],
+        "excludes": [
+          "harness fixture loading",
+          "harness input encoding",
+          "harness output validation/scoring",
+          "report file writes",
+          "memory tracing",
+          "process teardown after output"
+        ],
+        "stdout": "UTF-8 JSONL captured through an OS pipe; no prediction file or terminal rendering",
+        "cold_definition": "fresh interpreter and matcher for every address; no persistent index or prediction cache",
+        "filesystem_cache": "OS file/page caches and Python bytecode caches are uncontrolled; not a cold-machine measurement",
+        "stdout_observer": "parent reader thread timestamps complete lines; pipe/thread setup precedes timing; scheduling overhead is included",
+        "process_exit": "cold_process_exit separately records launch through communicate/wait; every CLI must exit successfully",
+        "first_request": "identify only, after index construction; diagnostic, excludes startup",
+        "child_total_elapsed": "diagnostic worker including case loading, warmups and report-file I/O; not grading latency",
+        "batch": "one process for the entire dataset; elapsed / case count is throughput, not maximum request latency"
+      },
+      "cold_coverage": {
+        "selection": "seeded_uniform_sample_without_replacement",
+        "selected_case_ids": [
+          "synth-case-00655",
+          "synth-case-00115",
+          "synth-case-00026",
+          "synth-case-00760",
+          "synth-case-00282",
+          "synth-case-00251",
+          "synth-case-00229",
+          "synth-case-00143",
+          "synth-case-00755",
+          "synth-case-00105",
+          "synth-case-00693",
+          "synth-case-00759",
+          "synth-case-00914",
+          "synth-case-00559",
+          "synth-case-00090",
+          "synth-case-00605",
+          "synth-case-00433",
+          "synth-case-00033",
+          "synth-case-00031",
+          "synth-case-00096"
+        ],
+        "unique_cases": 20,
+        "total_cases": 1000,
+        "full_dataset": false,
+        "rounds": 5,
+        "warmup": 0,
+        "matches_expected": 100
+      },
+      "phases": {
+        "cold_process_request": {
+          "count": 100,
+          "mean_ns": 310642480.16,
+          "mean_ms": 310.64248016000005,
+          "min_ns": 281758069.0,
+          "min_ms": 281.758069,
+          "p50_ns": 295378081.5,
+          "p50_ms": 295.3780815,
+          "p95_ns": 339873857.15,
+          "p95_ms": 339.87385715,
+          "p99_ns": 600778341.7300005,
+          "p99_ms": 600.7783417300005,
+          "max_ns": 694497853.0,
+          "max_ms": 694.497853
+        },
+        "cold_process_exit": {
+          "count": 100,
+          "mean_ns": 324446006.3,
+          "mean_ms": 324.4460063,
+          "min_ns": 294366247.0,
+          "min_ms": 294.366247,
+          "p50_ns": 308666731.5,
+          "p50_ms": 308.6667315,
+          "p95_ns": 354359799.2,
+          "p95_ms": 354.3597992,
+          "p99_ns": 615908714.3300005,
+          "p99_ms": 615.9087143300005,
+          "max_ns": 716773313.0,
+          "max_ms": 716.773313
+        },
+        "fresh_process_import": {
+          "count": 1,
+          "mean_ns": 20581442.0,
+          "mean_ms": 20.581442,
+          "min_ns": 20581442.0,
+          "min_ms": 20.581442,
+          "p50_ns": 20581442.0,
+          "p50_ms": 20.581442,
+          "p95_ns": 20581442.0,
+          "p95_ms": 20.581442,
+          "p99_ns": 20581442.0,
+          "p99_ms": 20.581442,
+          "max_ns": 20581442.0,
+          "max_ms": 20.581442
+        },
+        "interpreter_and_import_total": {
+          "count": 1,
+          "mean_ns": 35680813.0,
+          "mean_ms": 35.680813,
+          "min_ns": 35680813.0,
+          "min_ms": 35.680813,
+          "p50_ns": 35680813.0,
+          "p50_ms": 35.680813,
+          "p95_ns": 35680813.0,
+          "p95_ms": 35.680813,
+          "p99_ns": 35680813.0,
+          "p99_ms": 35.680813,
+          "max_ns": 35680813.0,
+          "max_ms": 35.680813
+        },
+        "dictionary_load": {
+          "count": 5,
+          "mean_ns": 6421571.8,
+          "mean_ms": 6.4215718,
+          "min_ns": 6256687.0,
+          "min_ms": 6.256687,
+          "p50_ns": 6451458.0,
+          "p50_ms": 6.451458,
+          "p95_ns": 6514366.0,
+          "p95_ms": 6.514366,
+          "p99_ns": 6519347.6,
+          "p99_ms": 6.5193476,
+          "max_ns": 6520593.0,
+          "max_ms": 6.520593
+        },
+        "matcher_index": {
+          "count": 5,
+          "mean_ns": 267546107.0,
+          "mean_ms": 267.546107,
+          "min_ns": 264649967.0,
+          "min_ms": 264.649967,
+          "p50_ns": 267977843.0,
+          "p50_ms": 267.977843,
+          "p95_ns": 269479794.2,
+          "p95_ms": 269.4797942,
+          "p99_ns": 269519010.04,
+          "p99_ms": 269.51901004,
+          "max_ns": 269528814.0,
+          "max_ms": 269.528814
+        },
+        "first_request": {
+          "count": 5,
+          "mean_ns": 372475.2,
+          "mean_ms": 0.3724752,
+          "min_ns": 362513.0,
+          "min_ms": 0.362513,
+          "p50_ns": 376792.0,
+          "p50_ms": 0.376792,
+          "p95_ns": 377109.2,
+          "p95_ms": 0.37710920000000003,
+          "p99_ns": 377137.04,
+          "p99_ms": 0.37713704,
+          "max_ns": 377144.0,
+          "max_ms": 0.377144
+        },
+        "warmed_request": {
+          "count": 15000,
+          "mean_ns": 210865.91053333334,
+          "mean_ms": 0.21086591053333334,
+          "min_ns": 86005.0,
+          "min_ms": 0.086005,
+          "p50_ns": 221111.5,
+          "p50_ms": 0.2211115,
+          "p95_ns": 379740.4499999999,
+          "p95_ms": 0.3797404499999999,
+          "p99_ns": 409702.85000000003,
+          "p99_ms": 0.40970285,
+          "max_ns": 930413.0,
+          "max_ms": 0.930413
+        },
+        "child_total_elapsed": {
+          "count": 5,
+          "mean_ns": 1007400844.2,
+          "mean_ms": 1007.4008442,
+          "min_ns": 985044509.0,
+          "min_ms": 985.044509,
+          "p50_ns": 1014280177.0,
+          "p50_ms": 1014.280177,
+          "p95_ns": 1018972468.1999999,
+          "p95_ms": 1018.9724682,
+          "p99_ns": 1019198649.64,
+          "p99_ms": 1019.19864964,
+          "max_ns": 1019255195.0,
+          "max_ms": 1019.255195
+        },
+        "full_jsonl_adapter": {
+          "count": 5,
+          "mean_ns": 512347989.4,
+          "mean_ms": 512.3479894,
+          "min_ns": 483538380.0,
+          "min_ms": 483.53838,
+          "p50_ns": 509392402.0,
+          "p50_ms": 509.392402,
+          "p95_ns": 549871264.1999999,
+          "p95_ms": 549.8712641999999,
+          "p99_ns": 554710288.84,
+          "p99_ms": 554.7102888400001,
+          "max_ns": 555920045.0,
+          "max_ms": 555.920045
+        }
+      },
+      "batch_process": {
+        "cases_per_process": 1000,
+        "amortized_per_case": {
+          "count": 5,
+          "mean_ns": 512347.9894,
+          "mean_ms": 0.5123479894,
+          "min_ns": 483538.38,
+          "min_ms": 0.48353838,
+          "p50_ns": 509392.402,
+          "p50_ms": 0.509392402,
+          "p95_ns": 549871.2642000001,
+          "p95_ms": 0.5498712642000001,
+          "p99_ns": 554710.28884,
+          "p99_ms": 0.5547102888400001,
+          "max_ns": 555920.045,
+          "max_ms": 0.555920045
+        },
+        "process_exit": {
+          "count": 5,
+          "mean_ns": 526268806.0,
+          "mean_ms": 526.268806,
+          "min_ns": 497008292.0,
+          "min_ms": 497.008292,
+          "p50_ns": 522982865.0,
+          "p50_ms": 522.982865,
+          "p95_ns": 564322702.6,
+          "p95_ms": 564.3227026000001,
+          "p99_ns": 569177056.52,
+          "p99_ms": 569.17705652,
+          "max_ns": 570390645.0,
+          "max_ms": 570.390645
+        },
+        "raw_elapsed_ns": [
+          487212979,
+          555920045,
+          509392402,
+          525676141,
+          483538380
+        ],
+        "raw_process_exit_ns": [
+          500911295,
+          570390645,
+          522982865,
+          540050933,
+          497008292
+        ],
+        "matches_expected_per_round": [
+          1000,
+          1000,
+          1000,
+          1000,
+          1000
+        ]
+      },
+      "memory": {
+        "tracemalloc_peak_bytes": 35047901,
+        "tracemalloc_current_bytes": 21619701,
+        "ru_maxrss": 99984,
+        "ru_maxrss_units": "kibibytes",
+        "platform": "linux",
+        "measurement_notes": "tracemalloc measures Python heap allocations; ru_maxrss measures OS peak resident set size and includes tracemalloc overhead."
+      },
+      "thresholds": {
+        "scope": "cold_process_request",
+        "mean_request_ms_target": 10.0,
+        "max_request_ms_target": 100.0,
+        "observed_warmed_mean_ms": 0.21086591053333334,
+        "observed_warmed_max_ms": 0.930413,
+        "observed_first_request_max_ms": 0.377144,
+        "observed_mean_ms": 310.64248016000005,
+        "observed_overall_max_ms": 694.497853,
+        "mean_target_met": false,
+        "max_target_met": false,
+        "warm_max_target_met": true,
+        "all_requests_within_target": false,
+        "cold_request_case_ids": [
+          "synth-case-00655",
+          "synth-case-00115",
+          "synth-case-00026",
+          "synth-case-00760",
+          "synth-case-00282",
+          "synth-case-00251",
+          "synth-case-00229",
+          "synth-case-00143",
+          "synth-case-00755",
+          "synth-case-00105",
+          "synth-case-00693",
+          "synth-case-00759",
+          "synth-case-00914",
+          "synth-case-00559",
+          "synth-case-00090",
+          "synth-case-00605",
+          "synth-case-00433",
+          "synth-case-00033",
+          "synth-case-00031",
+          "synth-case-00096"
+        ],
+        "first_identify_case_ids": [
+          "synth-case-00001",
+          "synth-case-00001",
+          "synth-case-00001",
+          "synth-case-00001",
+          "synth-case-00001"
+        ],
+        "observation_note": "Local observed cold-process limits only; sampled runs cannot certify full-dataset mean or maximum. Primary timing stops when the parent receives the complete result line; process exit is measured separately."
+      },
+      "raw_cold_process_timings": [
+        {
+          "case_id": "synth-case-00096",
+          "input_len": 45,
+          "round": 0,
+          "elapsed_ns": 300544707,
+          "process_exit_ns": 313690597,
+          "prediction": {
+            "street": "Phố Nguyễn Duy Trí Tây",
+            "ward": "Phường 57",
+            "province": null
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00251",
+          "input_len": 24,
+          "round": 0,
+          "elapsed_ns": 324569180,
+          "process_exit_ns": 338584339,
+          "prediction": {
+            "street": null,
+            "ward": "Phường 90",
+            "province": "Tỉnh Hà Giang"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00090",
+          "input_len": 54,
+          "round": 0,
+          "elapsed_ns": 282622893,
+          "process_exit_ns": 296011721,
+          "prediction": {
+            "street": "Phố Nguyễn Hùng Quang Đông",
+            "ward": null,
+            "province": "Tỉnh Điện Biên"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00282",
+          "input_len": 55,
+          "round": 0,
+          "elapsed_ns": 290770985,
+          "process_exit_ns": 304158321,
+          "prediction": {
+            "street": "Phố Nguyễn Hồng Tài Nối Dài",
+            "ward": null,
+            "province": "Tỉnh Cao Bằng"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00105",
+          "input_len": 62,
+          "round": 0,
+          "elapsed_ns": 288316345,
+          "process_exit_ns": 301304927,
+          "prediction": {
+            "street": "Phố Nguyễn Bảo Minh Bắc",
+            "ward": "Phường 77",
+            "province": "Tỉnh Đắk Nông"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00559",
+          "input_len": 60,
+          "round": 0,
+          "elapsed_ns": 291038443,
+          "process_exit_ns": 304173118,
+          "prediction": {
+            "street": "Phố Nguyễn Ngọc Hải",
+            "ward": "Phường 68",
+            "province": "Thành phố Đà Nẵng"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00605",
+          "input_len": 67,
+          "round": 0,
+          "elapsed_ns": 324203002,
+          "process_exit_ns": 340365322,
+          "prediction": {
+            "street": null,
+            "ward": null,
+            "province": null
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00031",
+          "input_len": 24,
+          "round": 0,
+          "elapsed_ns": 318537735,
+          "process_exit_ns": 332415233,
+          "prediction": {
+            "street": null,
+            "ward": "Phường 83",
+            "province": "Tỉnh Bắc Ninh"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00229",
+          "input_len": 56,
+          "round": 0,
+          "elapsed_ns": 282423878,
+          "process_exit_ns": 295148736,
+          "prediction": {
+            "street": "Phố Nguyễn Công Lâm",
+            "ward": "Phường 84",
+            "province": "Tỉnh Kon Tum"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00914",
+          "input_len": 79,
+          "round": 0,
+          "elapsed_ns": 306510269,
+          "process_exit_ns": 319695755,
+          "prediction": {
+            "street": "Phố Nguyễn Duy Thuận Tây",
+            "ward": "Phường 47",
+            "province": "Tỉnh Hà Nam"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00033",
+          "input_len": 60,
+          "round": 0,
+          "elapsed_ns": 323266659,
+          "process_exit_ns": 337575526,
+          "prediction": {
+            "street": "Phố Nguyễn Hải Thông Tây",
+            "ward": "Phường 13",
+            "province": "Tỉnh Hà Nam"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00693",
+          "input_len": 68,
+          "round": 0,
+          "elapsed_ns": 291801999,
+          "process_exit_ns": 306479221,
+          "prediction": {
+            "street": null,
+            "ward": null,
+            "province": null
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00115",
+          "input_len": 24,
+          "round": 0,
+          "elapsed_ns": 284167121,
+          "process_exit_ns": 297474297,
+          "prediction": {
+            "street": null,
+            "ward": "Phường 4",
+            "province": "Tỉnh Khánh Hòa"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00759",
+          "input_len": 26,
+          "round": 0,
+          "elapsed_ns": 318536334,
+          "process_exit_ns": 332225396,
+          "prediction": {
+            "street": null,
+            "ward": "Phường 92",
+            "province": null
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00026",
+          "input_len": 46,
+          "round": 0,
+          "elapsed_ns": 322319989,
+          "process_exit_ns": 335872030,
+          "prediction": {
+            "street": "Phố Nguyễn Ngọc Tiến",
+            "ward": null,
+            "province": "Tỉnh Bắc Kạn"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00433",
+          "input_len": 67,
+          "round": 0,
+          "elapsed_ns": 339712044,
+          "process_exit_ns": 354164977,
+          "prediction": {
+            "street": "Phố Nguyễn Tuấn Thắng Bắc",
+            "ward": "Phường 35",
+            "province": "Thành phố Đà Nẵng"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00143",
+          "input_len": 30,
+          "round": 0,
+          "elapsed_ns": 282323005,
+          "process_exit_ns": 295386737,
+          "prediction": {
+            "street": null,
+            "ward": "Phường 24",
+            "province": "Thành phố Hải Phòng"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00755",
+          "input_len": 25,
+          "round": 0,
+          "elapsed_ns": 322058521,
+          "process_exit_ns": 337052471,
+          "prediction": {
+            "street": null,
+            "ward": "Phường 8",
+            "province": null
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00655",
+          "input_len": 68,
+          "round": 0,
+          "elapsed_ns": 322634842,
+          "process_exit_ns": 335583364,
+          "prediction": {
+            "street": null,
+            "ward": null,
+            "province": null
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00760",
+          "input_len": 26,
+          "round": 0,
+          "elapsed_ns": 285040961,
+          "process_exit_ns": 297623788,
+          "prediction": {
+            "street": null,
+            "ward": "Phường 42",
+            "province": null
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00251",
+          "input_len": 24,
+          "round": 1,
+          "elapsed_ns": 303399567,
+          "process_exit_ns": 316709156,
+          "prediction": {
+            "street": null,
+            "ward": "Phường 90",
+            "province": "Tỉnh Hà Giang"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00655",
+          "input_len": 68,
+          "round": 1,
+          "elapsed_ns": 289973108,
+          "process_exit_ns": 303056668,
+          "prediction": {
+            "street": null,
+            "ward": null,
+            "province": null
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00605",
+          "input_len": 67,
+          "round": 1,
+          "elapsed_ns": 315935781,
+          "process_exit_ns": 330395717,
+          "prediction": {
+            "street": null,
+            "ward": null,
+            "province": null
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00760",
+          "input_len": 26,
+          "round": 1,
+          "elapsed_ns": 342948307,
+          "process_exit_ns": 358061421,
+          "prediction": {
+            "street": null,
+            "ward": "Phường 42",
+            "province": null
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00033",
+          "input_len": 60,
+          "round": 1,
+          "elapsed_ns": 336835565,
+          "process_exit_ns": 350917005,
+          "prediction": {
+            "street": "Phố Nguyễn Hải Thông Tây",
+            "ward": "Phường 13",
+            "province": "Tỉnh Hà Nam"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00105",
+          "input_len": 62,
+          "round": 1,
+          "elapsed_ns": 369489627,
+          "process_exit_ns": 384857651,
+          "prediction": {
+            "street": "Phố Nguyễn Bảo Minh Bắc",
+            "ward": "Phường 77",
+            "province": "Tỉnh Đắk Nông"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00433",
+          "input_len": 67,
+          "round": 1,
+          "elapsed_ns": 281758069,
+          "process_exit_ns": 294366247,
+          "prediction": {
+            "street": "Phố Nguyễn Tuấn Thắng Bắc",
+            "ward": "Phường 35",
+            "province": "Thành phố Đà Nẵng"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00755",
+          "input_len": 25,
+          "round": 1,
+          "elapsed_ns": 287371023,
+          "process_exit_ns": 300780920,
+          "prediction": {
+            "street": null,
+            "ward": "Phường 8",
+            "province": null
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00914",
+          "input_len": 79,
+          "round": 1,
+          "elapsed_ns": 284510324,
+          "process_exit_ns": 297341261,
+          "prediction": {
+            "street": "Phố Nguyễn Duy Thuận Tây",
+            "ward": "Phường 47",
+            "province": "Tỉnh Hà Nam"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00026",
+          "input_len": 46,
+          "round": 1,
+          "elapsed_ns": 287007490,
+          "process_exit_ns": 300541708,
+          "prediction": {
+            "street": "Phố Nguyễn Ngọc Tiến",
+            "ward": null,
+            "province": "Tỉnh Bắc Kạn"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00559",
+          "input_len": 60,
+          "round": 1,
+          "elapsed_ns": 282890109,
+          "process_exit_ns": 296030920,
+          "prediction": {
+            "street": "Phố Nguyễn Ngọc Hải",
+            "ward": "Phường 68",
+            "province": "Thành phố Đà Nẵng"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00229",
+          "input_len": 56,
+          "round": 1,
+          "elapsed_ns": 322212114,
+          "process_exit_ns": 343179288,
+          "prediction": {
+            "street": "Phố Nguyễn Công Lâm",
+            "ward": "Phường 84",
+            "province": "Tỉnh Kon Tum"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00096",
+          "input_len": 45,
+          "round": 1,
+          "elapsed_ns": 296177239,
+          "process_exit_ns": 309268380,
+          "prediction": {
+            "street": "Phố Nguyễn Duy Trí Tây",
+            "ward": "Phường 57",
+            "province": null
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00031",
+          "input_len": 24,
+          "round": 1,
+          "elapsed_ns": 292235379,
+          "process_exit_ns": 306443169,
+          "prediction": {
+            "street": null,
+            "ward": "Phường 83",
+            "province": "Tỉnh Bắc Ninh"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00090",
+          "input_len": 54,
+          "round": 1,
+          "elapsed_ns": 302952307,
+          "process_exit_ns": 315603070,
+          "prediction": {
+            "street": "Phố Nguyễn Hùng Quang Đông",
+            "ward": null,
+            "province": "Tỉnh Điện Biên"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00693",
+          "input_len": 68,
+          "round": 1,
+          "elapsed_ns": 290444809,
+          "process_exit_ns": 303476671,
+          "prediction": {
+            "street": null,
+            "ward": null,
+            "province": null
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00115",
+          "input_len": 24,
+          "round": 1,
+          "elapsed_ns": 288013624,
+          "process_exit_ns": 300792528,
+          "prediction": {
+            "street": null,
+            "ward": "Phường 4",
+            "province": "Tỉnh Khánh Hòa"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00759",
+          "input_len": 26,
+          "round": 1,
+          "elapsed_ns": 321268830,
+          "process_exit_ns": 335314024,
+          "prediction": {
+            "street": null,
+            "ward": "Phường 92",
+            "province": null
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00282",
+          "input_len": 55,
+          "round": 1,
+          "elapsed_ns": 282985770,
+          "process_exit_ns": 296222692,
+          "prediction": {
+            "street": "Phố Nguyễn Hồng Tài Nối Dài",
+            "ward": null,
+            "province": "Tỉnh Cao Bằng"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00143",
+          "input_len": 30,
+          "round": 1,
+          "elapsed_ns": 291645494,
+          "process_exit_ns": 305040070,
+          "prediction": {
+            "street": null,
+            "ward": "Phường 24",
+            "province": "Thành phố Hải Phòng"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00096",
+          "input_len": 45,
+          "round": 2,
+          "elapsed_ns": 295524085,
+          "process_exit_ns": 308859349,
+          "prediction": {
+            "street": "Phố Nguyễn Duy Trí Tây",
+            "ward": "Phường 57",
+            "province": null
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00605",
+          "input_len": 67,
+          "round": 2,
+          "elapsed_ns": 291932547,
+          "process_exit_ns": 305445573,
+          "prediction": {
+            "street": null,
+            "ward": null,
+            "province": null
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00251",
+          "input_len": 24,
+          "round": 2,
+          "elapsed_ns": 292556677,
+          "process_exit_ns": 305476159,
+          "prediction": {
+            "street": null,
+            "ward": "Phường 90",
+            "province": "Tỉnh Hà Giang"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00026",
+          "input_len": 46,
+          "round": 2,
+          "elapsed_ns": 290242561,
+          "process_exit_ns": 302948856,
+          "prediction": {
+            "street": "Phố Nguyễn Ngọc Tiến",
+            "ward": null,
+            "province": "Tỉnh Bắc Kạn"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00033",
+          "input_len": 60,
+          "round": 2,
+          "elapsed_ns": 291021113,
+          "process_exit_ns": 303645849,
+          "prediction": {
+            "street": "Phố Nguyễn Hải Thông Tây",
+            "ward": "Phường 13",
+            "province": "Tỉnh Hà Nam"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00755",
+          "input_len": 25,
+          "round": 2,
+          "elapsed_ns": 287167076,
+          "process_exit_ns": 300214597,
+          "prediction": {
+            "street": null,
+            "ward": "Phường 8",
+            "province": null
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00914",
+          "input_len": 79,
+          "round": 2,
+          "elapsed_ns": 329248610,
+          "process_exit_ns": 343193245,
+          "prediction": {
+            "street": "Phố Nguyễn Duy Thuận Tây",
+            "ward": "Phường 47",
+            "province": "Tỉnh Hà Nam"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00031",
+          "input_len": 24,
+          "round": 2,
+          "elapsed_ns": 287416578,
+          "process_exit_ns": 300265159,
+          "prediction": {
+            "street": null,
+            "ward": "Phường 83",
+            "province": "Tỉnh Bắc Ninh"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00760",
+          "input_len": 26,
+          "round": 2,
+          "elapsed_ns": 329203245,
+          "process_exit_ns": 343273076,
+          "prediction": {
+            "street": null,
+            "ward": "Phường 42",
+            "province": null
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00090",
+          "input_len": 54,
+          "round": 2,
+          "elapsed_ns": 283064150,
+          "process_exit_ns": 295772293,
+          "prediction": {
+            "street": "Phố Nguyễn Hùng Quang Đông",
+            "ward": null,
+            "province": "Tỉnh Điện Biên"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00655",
+          "input_len": 68,
+          "round": 2,
+          "elapsed_ns": 289940915,
+          "process_exit_ns": 304600441,
+          "prediction": {
+            "street": null,
+            "ward": null,
+            "province": null
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00229",
+          "input_len": 56,
+          "round": 2,
+          "elapsed_ns": 322204387,
+          "process_exit_ns": 335185119,
+          "prediction": {
+            "street": "Phố Nguyễn Công Lâm",
+            "ward": "Phường 84",
+            "province": "Tỉnh Kon Tum"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00759",
+          "input_len": 26,
+          "round": 2,
+          "elapsed_ns": 317888365,
+          "process_exit_ns": 332047837,
+          "prediction": {
+            "street": null,
+            "ward": "Phường 92",
+            "province": null
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00559",
+          "input_len": 60,
+          "round": 2,
+          "elapsed_ns": 288363681,
+          "process_exit_ns": 301812777,
+          "prediction": {
+            "street": "Phố Nguyễn Ngọc Hải",
+            "ward": "Phường 68",
+            "province": "Thành phố Đà Nẵng"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00115",
+          "input_len": 24,
+          "round": 2,
+          "elapsed_ns": 292496435,
+          "process_exit_ns": 305958234,
+          "prediction": {
+            "street": null,
+            "ward": "Phường 4",
+            "province": "Tỉnh Khánh Hòa"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00105",
+          "input_len": 62,
+          "round": 2,
+          "elapsed_ns": 313724589,
+          "process_exit_ns": 328551857,
+          "prediction": {
+            "street": "Phố Nguyễn Bảo Minh Bắc",
+            "ward": "Phường 77",
+            "province": "Tỉnh Đắk Nông"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00282",
+          "input_len": 55,
+          "round": 2,
+          "elapsed_ns": 325824320,
+          "process_exit_ns": 339891978,
+          "prediction": {
+            "street": "Phố Nguyễn Hồng Tài Nối Dài",
+            "ward": null,
+            "province": "Tỉnh Cao Bằng"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00433",
+          "input_len": 67,
+          "round": 2,
+          "elapsed_ns": 320602329,
+          "process_exit_ns": 334734567,
+          "prediction": {
+            "street": "Phố Nguyễn Tuấn Thắng Bắc",
+            "ward": "Phường 35",
+            "province": "Thành phố Đà Nẵng"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00143",
+          "input_len": 30,
+          "round": 2,
+          "elapsed_ns": 325892647,
+          "process_exit_ns": 340290484,
+          "prediction": {
+            "street": null,
+            "ward": "Phường 24",
+            "province": "Thành phố Hải Phòng"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00693",
+          "input_len": 68,
+          "round": 2,
+          "elapsed_ns": 290995487,
+          "process_exit_ns": 305521433,
+          "prediction": {
+            "street": null,
+            "ward": null,
+            "province": null
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00229",
+          "input_len": 56,
+          "round": 3,
+          "elapsed_ns": 310364131,
+          "process_exit_ns": 324746178,
+          "prediction": {
+            "street": "Phố Nguyễn Công Lâm",
+            "ward": "Phường 84",
+            "province": "Tỉnh Kon Tum"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00105",
+          "input_len": 62,
+          "round": 3,
+          "elapsed_ns": 285694169,
+          "process_exit_ns": 298903544,
+          "prediction": {
+            "street": "Phố Nguyễn Bảo Minh Bắc",
+            "ward": "Phường 77",
+            "province": "Tỉnh Đắk Nông"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00026",
+          "input_len": 46,
+          "round": 3,
+          "elapsed_ns": 290993105,
+          "process_exit_ns": 305140176,
+          "prediction": {
+            "street": "Phố Nguyễn Ngọc Tiến",
+            "ward": null,
+            "province": "Tỉnh Bắc Kạn"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00760",
+          "input_len": 26,
+          "round": 3,
+          "elapsed_ns": 290423678,
+          "process_exit_ns": 303451800,
+          "prediction": {
+            "street": null,
+            "ward": "Phường 42",
+            "province": null
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00251",
+          "input_len": 24,
+          "round": 3,
+          "elapsed_ns": 299553147,
+          "process_exit_ns": 317549109,
+          "prediction": {
+            "street": null,
+            "ward": "Phường 90",
+            "province": "Tỉnh Hà Giang"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00282",
+          "input_len": 55,
+          "round": 3,
+          "elapsed_ns": 302420568,
+          "process_exit_ns": 316294236,
+          "prediction": {
+            "street": "Phố Nguyễn Hồng Tài Nối Dài",
+            "ward": null,
+            "province": "Tỉnh Cao Bằng"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00115",
+          "input_len": 24,
+          "round": 3,
+          "elapsed_ns": 316933021,
+          "process_exit_ns": 330855649,
+          "prediction": {
+            "street": null,
+            "ward": "Phường 4",
+            "province": "Tỉnh Khánh Hòa"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00693",
+          "input_len": 68,
+          "round": 3,
+          "elapsed_ns": 336250925,
+          "process_exit_ns": 350189360,
+          "prediction": {
+            "street": null,
+            "ward": null,
+            "province": null
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00914",
+          "input_len": 79,
+          "round": 3,
+          "elapsed_ns": 327873840,
+          "process_exit_ns": 342157802,
+          "prediction": {
+            "street": "Phố Nguyễn Duy Thuận Tây",
+            "ward": "Phường 47",
+            "province": "Tỉnh Hà Nam"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00655",
+          "input_len": 68,
+          "round": 3,
+          "elapsed_ns": 282301914,
+          "process_exit_ns": 295100567,
+          "prediction": {
+            "street": null,
+            "ward": null,
+            "province": null
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00031",
+          "input_len": 24,
+          "round": 3,
+          "elapsed_ns": 312231292,
+          "process_exit_ns": 326307260,
+          "prediction": {
+            "street": null,
+            "ward": "Phường 83",
+            "province": "Tỉnh Bắc Ninh"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00096",
+          "input_len": 45,
+          "round": 3,
+          "elapsed_ns": 291212386,
+          "process_exit_ns": 306896179,
+          "prediction": {
+            "street": "Phố Nguyễn Duy Trí Tây",
+            "ward": "Phường 57",
+            "province": null
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00559",
+          "input_len": 60,
+          "round": 3,
+          "elapsed_ns": 319050725,
+          "process_exit_ns": 333218146,
+          "prediction": {
+            "street": "Phố Nguyễn Ngọc Hải",
+            "ward": "Phường 68",
+            "province": "Thành phố Đà Nẵng"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00755",
+          "input_len": 25,
+          "round": 3,
+          "elapsed_ns": 334639706,
+          "process_exit_ns": 349225375,
+          "prediction": {
+            "street": null,
+            "ward": "Phường 8",
+            "province": null
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00433",
+          "input_len": 67,
+          "round": 3,
+          "elapsed_ns": 296442819,
+          "process_exit_ns": 310254883,
+          "prediction": {
+            "street": "Phố Nguyễn Tuấn Thắng Bắc",
+            "ward": "Phường 35",
+            "province": "Thành phố Đà Nẵng"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00033",
+          "input_len": 60,
+          "round": 3,
+          "elapsed_ns": 298624257,
+          "process_exit_ns": 312684295,
+          "prediction": {
+            "street": "Phố Nguyễn Hải Thông Tây",
+            "ward": "Phường 13",
+            "province": "Tỉnh Hà Nam"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00759",
+          "input_len": 26,
+          "round": 3,
+          "elapsed_ns": 318593727,
+          "process_exit_ns": 332284406,
+          "prediction": {
+            "street": null,
+            "ward": "Phường 92",
+            "province": null
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00090",
+          "input_len": 54,
+          "round": 3,
+          "elapsed_ns": 694497853,
+          "process_exit_ns": 716773313,
+          "prediction": {
+            "street": "Phố Nguyễn Hùng Quang Đông",
+            "ward": null,
+            "province": "Tỉnh Điện Biên"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00143",
+          "input_len": 30,
+          "round": 3,
+          "elapsed_ns": 599831680,
+          "process_exit_ns": 614889880,
+          "prediction": {
+            "street": null,
+            "ward": "Phường 24",
+            "province": "Thành phố Hải Phòng"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00605",
+          "input_len": 67,
+          "round": 3,
+          "elapsed_ns": 293562552,
+          "process_exit_ns": 306993691,
+          "prediction": {
+            "street": null,
+            "ward": null,
+            "province": null
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00914",
+          "input_len": 79,
+          "round": 4,
+          "elapsed_ns": 295232078,
+          "process_exit_ns": 307972374,
+          "prediction": {
+            "street": "Phố Nguyễn Duy Thuận Tây",
+            "ward": "Phường 47",
+            "province": "Tỉnh Hà Nam"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00090",
+          "input_len": 54,
+          "round": 4,
+          "elapsed_ns": 316681138,
+          "process_exit_ns": 329727426,
+          "prediction": {
+            "street": "Phố Nguyễn Hùng Quang Đông",
+            "ward": null,
+            "province": "Tỉnh Điện Biên"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00755",
+          "input_len": 25,
+          "round": 4,
+          "elapsed_ns": 288090171,
+          "process_exit_ns": 300969316,
+          "prediction": {
+            "street": null,
+            "ward": "Phường 8",
+            "province": null
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00026",
+          "input_len": 46,
+          "round": 4,
+          "elapsed_ns": 318805289,
+          "process_exit_ns": 332734960,
+          "prediction": {
+            "street": "Phố Nguyễn Ngọc Tiến",
+            "ward": null,
+            "province": "Tỉnh Bắc Kạn"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00559",
+          "input_len": 60,
+          "round": 4,
+          "elapsed_ns": 282489063,
+          "process_exit_ns": 295474531,
+          "prediction": {
+            "street": "Phố Nguyễn Ngọc Hải",
+            "ward": "Phường 68",
+            "province": "Thành phố Đà Nẵng"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00143",
+          "input_len": 30,
+          "round": 4,
+          "elapsed_ns": 285715199,
+          "process_exit_ns": 298567328,
+          "prediction": {
+            "street": null,
+            "ward": "Phường 24",
+            "province": "Thành phố Hải Phòng"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00605",
+          "input_len": 67,
+          "round": 4,
+          "elapsed_ns": 290512873,
+          "process_exit_ns": 303421000,
+          "prediction": {
+            "street": null,
+            "ward": null,
+            "province": null
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00282",
+          "input_len": 55,
+          "round": 4,
+          "elapsed_ns": 295134253,
+          "process_exit_ns": 308474114,
+          "prediction": {
+            "street": "Phố Nguyễn Hồng Tài Nối Dài",
+            "ward": null,
+            "province": "Tỉnh Cao Bằng"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00096",
+          "input_len": 45,
+          "round": 4,
+          "elapsed_ns": 345379335,
+          "process_exit_ns": 359421584,
+          "prediction": {
+            "street": "Phố Nguyễn Duy Trí Tây",
+            "ward": "Phường 57",
+            "province": null
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00760",
+          "input_len": 26,
+          "round": 4,
+          "elapsed_ns": 282290563,
+          "process_exit_ns": 294696779,
+          "prediction": {
+            "street": null,
+            "ward": "Phường 42",
+            "province": null
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00229",
+          "input_len": 56,
+          "round": 4,
+          "elapsed_ns": 320702465,
+          "process_exit_ns": 333345848,
+          "prediction": {
+            "street": "Phố Nguyễn Công Lâm",
+            "ward": "Phường 84",
+            "province": "Tỉnh Kon Tum"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00759",
+          "input_len": 26,
+          "round": 4,
+          "elapsed_ns": 293780818,
+          "process_exit_ns": 306659213,
+          "prediction": {
+            "street": null,
+            "ward": "Phường 92",
+            "province": null
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00105",
+          "input_len": 62,
+          "round": 4,
+          "elapsed_ns": 291953974,
+          "process_exit_ns": 304845442,
+          "prediction": {
+            "street": "Phố Nguyễn Bảo Minh Bắc",
+            "ward": "Phường 77",
+            "province": "Tỉnh Đắk Nông"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00693",
+          "input_len": 68,
+          "round": 4,
+          "elapsed_ns": 318063938,
+          "process_exit_ns": 332137597,
+          "prediction": {
+            "street": null,
+            "ward": null,
+            "province": null
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00655",
+          "input_len": 68,
+          "round": 4,
+          "elapsed_ns": 287250284,
+          "process_exit_ns": 300006810,
+          "prediction": {
+            "street": null,
+            "ward": null,
+            "province": null
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00033",
+          "input_len": 60,
+          "round": 4,
+          "elapsed_ns": 287739078,
+          "process_exit_ns": 300572591,
+          "prediction": {
+            "street": "Phố Nguyễn Hải Thông Tây",
+            "ward": "Phường 13",
+            "province": "Tỉnh Hà Nam"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00251",
+          "input_len": 24,
+          "round": 4,
+          "elapsed_ns": 286868694,
+          "process_exit_ns": 300694301,
+          "prediction": {
+            "street": null,
+            "ward": "Phường 90",
+            "province": "Tỉnh Hà Giang"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00433",
+          "input_len": 67,
+          "round": 4,
+          "elapsed_ns": 327268923,
+          "process_exit_ns": 341236056,
+          "prediction": {
+            "street": "Phố Nguyễn Tuấn Thắng Bắc",
+            "ward": "Phường 35",
+            "province": "Thành phố Đà Nẵng"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00115",
+          "input_len": 24,
+          "round": 4,
+          "elapsed_ns": 282520665,
+          "process_exit_ns": 295283882,
+          "prediction": {
+            "street": null,
+            "ward": "Phường 4",
+            "province": "Tỉnh Khánh Hòa"
+          },
+          "matches_expected": true
+        },
+        {
+          "case_id": "synth-case-00031",
+          "input_len": 24,
+          "round": 4,
+          "elapsed_ns": 329510475,
+          "process_exit_ns": 343370304,
+          "prediction": {
+            "street": null,
+            "ward": "Phường 83",
+            "province": "Tỉnh Bắc Ninh"
+          },
+          "matches_expected": true
+        }
+      ],
+      "full_report_sha256": "4132865647455bf973d3cbaada8b8b3d5f59e077aaa17d7e6c8756cd82b2ee90",
+      "full_report_path": "reports/index-review/exact-only-scale-timing.json"
+    }
+  },
+  "startup_probes": {
+    "empty_python": {
+      "stats": {
+        "count": 30,
+        "mean_ns": 9855518.666666666,
+        "mean_ms": 9.855518666666667,
+        "min_ns": 9277075.0,
+        "min_ms": 9.277075,
+        "p50_ns": 9844277.0,
+        "p50_ms": 9.844277,
+        "p95_ns": 10388046.85,
+        "p95_ms": 10.38804685,
+        "p99_ns": 10512963.19,
+        "p99_ms": 10.512963189999999,
+        "max_ns": 10538509.0,
+        "max_ms": 10.538509
+      },
+      "raw_ns": [
+        9619030,
+        9379195,
+        9394128,
+        9341795,
+        10094211,
+        9356875,
+        9317646,
+        9595933,
+        9797685,
+        9444233,
+        9769038,
+        10538509,
+        9813050,
+        9603531,
+        9277075,
+        9764318,
+        9797528,
+        9996224,
+        10450420,
+        10058884,
+        9875504,
+        10110952,
+        10153959,
+        10252116,
+        10216566,
+        9942515,
+        10311813,
+        10109035,
+        10100158,
+        10183634
+      ],
+      "command": [
+        "/usr/bin/python3.14",
+        "-c",
+        "print('{\"street\": null, \"ward\": null, \"province\": null}', flush=True)"
+      ]
+    },
+    "package_import_only": {
+      "stats": {
+        "count": 30,
+        "mean_ns": 30453420.533333335,
+        "mean_ms": 30.453420533333336,
+        "min_ns": 29586602.0,
+        "min_ms": 29.586602,
+        "p50_ns": 30392149.5,
+        "p50_ms": 30.3921495,
+        "p95_ns": 31186343.799999997,
+        "p95_ms": 31.186343799999996,
+        "p99_ns": 32328323.160000004,
+        "p99_ms": 32.328323160000004,
+        "max_ns": 32785565.0,
+        "max_ms": 32.785565
+      },
+      "raw_ns": [
+        31147765,
+        31158813,
+        30412199,
+        31157813,
+        30411994,
+        30376847,
+        30007525,
+        30471277,
+        29788263,
+        29773620,
+        29919428,
+        30190574,
+        29782612,
+        30390453,
+        29664064,
+        29586602,
+        30717578,
+        30153662,
+        30930311,
+        32785565,
+        30255289,
+        30393846,
+        31208869,
+        30714373,
+        30416133,
+        30299521,
+        29860600,
+        30095374,
+        30548767,
+        30982879
+      ],
+      "command": [
+        "/usr/bin/python3.14",
+        "-c",
+        "import address_segmentation; print('{\"street\": null, \"ward\": null, \"province\": null}', flush=True)"
+      ]
+    },
+    "cli_import_only": {
+      "stats": {
+        "count": 30,
+        "mean_ns": 36301885.93333333,
+        "mean_ms": 36.30188593333333,
+        "min_ns": 34633120.0,
+        "min_ms": 34.63312,
+        "p50_ns": 35545637.0,
+        "p50_ms": 35.545637,
+        "p95_ns": 38061352.35,
+        "p95_ms": 38.06135235,
+        "p99_ns": 46706818.720000006,
+        "p99_ms": 46.70681872000001,
+        "max_ns": 50228762.0,
+        "max_ms": 50.228762
+      },
+      "raw_ns": [
+        34750810,
+        34662193,
+        36797923,
+        37996207,
+        50228762,
+        36297004,
+        35116355,
+        35547041,
+        36506173,
+        34787620,
+        35139598,
+        35372574,
+        35824218,
+        36946645,
+        34637567,
+        35005879,
+        35544233,
+        35530515,
+        34633120,
+        35324390,
+        38033513,
+        37817376,
+        38084130,
+        35704974,
+        35579519,
+        35130885,
+        35137158,
+        35202011,
+        35858209,
+        35859976
+      ],
+      "command": [
+        "/usr/bin/python3.14",
+        "-c",
+        "import address_segmentation.io; print('{\"street\": null, \"ward\": null, \"province\": null}', flush=True)"
+      ]
+    }
+  },
+  "trusted_local_snapshot_probe": {
+    "note": "Local trusted-file experiment only, not a supported submission format. Build and file write occur before timing. Loading the complete object graph occurs inside timing.",
+    "source_hash": "13f36c4a44178e487a6ebfe61c5fadc22f6c9de76a69dfc56f46a9a23edc6c3f",
+    "bytes": 14319269,
+    "serialization_write_ns": 387162390,
+    "stats": {
+      "count": 20,
+      "mean_ns": 310834261.05,
+      "mean_ms": 310.83426105,
+      "min_ns": 296126467.0,
+      "min_ms": 296.126467,
+      "p50_ns": 305734849.0,
+      "p50_ms": 305.734849,
+      "p95_ns": 328920144.55,
+      "p95_ms": 328.92014455000003,
+      "p99_ns": 359873432.90999997,
+      "p99_ms": 359.87343290999996,
+      "max_ns": 367611755.0,
+      "max_ms": 367.611755
+    },
+    "records": [
+      {
+        "case_id": "synth-case-00655",
+        "elapsed_ns": 303811298,
+        "process_exit_ns": 368702045,
+        "matches_expected": true
+      },
+      {
+        "case_id": "synth-case-00115",
+        "elapsed_ns": 311457870,
+        "process_exit_ns": 369518315,
+        "matches_expected": true
+      },
+      {
+        "case_id": "synth-case-00026",
+        "elapsed_ns": 303700524,
+        "process_exit_ns": 359502220,
+        "matches_expected": true
+      },
+      {
+        "case_id": "synth-case-00760",
+        "elapsed_ns": 296495417,
+        "process_exit_ns": 352212256,
+        "matches_expected": true
+      },
+      {
+        "case_id": "synth-case-00282",
+        "elapsed_ns": 300262673,
+        "process_exit_ns": 354986972,
+        "matches_expected": true
+      },
+      {
+        "case_id": "synth-case-00251",
+        "elapsed_ns": 304304654,
+        "process_exit_ns": 360079825,
+        "matches_expected": true
+      },
+      {
+        "case_id": "synth-case-00229",
+        "elapsed_ns": 296126467,
+        "process_exit_ns": 353548962,
+        "matches_expected": true
+      },
+      {
+        "case_id": "synth-case-00143",
+        "elapsed_ns": 311876981,
+        "process_exit_ns": 367945825,
+        "matches_expected": true
+      },
+      {
+        "case_id": "synth-case-00755",
+        "elapsed_ns": 306795213,
+        "process_exit_ns": 384104543,
+        "matches_expected": true
+      },
+      {
+        "case_id": "synth-case-00105",
+        "elapsed_ns": 308937856,
+        "process_exit_ns": 366283817,
+        "matches_expected": true
+      },
+      {
+        "case_id": "synth-case-00693",
+        "elapsed_ns": 367611755,
+        "process_exit_ns": 427293382,
+        "matches_expected": true
+      },
+      {
+        "case_id": "synth-case-00759",
+        "elapsed_ns": 297835320,
+        "process_exit_ns": 352498262,
+        "matches_expected": true
+      },
+      {
+        "case_id": "synth-case-00914",
+        "elapsed_ns": 326099689,
+        "process_exit_ns": 383188109,
+        "matches_expected": true
+      },
+      {
+        "case_id": "synth-case-00559",
+        "elapsed_ns": 300046412,
+        "process_exit_ns": 356916809,
+        "matches_expected": true
+      },
+      {
+        "case_id": "synth-case-00090",
+        "elapsed_ns": 306629040,
+        "process_exit_ns": 363746888,
+        "matches_expected": true
+      },
+      {
+        "case_id": "synth-case-00605",
+        "elapsed_ns": 304840658,
+        "process_exit_ns": 362351798,
+        "matches_expected": true
+      },
+      {
+        "case_id": "synth-case-00433",
+        "elapsed_ns": 319844753,
+        "process_exit_ns": 377253274,
+        "matches_expected": true
+      },
+      {
+        "case_id": "synth-case-00033",
+        "elapsed_ns": 301343774,
+        "process_exit_ns": 363354985,
+        "matches_expected": true
+      },
+      {
+        "case_id": "synth-case-00031",
+        "elapsed_ns": 321781123,
+        "process_exit_ns": 378330160,
+        "matches_expected": true
+      },
+      {
+        "case_id": "synth-case-00096",
+        "elapsed_ns": 326883744,
+        "process_exit_ns": 385246246,
+        "matches_expected": true
+      }
+    ],
+    "reproduction_source": "import json, os, pickle, random, sys, time\nfrom pathlib import Path\nfrom address_segmentation import AddressMatcher\nfrom address_segmentation.io import load_dictionary\nfrom tools.datasets import load_cases\nfrom tools.benchmark import measure_cli, compute_stats\nfolder = Path(\"reports/index-review\")\nfolder.mkdir(parents=True, exist_ok=True)\ndata = load_dictionary(\"reports/scale/dictionary.json\")\ncases = load_cases(\"reports/scale/cases.jsonl\", data)\nmatcher = AddressMatcher(**data)\nartifact = folder / \"trusted-local-experiment.pickle\"\nwith artifact.open(\"wb\") as stream:\n    pickle.dump(matcher, stream, protocol=pickle.HIGHEST_PROTOCOL)\ncommand = [sys.executable, \"-c\",\n    \"import json,pickle,sys; matcher=pickle.load(open(sys.argv[1],'rb')); \"\n    \"address=json.loads(sys.stdin.readline()); \"\n    \"print(json.dumps(matcher.identify(address),ensure_ascii=False),flush=True)\",\n    str(artifact)]\nvalues = [measure_cli(command, [case.address], dict(os.environ), 30)[0]\n          for case in random.Random(42).sample(cases, 20)]\nprint(artifact.stat().st_size, compute_stats(values))\n"
+  },
+  "profiles": {
+    "baseline": {
+      "note": "Profiler overhead is excluded from primary latency; no input requests, construction only.",
+      "total_function_calls": 19044692,
+      "calls": {
+        "tokenize": 48348,
+        "tokenize_label": 48348,
+        "fold_accents": 508083
+      }
+    },
+    "optimized": {
+      "note": "Profiler overhead is excluded from primary latency; no input requests, construction only.",
+      "total_function_calls": 6990726,
+      "calls": {
+        "tokenize_label": 24174,
+        "fold_accents": 431
+      }
+    }
+  },
+  "limitations": [
+    "Primary reports measure 20 unique seeded uniformly sampled cases repeated in five rounds (100 processes), not all 1,000 cases.",
+    "No cold-process warmups. OS page caches and Python bytecode caches are uncontrolled.",
+    "Before/after reports are sequential, not an interleaved experiment; machine load and scheduling can affect timings.",
+    "Construction caching benefits repeated vocabulary; the upcoming instructor dictionary may differ.",
+    "Startup probes emit a constant three-null result and do not load a dictionary or implement a matcher.",
+    "Serialization probe uses a locally generated trusted file; build/write is outside timing, loading is inside. It is not a supported artifact format.",
+    "No replacement compact queryable artifact implementation was benchmarked; no evidence of compliance with the 10 ms mean exists for this runtime.",
+    "Memory measurements run separately and RSS includes allocation tracing overhead.",
+    "Instructor environment, dictionary-delivery contract and exact CLI protocol remain unverified."
+  ],
+  "startup_probe_reproduction_source": "import json, os\nfrom tools.benchmark import measure_cli, compute_stats\nwith open(\"docs/index-construction-results.json\") as stream:\n    probes = json.load(stream)[\"startup_probes\"]\nfor name, probe in probes.items():\n    values = [measure_cli(probe[\"command\"], [\"\"], dict(os.environ), 10)[0]\n              for _ in range(30)]\n    print(name, compute_stats(values))\n"
+}

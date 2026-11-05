@@ -114,7 +114,9 @@ def extract_prefix_body(
     return (False, (), nfc_tokens, folded_tokens)
 
 
-def validate_field_sequence(labels: Any, field_name: str) -> list[str]:
+def _validated_field_forms(
+    labels: Any, field_name: str, token_cache: dict[str, tuple[str, str]],
+) -> list[tuple[str, tuple[str, ...], tuple[str, ...]]]:
     """Validate that labels is a finite sequence or set of non-empty strings.
 
     Rejects scalar strings, non-sequences, non-string items, and blank strings.
@@ -128,7 +130,7 @@ def validate_field_sequence(labels: Any, field_name: str) -> list[str]:
             f"{field_name} must be a finite sequence or set, got {type(labels).__name__}"
         )
 
-    validated: list[str] = []
+    validated = []
     for idx, item in enumerate(labels):
         if not isinstance(item, str):
             raise TypeError(
@@ -138,14 +140,19 @@ def validate_field_sequence(labels: Any, field_name: str) -> list[str]:
             raise ValueError(
                 f"Item at index {idx} in {field_name} cannot be blank or whitespace-only"
             )
-        nfc_tokens, _ = tokenize_label(item)
+        nfc_tokens, folded_tokens = tokenize_label(item, token_cache=token_cache)
         if not nfc_tokens:
             raise ValueError(
                 f"Item at index {idx} in {field_name} contains no recognizable word or numeric tokens: {item!r}"
             )
-        validated.append(item)
+        validated.append((item, nfc_tokens, folded_tokens))
 
     return validated
+
+
+def validate_field_sequence(labels: Any, field_name: str) -> list[str]:
+    """Validate labels, preserving their original order and duplicates."""
+    return [label for label, _, _ in _validated_field_forms(labels, field_name, {})]
 
 
 class Catalog:
@@ -157,24 +164,22 @@ class Catalog:
         wards: Sequence[str] | Set[str] = (),
         provinces: Sequence[str] | Set[str] = (),
     ) -> None:
-        validated_streets = validate_field_sequence(streets, "streets")
-        validated_wards = validate_field_sequence(wards, "wards")
-        validated_provinces = validate_field_sequence(provinces, "provinces")
-
-        # Deduplicate exact labels within each field and sort deterministically
-        unique_by_field: dict[str, list[str]] = {
-            "street": sorted(set(validated_streets)),
-            "ward": sorted(set(validated_wards)),
-            "province": sorted(set(validated_provinces)),
-        }
+        # Normalize each label once, sharing repeated word forms only during
+        # this build. Keep all normalized collisions and original canonical text.
+        token_cache: dict[str, tuple[str, str]] = {}
+        unique_by_field = {}
+        for field, labels in (("street", streets), ("ward", wards), ("province", provinces)):
+            unique_by_field[field] = {
+                label: (nfc, folded)
+                for label, nfc, folded in _validated_field_forms(labels, field + "s", token_cache)
+            }
 
         # Build entries sorted lexicographically by (field, canonical_label)
         # to guarantee stable documented IDs ('province' < 'street' < 'ward')
         entries: list[CatalogEntry] = []
         entry_id = 0
         for field in LEXICOGRAPHICAL_FIELDS:
-            for label in unique_by_field[field]:
-                nfc_tokens, folded_tokens = tokenize_label(label)
+            for label, (nfc_tokens, folded_tokens) in sorted(unique_by_field[field].items()):
                 has_prefix, prefix_tokens, body_nfc, body_folded = extract_prefix_body(
                     field, nfc_tokens, folded_tokens
                 )

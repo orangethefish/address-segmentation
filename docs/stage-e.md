@@ -35,7 +35,14 @@ Both features have positive isolated gains: compact adds two correct cases, typi
 
 ## Scale and limits
 
-The seeded scale fixture has 23,800 streets, 340 wards, 34 provinces and 1,000 cases, including shared prefixes, collisions, numeric names, misses, repeated tokens and long adversarial inputs. Stage E's warmed mean is **0.402 ms** and observed maximum is **3.971 ms**, within the local request targets. Index preparation averages **1640.6 ms** and is measured separately. The Python allocation peak is **98,207,583 bytes**; peak process RSS is **275,456 KiB**, including allocation-tracing overhead. These are different memory measurements.
+The historical measurements below predate the
+[construction optimization review](cold-start-optimization.md). Current
+construction is faster; both fresh-process timing limits still fail.
+
+The later [fixed-dictionary bundle](prepared-dictionary.md) moves preparation
+offline and has separate cold measurements and launch/packaging conditions.
+
+The seeded scale fixture has 23,800 streets, 340 wards, 34 provinces and 1,000 cases, including shared prefixes, collisions, numeric names, misses, repeated tokens and long adversarial inputs. Stage E's historical warmed mean is **0.402 ms** and observed maximum is **3.971 ms**, excluding initialization. Index preparation averages **1640.6 ms** and alone violates both limits if rebuilt per request. The warm measurements do not establish compliance with the current fresh-process grading assumption; see the [updated timing review](user-dataset-review.md#performance-against-the-documented-limits). The Python allocation peak is **98,207,583 bytes**; peak process RSS is **275,456 KiB**, including allocation-tracing overhead. These are different memory measurements.
 
 The typing fixture's warmed mean is 0.226 ms, with an observed maximum of 0.509 ms. These measurements establish local fixture behavior, not instructor-data accuracy or official timing compliance. Initialization scope, input length limits and grader lifecycle remain unknown.
 
