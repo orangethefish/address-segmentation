@@ -1,0 +1,32 @@
+{
+  "streets": [
+    "Nam Kỳ Khởi Nghĩa",
+    "3/2",
+    "Lê Lợi",
+    "Trần Hưng Đạo",
+    "Hòa Bình",
+    "Điện Biên Phủ",
+    "An Phú Đông",
+    "Nguyễn Thị Minh Khai",
+    "Hai Bà Trưng",
+    "Hoàng Diệu"
+  ],
+  "wards": [
+    "Phường Bến Thành",
+    "Phường 1",
+    "Phường 2",
+    "An Phú",
+    "Phường An Phú Đông",
+    "Xã Tân Kiên",
+    "Thị trấn Củ Chi",
+    "Phường Đa Kao"
+  ],
+  "provinces": [
+    "Thành phố Hồ Chí Minh",
+    "Hòa Bình",
+    "Thành phố Hà Nội",
+    "Thành phố Đà Nẵng",
+    "Tỉnh Bình Dương",
+    "Tỉnh Đồng Nai"
+  ]
+}

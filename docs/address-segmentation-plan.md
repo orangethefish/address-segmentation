@@ -1,6 +1,6 @@
 # Vietnamese Address Identification - Consolidated Technical Plan
 
-**Status:** Design specification; no implementation has been written yet.  
+**Status:** Authoritative design specification; stages A–D are implemented against controlled fixtures. See [architecture](architecture.md) for implementation status.
 **Working language/runtime:** Pure Python, provisionally CPython 3.14.  
 **Primary reference:** Instructor slide deck, *Address Segmentation* (12 pages), plus decisions and examples from our discussion.  
 **Last consolidated:** 2026-11-04.

@@ -140,7 +140,7 @@ Each feature experiment compares identical cases/configuration except the featur
 
 ## Execution stages and delegation boundaries
 
-Current status: stages A–C are implemented and verified on CPython 3.14.4 (88 tests). Stage C adds field-marker/body evidence, compatible joint selection, conservative pruning, and diagnostic traces consumed by the evaluator. The 15-case baseline remains fully correct; stage measurements and hashes are recorded in `stage-results.json`. Stages D–F remain in progress. Official grader compatibility remains unverified.
+Current status: stages A–D are implemented and verified on CPython 3.14.4 (120 tests). Stage D adds bounded trigram retrieval, thresholded OSA verification, conservative work budgets, and non-greedy prefix recovery. The original 15-case fixture and 14-case recovery fixture are fully correct. Measurements and source hashes are recorded in `stage-results.json`. Stages E–G remain pending. Official grader compatibility remains unverified.
 
 | Stage | Owned deliverables | Exit gate |
 | --- | --- | --- |

@@ -1,0 +1,465 @@
+"""Approximate typo recovery using Optimal String Alignment and trigram indexing.
+
+# Approximate Recovery Architecture (Stage D)
+
+Stage D adds bounded, deterministic typo recovery for address components:
+1. Indexing: Prepares per-entry FULL and BODY folded forms once per matcher.
+   Constructs char-trigram inverted postings lists and length buckets.
+   Maintains a tiny bounded bucket for short names (length 5..7).
+2. Spans: Extracts component windows around administrative markers and
+   comma/newline-delimited segments, stripping leading house numbers.
+3. Non-Greedy Extension: Trailing unexplained name tokens after an exact prefix
+   trigger extended recovery windows (e.g., 'An Phú' + 'dnog' -> 'An Phú Đông').
+4. Candidate Retrieval: Sorts query trigrams rare-first, looks up postings
+   bounded by `max_postings`, and generates shortlists up to `max_candidates_per_span`.
+   Retrieved candidates appear before distance rejection for retrieval recall diagnostics.
+5. Verification: Computes thresholded OSA distance bounded by `max_verifications`
+   and `max_edits`. Conservative acceptance requires length >= 5, max 1 edit
+   for < 9 letters, max 2 edits for longer, and enough unchanged text.
+   Numeric names and digits are strictly exact only.
+6. Budgets: Tracks exact counts for fuzzy_spans, postings, verifications, and
+   candidates_per_span. If any budget is exhausted, affected fuzzy fields and
+   unresolved suspicious exact prefixes conservatively abstain. Independent exact
+   fields are preserved.
+"""
+
+from collections.abc import Sequence
+from typing import Any
+from address_segmentation.retrieve import find_preceding_marker
+from dataclasses import dataclass
+
+from address_segmentation.catalog import Catalog, CatalogEntry
+from address_segmentation.model import Candidate, MatcherConfig
+from address_segmentation.normalize import Token
+from address_segmentation.verify import thresholded_osa_distance
+
+
+class ExhaustedDict(dict):
+    """Dictionary of budget exhaustion flags that evaluates truthy if any flag is True."""
+
+    def __bool__(self) -> bool:
+        return any(self.values())
+
+
+@dataclass(frozen=True, slots=True)
+class TargetForm:
+    """An indexed catalog target form (full canonical or body only)."""
+
+    form_id: int
+    entry: CatalogEntry
+    form_type: str  # 'full' or 'body'
+    folded_text: str
+    length: int
+    trigrams: tuple[str, ...]
+
+
+@dataclass(frozen=True, slots=True)
+class CandidateSpan:
+    """A candidate text window in the source address for approximate matching."""
+
+    start: int
+    end: int
+    raw_text: str
+    folded_text: str
+    has_marker: bool
+    field_hint: str | None
+    is_extension_of: Candidate | None
+
+
+def extract_trigrams(text: str) -> tuple[str, ...]:
+    """Extract character trigrams from normalized string."""
+    if len(text) < 3:
+        return ()
+    return tuple(text[i : i + 3] for i in range(len(text) - 2))
+
+
+class ApproximateIndex:
+    """Immutable inverted trigram index and length buckets for catalog forms."""
+
+    def __init__(self, catalog: Catalog) -> None:
+        forms: list[TargetForm] = []
+        postings: dict[str, list[TargetForm]] = {}
+        length_buckets: dict[int, list[TargetForm]] = {}
+        short_name_forms: list[TargetForm] = []
+        form_id = 0
+
+        # Forms are prepared once per matcher
+        for entry in catalog.entries:
+            # 1. Full folded form
+            full_folded = " ".join(entry.folded_tokens)
+            # Digits and short names (< 5) cannot be repaired fuzzily
+            if not any(c.isdigit() for c in full_folded) and len(full_folded) >= 5:
+                full_grams = extract_trigrams(full_folded)
+                tf_full = TargetForm(
+                    form_id=form_id,
+                    entry=entry,
+                    form_type="full",
+                    folded_text=full_folded,
+                    length=len(full_folded),
+                    trigrams=full_grams,
+                )
+                forms.append(tf_full)
+                form_id += 1
+                length_buckets.setdefault(tf_full.length, []).append(tf_full)
+                if 5 <= tf_full.length <= 7:
+                    short_name_forms.append(tf_full)
+                for g in set(full_grams):
+                    postings.setdefault(g, []).append(tf_full)
+
+            # 2. Body folded form if distinct from full folded form
+            if entry.has_prefix:
+                body_folded = " ".join(entry.body_folded_tokens)
+                if not any(c.isdigit() for c in body_folded) and len(body_folded) >= 5:
+                    if body_folded != full_folded:
+                        body_grams = extract_trigrams(body_folded)
+                        tf_body = TargetForm(
+                            form_id=form_id,
+                            entry=entry,
+                            form_type="body",
+                            folded_text=body_folded,
+                            length=len(body_folded),
+                            trigrams=body_grams,
+                        )
+                        forms.append(tf_body)
+                        form_id += 1
+                        length_buckets.setdefault(tf_body.length, []).append(tf_body)
+                        if 5 <= tf_body.length <= 7:
+                            short_name_forms.append(tf_body)
+                        for g in set(body_grams):
+                            postings.setdefault(g, []).append(tf_body)
+
+        self._forms: tuple[TargetForm, ...] = tuple(forms)
+        self._postings: dict[str, tuple[TargetForm, ...]] = {
+            k: tuple(v) for k, v in postings.items()
+        }
+        self._length_buckets: dict[int, tuple[TargetForm, ...]] = {
+            k: tuple(v) for k, v in length_buckets.items()
+        }
+        self._short_name_forms: tuple[TargetForm, ...] = tuple(short_name_forms)
+        self._gram_frequency: dict[str, int] = {
+            g: len(p) for g, p in self._postings.items()
+        }
+
+    @property
+    def gram_frequency(self) -> dict[str, int]:
+        return self._gram_frequency
+
+    @property
+    def postings(self) -> dict[str, tuple[TargetForm, ...]]:
+        return self._postings
+
+    @property
+    def short_name_forms(self) -> tuple[TargetForm, ...]:
+        return self._short_name_forms
+
+    @property
+    def length_buckets(self) -> dict[int, tuple[TargetForm, ...]]:
+        return self._length_buckets
+
+
+def is_house_number_token(tok: Token) -> bool:
+    """Check if token represents house number components (digits or slash numbers)."""
+    return any(c.isdigit() for c in tok.text)
+
+
+def extract_spans(
+    address: str,
+    tokens: list[Token],
+    exact_candidates: list[Candidate],
+    max_spans: int,
+) -> tuple[list[CandidateSpan], bool, list[Candidate]]:
+    """Extract bounded component windows and non-greedy extension spans.
+
+    Returns:
+        (spans, spans_exhausted, suspicious_exact_candidates)
+    """
+    spans = []
+    seen = set()
+    suspicious = []
+    exhausted = False
+    # Partition tokens at separators and explicit field markers, including no-comma input.
+    groups = []
+    group = []
+    for index, token in enumerate(tokens):
+        if group and any(c in address[tokens[group[-1]].end:token.start] for c in ",;\n"):
+            groups.append(group)
+            group = []
+        group.append(index)
+    if group:
+        groups.append(group)
+    for indices in groups:
+        markers = {}
+        starts = {tokens[index].start: pos for pos, index in enumerate(indices)}
+        for pos, index in enumerate(indices):
+            for field in ("street", "ward", "province"):
+                marker = find_preceding_marker(tokens, index, field, address)
+                if marker is not None and marker[0] in starts:
+                    markers[starts[marker[0]]] = (pos, field)
+        cuts = sorted({0, len(indices), *markers})
+        for left, right in zip(cuts, cuts[1:]):
+            hint = markers.get(left)
+            body = hint[0] if hint else left
+            if hint is None:
+                while body < right and (tokens[indices[body]].folded.replace("/", "").isdigit()
+                        or (tokens[indices[body]].folded == "so" and body+1 < right
+                            and tokens[indices[body+1]].folded.replace("/", "").isdigit())):
+                    body += 1
+                left = body
+            if body >= right:
+                continue
+            start, end = tokens[indices[left]].start, tokens[indices[right-1]].end
+            covering = [c for c in exact_candidates if c.start <= start and c.end >= end]
+            if covering:
+                continue
+            prefix = next((c for c in exact_candidates if c.start == start and c.end < end
+                           and (hint is None or c.field == hint[1])), None)
+            if prefix is not None:
+                suspicious.append(prefix)
+            for offset in dict.fromkeys((left, body)):
+                folded = " ".join(tokens[indices[pos]].folded for pos in range(offset, right))
+                key = (start, end, folded)
+                if key in seen:
+                    continue
+                seen.add(key)
+                if len(spans) >= max_spans:
+                    exhausted = True
+                    continue
+                spans.append(CandidateSpan(start, end, address[start:end], folded,
+                                           hint is not None, hint[1] if hint else None, prefix))
+    spans.sort(key=lambda span: (span.is_extension_of is None, span.start, -(span.end-span.start), span.folded_text))
+    return spans, exhausted, suspicious
+
+
+def recover_fuzzy_candidates(
+    address: str,
+    tokens: list[Token],
+    catalog: Catalog,
+    config: MatcherConfig,
+    approx_index: ApproximateIndex,
+    exact_candidates: list[Candidate],
+) -> tuple[
+    list[Candidate],
+    list[Candidate],
+    dict[str, Any],
+    set[str],
+    list[Candidate],
+]:
+    """Execute bounded approximate recovery using trigrams and thresholded OSA.
+
+    Returns:
+        (retrieved_fuzzy, verified_fuzzy, budget_trace, exhausted_fields, suspicious_exact_to_abstain)
+    """
+    postings_count = 0
+    verifications_count = 0
+    max_cands_in_span = 0
+
+    postings_exhausted = False
+    verifications_exhausted = False
+    candidates_per_span_exhausted = False
+    exhausted_fields: set[str] = set()
+
+    spans, spans_exhausted, suspicious_exact = extract_spans(
+        address, tokens, exact_candidates, config.max_fuzzy_spans
+    )
+    if spans_exhausted:
+        # If spans budget is hit, mark all fields evaluated as potentially truncated
+        exhausted_fields.update({"street", "ward", "province"})
+
+    retrieved_fuzzy: list[Candidate] = []
+    verified_fuzzy: list[Candidate] = []
+    verify_cache: dict[tuple[str, str, int], int] = {}
+
+    for span in spans:
+        span_folded = span.folded_text
+        span_len = len(span_folded)
+
+        # Acceptance conservative rules:
+        # Length >= 5 for fuzzy, no digits/numeric strings
+        if span_len < 5 or any(c.isdigit() for c in span_folded):
+            continue
+
+        # Extract trigrams and sort rare-first
+        span_grams = extract_trigrams(span_folded)
+        unique_grams = sorted(
+            (g for g in set(span_grams) if g in approx_index.gram_frequency),
+            key=lambda g: (approx_index.gram_frequency[g], g),
+        )[:3]  # Fixed rare-gram retrieval heuristic; recall is measured separately.
+
+        form_gram_hits: dict[TargetForm, int] = {}
+
+        # 1. Look up inverted postings
+        for g in unique_grams:
+            postings_list = approx_index.postings.get(g, ())
+            for target_form in postings_list:
+                if postings_count >= config.max_postings:
+                    postings_exhausted = True
+                    exhausted_fields.update((span.field_hint,) if span.field_hint else ("street", "ward", "province"))
+                    break
+                postings_count += 1
+                # Filter by length bucket delta <= max_edits
+                if (abs(target_form.length - span_len) <= config.max_edits
+                        and (span.field_hint is None or target_form.entry.field == span.field_hint)):
+                    form_gram_hits[target_form] = form_gram_hits.get(target_form, 0) + 1
+            if postings_exhausted:
+                break
+
+        # 2. Short-name bucket: direct compare bounded short names (length 5..7)
+        if span_len <= 7 and not postings_exhausted:
+            for tf in approx_index.short_name_forms:
+                if postings_count >= config.max_postings:
+                    postings_exhausted = True
+                    exhausted_fields.update((span.field_hint,) if span.field_hint else ("street", "ward", "province"))
+                    break
+                postings_count += 1
+                if (abs(tf.length - span_len) <= config.max_edits
+                        and (span.field_hint is None or tf.entry.field == span.field_hint)):
+                    form_gram_hits.setdefault(tf, 0)
+
+        if not form_gram_hits:
+            continue
+
+        # 3. Shortlist candidates deterministically
+        sorted_forms = sorted(
+            form_gram_hits.keys(),
+            key=lambda f: (
+                -form_gram_hits[f],
+                abs(f.length - span_len),
+                f.entry.entry_id,
+                f.form_type,
+            ),
+        )
+
+        cand_count = len(sorted_forms)
+        if cand_count > config.max_candidates_per_span:
+            candidates_per_span_exhausted = True
+            exhausted_fields.update(form.entry.field for form in sorted_forms)
+            sorted_forms = sorted_forms[: config.max_candidates_per_span]
+
+        retained_count = len(sorted_forms)
+        if retained_count > max_cands_in_span:
+            max_cands_in_span = retained_count
+
+        # 4. Record retrieved candidates BEFORE distance rejection for retrieval recall
+        span_retrieved: list[Candidate] = []
+        for form in sorted_forms:
+            cand = Candidate(
+                entry=form.entry,
+                start=span.start,
+                end=span.end,
+                path="fuzzy",
+                cost=0,
+                score=0.0,
+                context_marker=span.has_marker,
+                reasons=("retrieved_fuzzy",),
+            )
+            span_retrieved.append(cand)
+            retrieved_fuzzy.append(cand)
+
+        # 5. Verification with thresholded OSA
+        for form in sorted_forms:
+            if verifications_count >= config.max_verifications:
+                verifications_exhausted = True
+                exhausted_fields.update((span.field_hint,) if span.field_hint else ("street", "ward", "province"))
+                break
+
+            target_len = form.length
+            # Acceptance rules: max1 edit for <9 letters, max2 for longer
+            allowed_edits = (
+                1
+                if target_len < 9 or span_len < 9
+                else min(2, config.max_edits)
+            )
+
+            cache_key = (span_folded, form.folded_text, allowed_edits)
+            if cache_key in verify_cache:
+                dist = verify_cache[cache_key]
+            else:
+                verifications_count += 1
+                dist = thresholded_osa_distance(
+                    span_folded, form.folded_text, limit=allowed_edits
+                )
+                verify_cache[cache_key] = dist
+
+            # Acceptance checks
+            if 0 < dist <= allowed_edits and (max(target_len, span_len) - dist >= 4):
+                has_marker = span.has_marker or (
+                    form.form_type == "full" and form.entry.has_prefix
+                )
+                if form.form_type == "full":
+                    base_score = (
+                        70.0 if has_marker else 50.0
+                    ) + (5.0 if form.entry.has_prefix else 0.0)
+                else:
+                    base_score = 65.0 if has_marker else 50.0
+
+                score = base_score - dist * 10.0
+                reasons = (
+                    "fuzzy_verified",
+                    f"dist_{dist}",
+                ) + (("marker",) if has_marker else ())
+                if span.is_extension_of is not None:
+                    reasons = reasons + ("extension_recovery",)
+
+                v_cand = Candidate(
+                    entry=form.entry,
+                    start=span.start,
+                    end=span.end,
+                    path="fuzzy",
+                    cost=dist,
+                    score=score,
+                    context_marker=has_marker,
+                    reasons=reasons,
+                )
+                verified_fuzzy.append(v_cand)
+
+        if verifications_exhausted:
+            break
+
+    # Build budget trace
+    any_exhausted = bool(
+        spans_exhausted
+        or postings_exhausted
+        or verifications_exhausted
+        or candidates_per_span_exhausted
+    )
+
+    exhausted_map = ExhaustedDict(
+        {
+            "fuzzy_spans": spans_exhausted,
+            "postings": postings_exhausted,
+            "verifications": verifications_exhausted,
+            "candidates_per_span": candidates_per_span_exhausted,
+        }
+    )
+
+    budget_trace: dict[str, Any] = {
+        "counts": {
+            "fuzzy_spans": len(spans),
+            "postings": postings_count,
+            "verifications": verifications_count,
+            "candidates_per_span": max_cands_in_span,
+        },
+        "limits": {
+            "fuzzy_spans": config.max_fuzzy_spans,
+            "postings": config.max_postings,
+            "verifications": config.max_verifications,
+            "candidates_per_span": config.max_candidates_per_span,
+        },
+        "exhausted": any_exhausted,
+        "exhaustion_flags": dict(exhausted_map),
+    }
+
+    # If search was truncated, determine suspicious exact prefixes to abstain
+    suspicious_to_abstain: list[Candidate] = []
+    if any_exhausted:
+        # If budget was exhausted, any exact candidate with an unexplained tail
+        # could not be resolved against longer competitors and must be abstained
+        suspicious_to_abstain = [c for c in suspicious_exact if c.field in exhausted_fields]
+
+    return (
+        retrieved_fuzzy,
+        verified_fuzzy,
+        budget_trace,
+        exhausted_fields,
+        suspicious_to_abstain,
+    )

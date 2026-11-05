@@ -127,6 +127,10 @@ def retrieve_candidates(
             body_end_char = window[-1].end
             window_nfc = tuple(t.nfc for t in window)
             window_folded = tuple(t.folded for t in window)
+            if (window[-1].folded.isdigit() and i + length < num_tokens
+                    and tokens[i + length].folded.isdigit()
+                    and address[window[-1].end:tokens[i + length].start].isspace()):
+                continue  # An unfinished numeric sequence is not a complete name.
 
             # --- 1. Full matches ---
             exact_full = catalog.lookup_exact(window_nfc)
@@ -142,6 +146,8 @@ def retrieve_candidates(
                         has_marker = True
                         cand_start = marker_info[0]
 
+                if entry.field != "street" and not has_marker and all(t.replace("/", "").isdigit() for t in window_folded):
+                    continue
                 score = (FULL_EXACT_SCORE if has_marker else BARE_EXACT_SCORE) + (5.0 if entry.has_prefix else 0.0)
                 reasons = ("exact_full",) + (("marker",) if has_marker else ())
                 raw_candidates.append(
@@ -171,6 +177,8 @@ def retrieve_candidates(
                         has_marker = True
                         cand_start = marker_info[0]
 
+                if entry.field != "street" and not has_marker and all(t.replace("/", "").isdigit() for t in window_folded):
+                    continue
                 score = (FULL_FOLDED_SCORE if has_marker else BARE_FOLDED_SCORE) + (5.0 if entry.has_prefix else 0.0)
                 reasons = ("folded_full",) + (("marker",) if has_marker else ())
                 raw_candidates.append(
@@ -196,6 +204,8 @@ def retrieve_candidates(
                 exact_body_ids.add(entry.entry_id)
                 marker_info = find_preceding_marker(tokens, i, entry.field, address)
                 has_marker = marker_info is not None
+                if not has_marker and all(t.replace("/", "").isdigit() for t in window_folded):
+                    continue
                 cand_start = marker_info[0] if marker_info is not None else body_start_char
                 marker_exact = marker_info[1] if marker_info is not None else True
                 path = "exact" if marker_exact else "folded"
@@ -225,6 +235,8 @@ def retrieve_candidates(
                     continue
                 marker_info = find_preceding_marker(tokens, i, entry.field, address)
                 has_marker = marker_info is not None
+                if not has_marker and all(t.replace("/", "").isdigit() for t in window_folded):
+                    continue
                 cand_start = marker_info[0] if marker_info is not None else body_start_char
                 score = BODY_FOLDED_WITH_MARKER_SCORE if has_marker else BARE_FOLDED_SCORE
                 reasons = ("folded_body",) + (("marker",) if has_marker else ())

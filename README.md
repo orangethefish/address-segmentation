@@ -1,8 +1,8 @@
-# Vietnamese Address Segmentation (Stages A–C)
+# Vietnamese Address Segmentation (Stages A–D)
 
-This package implements **stages A–C** of the address segmentation architecture specified in [docs/architecture.md](docs/architecture.md) and [docs/address-segmentation-plan.md](docs/address-segmentation-plan.md).
+This package implements **stages A–D** of the address segmentation architecture specified in [docs/architecture.md](docs/architecture.md) and [docs/address-segmentation-plan.md](docs/address-segmentation-plan.md).
 
-It provides an exact-only, dictionary-constrained baseline implemented strictly in the Python standard library for CPython 3.14.
+It provides a dictionary-constrained matcher with bounded typo recovery implemented strictly in the Python standard library for CPython 3.14.
 
 ---
 
@@ -99,4 +99,4 @@ result, trace = matcher.identify_with_trace("Hòa Bình")
 
 The trace shows candidates before and after verification and selection pruning, plus rejection reasons. Public `identify` results always contain only the three address fields. Evaluation reports measure candidate recall and identify the first stage that loses each recoverable expected label. Use `--config path.json` with the development CLI, evaluator, or benchmark to supply explicit `MatcherConfig` values; reports record the configuration.
 
-Approximate matching, Telex/VNI recovery, and compact-word matching are not yet enabled. There is no geographic inference. The development JSONL protocol is provisional until the instructor supplies the grader contract.
+Bounded approximate matching is enabled by default. Set `enable_fuzzy` to false for the exact baseline. Recovery uses trigram shortlists, thresholded optimal string alignment verification, and deterministic work budgets. Numeric names remain exact only. Telex/VNI and compact-word recovery remain deferred to stage E. There is no geographic inference. The development JSONL protocol is provisional until the instructor supplies the grader contract.

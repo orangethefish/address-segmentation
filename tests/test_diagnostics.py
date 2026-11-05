@@ -9,7 +9,7 @@ class DiagnosticTests(unittest.TestCase):
     def test_retrieval_and_selection_losses_are_distinct(self):
         cases = [EvaluationCase('a', 'tan an', {'street':'Tân An','ward':None,'province':None}, (), 'a','recoverable'),
                  EvaluationCase('b', 'missing', {'street':'Tân An','ward':None,'province':None}, (), 'b','recoverable')]
-        matcher = AddressMatcher(streets=['Tân An','Tấn An'])
+        matcher = AddressMatcher(streets=['Tân An','Tấn An'], config=MatcherConfig(enable_fuzzy=False))
         predictions, traces = {}, {}
         for case in cases:
             predictions[case.id], traces[case.id] = matcher.identify_with_trace(case.address)

@@ -40,28 +40,54 @@ FIELDS: tuple[str, ...] = ("street", "ward", "province")
 def supersede_contained_prefixes(candidates: list[Candidate]) -> list[Candidate]:
     """Supersede strict contained same-field prefixes at the same occurrence.
 
-    If candidate C1 is a strict prefix of longer complete exact candidate C2
-    starting at the same character offset, C2 supersedes C1.
+    If candidate C1 is a strict prefix of longer complete exact or verified
+    fuzzy candidate C2 at the same occurrence/context, C2 supersedes C1.
     """
-    by_start: dict[tuple[str, int], list[Candidate]] = {}
+    by_field: dict[tuple[str, int], list[Candidate]] = {}
     for candidate in candidates:
-        by_start.setdefault((candidate.field, candidate.start), []).append(candidate)
-    survived = []
-    for group in by_start.values():
+        by_field.setdefault((candidate.field, candidate.start), []).append(candidate)
+
+    survived: list[Candidate] = []
+    for field_name, group in by_field.items():
         for short in group:
             superseded = False
             for longer in group:
-                if (longer.end <= short.end or longer.label == short.label
-                        or longer.path not in ("exact", "folded")
-                        or longer.score < short.score):
+                if longer is short or longer.label == short.label:
                     continue
-                for attr in ("nfc_tokens", "body_nfc_tokens", "folded_tokens", "body_folded_tokens"):
-                    left, right = getattr(short.entry, attr), getattr(longer.entry, attr)
-                    if len(left) < len(right) and right[:len(left)] == left:
-                        superseded = True
+
+                # Must be at the same occurrence/context
+                same_start = longer.start == short.start
+                if not same_start or longer.end <= short.end:
+                    continue
+
+                # Strict prefix check on token sequences
+                is_strict_prefix = False
+                for attr in (
+                    "nfc_tokens",
+                    "body_nfc_tokens",
+                    "folded_tokens",
+                    "body_folded_tokens",
+                ):
+                    left = getattr(short.entry, attr)
+                    right = getattr(longer.entry, attr)
+                    if left and len(left) < len(right) and right[: len(left)] == left:
+                        is_strict_prefix = True
                         break
-                if superseded:
+
+                if not is_strict_prefix:
+                    continue
+
+                # Exact or folded longer candidate supersedes if score >= short.score
+                if longer.path in ("exact", "folded") and longer.score >= short.score:
+                    superseded = True
                     break
+
+                # Complete-name fuzzy evidence can supersede a contained shorter exact match
+                # only with strong shared prefix + verified extension, same occurrence/context
+                if longer.path == "fuzzy" and longer.cost <= 2 and longer.score >= 10.0:
+                    superseded = True
+                    break
+
             if not superseded:
                 survived.append(short)
 

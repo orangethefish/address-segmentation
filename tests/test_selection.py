@@ -17,7 +17,7 @@ class TestConfigurationValidation(unittest.TestCase):
         self.assertEqual(config.top_k, 8)
         self.assertEqual(config.ambiguity_margin, 0.0)
         self.assertEqual(config.min_score, 10.0)
-        self.assertFalse(config.enable_fuzzy)
+        self.assertTrue(config.enable_fuzzy)
         self.assertFalse(config.enable_compact)
         self.assertFalse(config.enable_typing)
 
