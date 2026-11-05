@@ -14,6 +14,7 @@ from address_segmentation.catalog import Catalog
 from address_segmentation.approximate import extract_spans
 from address_segmentation.model import Candidate, MatcherConfig
 from address_segmentation.normalize import Token, fold_accents
+from address_segmentation.retrieve import accepts_marker
 
 TONES = dict(zip('sfrxj', '\u0301\u0300\u0309\u0303\u0323'))
 VNI_TONES = dict(zip('12345', '\u0301\u0300\u0309\u0303\u0323'))
@@ -61,6 +62,25 @@ def compatible(hypothesis: Hypothesis, target: str) -> bool:
         if observed.count(shape) > target_nfd.count(shape):
             return False
     return fold_accents(hypothesis.text) == fold_accents(target)
+
+
+def preserves_compact_accents(observed: str, target: str) -> bool:
+    """Keep explicit accents at their character positions when spaces change."""
+    def clusters(text: str) -> list[str]:
+        result = []
+        for char in unicodedata.normalize('NFD', text):
+            if unicodedata.combining(char) and result:
+                result[-1] += char
+            else:
+                result.append(char)
+        return result
+
+    left, right = clusters(observed), clusters(target)
+    return len(left) == len(right) and all(
+        fold_accents(a) == fold_accents(b) and set(a[1:]) <= set(b[1:])
+        and (a[0] != 'đ' or b[0] == 'đ')
+        for a, b in zip(left, right)
+    )
 
 
 class TypingIndex:
@@ -122,6 +142,8 @@ def recover_typing(
                 counts['candidates_per_span'] = max(counts['candidates_per_span'], span_visited)
                 if span.field_hint and entry.field != span.field_hint:
                     continue
+                if not accepts_marker(entry, span.marker_word):
+                    continue
                 candidate = Candidate(entry, span.start, span.end, mode, score=0)
                 retrieved.append(candidate)
                 if counts['verifications'] >= limits['verifications']:
@@ -136,6 +158,8 @@ def recover_typing(
                     if any(not (c.isalpha() or c.isspace() or unicodedata.category(c).startswith('M')) for c in source):
                         continue
                     if tuple(fold_accents(w) for w in words) == tuple(fold_accents(w) for w in target):
+                        continue
+                    if not preserves_compact_accents(''.join(words), ''.join(target)):
                         continue
                 elif len(target) != len(hypotheses) or not all(compatible(h, w) for h, w in zip(hypotheses, target)):
                     continue

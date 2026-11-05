@@ -1,0 +1,62 @@
+[
+  {
+    "record": 114,
+    "field": "ward",
+    "original": "Phường Long Thành",
+    "alternatives": [
+      "Phường Long Thành",
+      "Phường Long Thạnh"
+    ],
+    "reason": "The input contains accentless Long Thanh; both dictionary labels share that spelling and administrative type. Flat dictionaries provide no geographic evidence to distinguish them."
+  },
+  {
+    "record": 208,
+    "field": "ward",
+    "original": "Xã Long Thành",
+    "alternatives": [
+      "Xã Long Thành",
+      "Xã Long Thạnh"
+    ],
+    "reason": "The input contains accentless Long Thanh; both dictionary labels share that spelling and administrative type. Flat dictionaries provide no geographic evidence to distinguish them."
+  },
+  {
+    "record": 691,
+    "field": "ward",
+    "original": "Xã Long Thành",
+    "alternatives": [
+      "Xã Long Thành",
+      "Xã Long Thạnh"
+    ],
+    "reason": "The input contains accentless Long Thanh; both dictionary labels share that spelling and administrative type. Flat dictionaries provide no geographic evidence to distinguish them."
+  },
+  {
+    "record": 740,
+    "field": "ward",
+    "original": "Phường Long Thành",
+    "alternatives": [
+      "Phường Long Thành",
+      "Phường Long Thạnh"
+    ],
+    "reason": "The input contains accentless Long Thanh; both dictionary labels share that spelling and administrative type. Flat dictionaries provide no geographic evidence to distinguish them."
+  },
+  {
+    "record": 945,
+    "field": "ward",
+    "original": "Xã Long Thạnh",
+    "alternatives": [
+      "Xã Long Thành",
+      "Xã Long Thạnh"
+    ],
+    "reason": "The input contains accentless Long Thanh; both dictionary labels share that spelling and administrative type. Flat dictionaries provide no geographic evidence to distinguish them."
+  },
+  {
+    "record": 977,
+    "field": "ward",
+    "original": "Xã Long Thành",
+    "alternatives": [
+      "Xã Long Thành",
+      "Xã Long Thạnh"
+    ],
+    "reason": "The input contains accentless Long Thanh; both dictionary labels share that spelling and administrative type. Flat dictionaries provide no geographic evidence to distinguish them."
+  }
+]

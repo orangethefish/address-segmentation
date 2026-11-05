@@ -79,10 +79,16 @@ class AddressMatcher:
         """Check if address is completely explained by exact matches with no suspicious tails."""
         if not exact_candidates:
             return False
-        return all(token.folded.replace("/", "").isdigit()
-                   or token.folded == "so"
-                   or any(c.start <= token.start and c.end >= token.end for c in exact_candidates)
-                   for token in tokens)
+        intervals = sorted((c.start, c.end) for c in exact_candidates)
+        position, covered_end = 0, -1
+        for token in tokens:
+            while position < len(intervals) and intervals[position][0] <= token.start:
+                covered_end = max(covered_end, intervals[position][1])
+                position += 1
+            if (covered_end < token.end and token.folded != "so"
+                    and not token.folded.replace("/", "").isdigit()):
+                return False
+        return True
 
     def _execute_pipeline(
         self, address: str

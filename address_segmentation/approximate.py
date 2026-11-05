@@ -25,7 +25,7 @@ Stage D adds bounded, deterministic typo recovery for address components:
 
 from collections.abc import Sequence
 from typing import Any
-from address_segmentation.retrieve import find_preceding_marker
+from address_segmentation.retrieve import accepts_marker, find_preceding_marker
 from dataclasses import dataclass
 
 from address_segmentation.catalog import Catalog, CatalogEntry
@@ -64,6 +64,7 @@ class CandidateSpan:
     has_marker: bool
     field_hint: str | None
     is_extension_of: Candidate | None
+    marker_word: str | None = None
 
 
 def extract_trigrams(text: str) -> tuple[str, ...]:
@@ -177,6 +178,11 @@ def extract_spans(
     seen = set()
     suspicious = []
     exhausted = False
+    coverage = sorted((c.start, c.end) for c in exact_candidates)
+    coverage_position, covered_end = 0, -1
+    candidates_by_start = {}
+    for candidate in exact_candidates:
+        candidates_by_start.setdefault(candidate.start, []).append(candidate)
     # Partition tokens at separators and explicit field markers, including no-comma input.
     groups = []
     group = []
@@ -208,10 +214,12 @@ def extract_spans(
             if body >= right:
                 continue
             start, end = tokens[indices[left]].start, tokens[indices[right-1]].end
-            covering = [c for c in exact_candidates if c.start <= start and c.end >= end]
-            if covering:
+            while coverage_position < len(coverage) and coverage[coverage_position][0] <= start:
+                covered_end = max(covered_end, coverage[coverage_position][1])
+                coverage_position += 1
+            if covered_end >= end:
                 continue
-            prefix = next((c for c in exact_candidates if c.start == start and c.end < end
+            prefix = next((c for c in candidates_by_start.get(start, ()) if c.end < end
                            and (hint is None or c.field == hint[1])), None)
             if prefix is not None:
                 suspicious.append(prefix)
@@ -225,7 +233,8 @@ def extract_spans(
                     exhausted = True
                     continue
                 spans.append(CandidateSpan(start, end, address[start:end], folded,
-                                           hint is not None, hint[1] if hint else None, prefix))
+                                           hint is not None, hint[1] if hint else None, prefix,
+                                           tokens[indices[left]].folded if hint else None))
     spans.sort(key=lambda span: (span.is_extension_of is None, span.start, -(span.end-span.start), span.folded_text))
     return spans, exhausted, suspicious
 
@@ -298,7 +307,8 @@ def recover_fuzzy_candidates(
                 postings_count += 1
                 # Filter by length bucket delta <= max_edits
                 if (abs(target_form.length - span_len) <= config.max_edits
-                        and (span.field_hint is None or target_form.entry.field == span.field_hint)):
+                        and (span.field_hint is None or target_form.entry.field == span.field_hint)
+                        and accepts_marker(target_form.entry, span.marker_word)):
                     form_gram_hits[target_form] = form_gram_hits.get(target_form, 0) + 1
             if postings_exhausted:
                 break
@@ -312,7 +322,8 @@ def recover_fuzzy_candidates(
                     break
                 postings_count += 1
                 if (abs(tf.length - span_len) <= config.max_edits
-                        and (span.field_hint is None or tf.entry.field == span.field_hint)):
+                        and (span.field_hint is None or tf.entry.field == span.field_hint)
+                        and accepts_marker(tf.entry, span.marker_word)):
                     form_gram_hits.setdefault(tf, 0)
 
         if not form_gram_hits:

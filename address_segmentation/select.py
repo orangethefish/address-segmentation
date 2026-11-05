@@ -13,10 +13,10 @@ Unlike single-field independent matching, joint selection evaluates complete tri
    Each field retains at most K candidates (default 8). If pruning is required for a field,
    it is conservatively nulled BEFORE scoring and recorded in `pruned_fields` to prevent
    arbitrarily omitted candidates from creating false uniqueness or biasing other fields.
-3. **Contained Prefix Supersession**:
-   At the same occurrence, a longer complete exact candidate supersedes a strictly contained
-   same-field prefix (e.g., 'An Phú Đông' supersedes 'An Phú'). Shorter names are not globally
-   penalized.
+3. **Contained Name Supersession**:
+   At one occurrence, complete exact/folded names supersede contained fragments,
+   preserving explicit accents and independent markers. Verified recovery can
+   extend a same-field prefix. Separate occurrences remain competitors.
 4. **Ambiguity and Rejection Policy**:
    A field is emitted only if:
    - Exactly one canonical label appears across all combinations within `ambiguity_margin`
@@ -27,6 +27,7 @@ Unlike single-field independent matching, joint selection evaluates complete tri
    Deterministic ordering is strictly used for trace/display reproducibility, NEVER for tie resolution.
 """
 
+from bisect import bisect_left
 from typing import TYPE_CHECKING, Any
 
 from address_segmentation.model import Candidate, MatcherConfig
@@ -38,60 +39,48 @@ FIELDS: tuple[str, ...] = ("street", "ward", "province")
 
 
 def supersede_contained_prefixes(candidates: list[Candidate]) -> list[Candidate]:
-    """Supersede strict contained same-field prefixes at the same occurrence.
+    """Prefer complete names over their contained fragments at one occurrence.
 
-    If candidate C1 is a strict prefix of longer complete exact or verified
-    fuzzy candidate C2 at the same occurrence/context, C2 supersedes C1.
+    Full exact/folded names explain unmarked fragments across fields; recovered
+    names can extend a prefix within the same field. Separate occurrences and
+    explicitly marked competing fields remain independent.
     """
-    by_field: dict[tuple[str, int], list[Candidate]] = {}
+    by_start: dict[int, list[Candidate]] = {}
     for candidate in candidates:
-        by_field.setdefault((candidate.field, candidate.start), []).append(candidate)
-
-    survived: list[Candidate] = []
-    for field_name, group in by_field.items():
-        for short in group:
-            superseded = False
-            for longer in group:
-                if longer is short or longer.label == short.label:
+        by_start.setdefault(candidate.start, []).append(candidate)
+    starts = sorted(by_start)
+    removed = set()
+    for longer in candidates:
+        # Compare only candidates inside this occurrence, rather than scanning all
+        # repeated names elsewhere in a long input.
+        for pos in range(bisect_left(starts, longer.start), bisect_left(starts, longer.end)):
+            for short in by_start[starts[pos]]:
+                if (short is longer or short.end > longer.end
+                        or (short.start == longer.start and short.end == longer.end)
+                        or (short.field == longer.field and short.label == longer.label)):
                     continue
-
-                # Must be at the same occurrence/context
-                same_start = longer.start == short.start
-                if not same_start or longer.end <= short.end:
+                if short.field != longer.field and short.context_marker:
                     continue
-
-                # Strict prefix check on token sequences
-                is_strict_prefix = False
-                for attr in (
-                    "nfc_tokens",
-                    "body_nfc_tokens",
-                    "folded_tokens",
-                    "body_folded_tokens",
-                ):
-                    left = getattr(short.entry, attr)
-                    right = getattr(longer.entry, attr)
-                    if left and len(left) < len(right) and right[: len(left)] == left:
-                        is_strict_prefix = True
-                        break
-
-                if not is_strict_prefix:
-                    continue
-
-                # Exact or folded longer candidate supersedes if score >= short.score
-                if longer.path in ("exact", "folded") and longer.score >= short.score:
-                    superseded = True
-                    break
-
-                # Complete-name fuzzy evidence can supersede a contained shorter exact match
-                # only with strong shared prefix + verified extension, same occurrence/context
-                if longer.path in ("fuzzy", "compact", "telex", "vni") and longer.cost <= 2 and longer.score >= 10.0:
-                    superseded = True
-                    break
-
-            if not superseded:
-                survived.append(short)
-
-    return survived
+                if longer.path in ("exact", "folded") and "province_initials" not in longer.reasons:
+                    # A fully observed name supersedes its contained name fragments,
+                    # including suffixes. Preserve explicit accent evidence: an exact
+                    # fragment must also occur literally in the longer canonical name.
+                    attr = "body_nfc_tokens" if short.path == "exact" else "body_folded_tokens"
+                    small, large = getattr(short.entry, attr), getattr(longer.entry, attr)
+                    if (small and len(small) < len(large)
+                            and any(large[i:i + len(small)] == small
+                                    for i in range(len(large) - len(small) + 1))):
+                        removed.add(id(short))
+                elif (short.field == longer.field and short.start == longer.start
+                      and longer.path in ("fuzzy", "compact", "telex", "vni")
+                      and longer.cost <= 2 and longer.score >= 10.0):
+                    # Verified recovery may extend an exact prefix at this occurrence.
+                    for attr in ("nfc_tokens", "body_nfc_tokens", "folded_tokens", "body_folded_tokens"):
+                        small, large = getattr(short.entry, attr), getattr(longer.entry, attr)
+                        if small and len(small) < len(large) and large[:len(small)] == small:
+                            removed.add(id(short))
+                            break
+    return [c for c in candidates if id(c) not in removed]
 
 
 def spans_overlap(c1: Candidate, c2: Candidate) -> bool:
@@ -110,7 +99,7 @@ def select_candidates(
     - selection_trace: JSON-serializable dictionary with best_score, ambiguous_fields,
       pruned_fields, and rejection_reasons.
     """
-    # Step 1: Supersede contained same-field prefixes at the same occurrence
+    # Step 1: Supersede contained name fragments at the same occurrence
     post_supersede = supersede_contained_prefixes([c for c in verified_candidates if c.score >= config.min_score])
 
     # Step 2: Top-K Pruning per field

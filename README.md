@@ -75,6 +75,27 @@ Evaluation reports separate wrong labels, false non-null assignments, and missed
 
 ---
 
+### User-supplied dataset
+
+`testcases/1` is a development dataset supplied by the user, with 1,000 addresses,
+162 streets, 319 wards and 34 provinces. Its four original files are preserved.
+Convert its provisional `address`/`result` array and text dictionaries explicitly:
+
+```bash
+python3.14 -m tools.prepare_dataset --source-dir testcases/1 --review testcases/1/review.json --output-dir reports/user-1
+python3.14 -m tools.evaluate --dictionary reports/user-1/dictionary.json --cases reports/user-1/raw-cases.jsonl --output reports/user-1/raw-evaluation.json
+python3.14 -m tools.evaluate --dictionary reports/user-1/dictionary.json --cases reports/user-1/cases.jsonl --output reports/user-1/reviewed-evaluation.json
+python3.14 -m tools.benchmark --dictionary reports/user-1/dictionary.json --cases reports/user-1/cases.jsonl --output reports/user-1/timing.json
+```
+
+The adapter records source hashes, validates canonical membership, and groups
+identical inputs together. `raw-cases.jsonl` preserves every original expectation.
+`cases.jsonl` applies six audited null-on-ambiguity expectations from `review.json`:
+accentless `Long Thanh` cannot distinguish `Long Thành` from `Long Thạnh` of the
+same administrative type. Omitting `--review` preserves all original expectations
+in both outputs. See [review results](docs/user-dataset-review.md) for accuracy,
+performance and remaining official-contract limits.
+
 ## 3. Component Boundaries
 
 - [`address_segmentation/__init__.py`](address_segmentation/__init__.py): Exports `AddressMatcher` as the stable application interface.
@@ -90,7 +111,7 @@ Evaluation reports separate wrong labels, false non-null assignments, and missed
 
 ## 4. Joint selection and diagnostics
 
-The matcher retrieves complete canonical forms and field-specific name bodies, recognizes administrative markers, and selects compatible candidates jointly. Different fields cannot reuse overlapping input spans. Distinct occurrences can support multiple fields. Unresolved label ties return null, preserving independently supported fields. Candidate pruning is conservative and reported explicitly.
+The matcher retrieves complete canonical forms and field-specific name bodies, recognizes administrative markers, and selects compatible candidates jointly. Marker types distinguish `Phường`, `Xã` and `Thị trấn`; numbered street bodies require a street marker. Province body initials such as `HN` and `TP.HCM` are derived from dictionary entries, retain collisions, and rank below literal names. Complete names suppress contained fragments at the same occurrence while preserving explicit accent evidence. Matching respects commas, semicolons and newlines as component boundaries. Different fields cannot reuse overlapping input spans. Distinct occurrences can support multiple fields. Unresolved label ties return null, preserving independently supported fields. Candidate pruning is conservative and reported explicitly.
 
 ```python
 from address_segmentation.model import MatcherConfig

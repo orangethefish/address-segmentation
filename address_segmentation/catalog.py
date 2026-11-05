@@ -198,6 +198,7 @@ class Catalog:
         folded_map: dict[tuple[str, ...], list[CatalogEntry]] = {}
         body_exact_map: dict[tuple[str, ...], list[CatalogEntry]] = {}
         body_folded_map: dict[tuple[str, ...], list[CatalogEntry]] = {}
+        province_initials: dict[str, list[CatalogEntry]] = {}
         lengths: set[int] = set()
 
         for entry in self._entries:
@@ -209,6 +210,11 @@ class Catalog:
             body_exact_map.setdefault(entry.body_nfc_tokens, []).append(entry)
             body_folded_map.setdefault(entry.body_folded_tokens, []).append(entry)
             lengths.add(len(entry.body_nfc_tokens))
+            if (entry.field == "province" and len(entry.body_folded_tokens) >= 2
+                    and all(word.isalpha() for word in entry.body_folded_tokens)):
+                initials = "".join(word[0] for word in entry.body_folded_tokens)
+                province_initials.setdefault(initials, []).append(entry)
+                lengths.add(1)
 
         # Freeze indexes to immutable tuples and frozenset
         self._exact_index: dict[tuple[str, ...], tuple[CatalogEntry, ...]] = {
@@ -223,6 +229,13 @@ class Catalog:
         self._body_folded_index: dict[tuple[str, ...], tuple[CatalogEntry, ...]] = {
             k: tuple(v) for k, v in body_folded_map.items()
         }
+        self._province_initials = {k: tuple(v) for k, v in province_initials.items()}
+        window_lengths: dict[str, set[int]] = {}
+        for words in folded_map.keys() | body_folded_map.keys():
+            window_lengths.setdefault(words[0], set()).add(len(words))
+        for initials in province_initials:
+            window_lengths.setdefault(initials, set()).add(1)
+        self._window_lengths = {k: tuple(sorted(v)) for k, v in window_lengths.items()}
         self._token_lengths: frozenset[int] = frozenset(lengths)
         self._max_tokens: int = max(self._token_lengths) if self._token_lengths else 0
 
@@ -253,3 +266,11 @@ class Catalog:
     def lookup_body_folded(self, folded_tokens: tuple[str, ...]) -> tuple[CatalogEntry, ...]:
         """Look up entries whose body matches accent-folded tokens (immutable tuple)."""
         return self._body_folded_index.get(folded_tokens, ())
+
+    def lookup_province_initials(self, text: str) -> tuple[CatalogEntry, ...]:
+        """Return every province with these body initials; collisions remain explicit."""
+        return self._province_initials.get(text, ())
+
+    def window_lengths(self, first_folded_token: str) -> tuple[int, ...]:
+        """Only exact windows whose first token can start an indexed name or alias."""
+        return self._window_lengths.get(first_folded_token, ())

@@ -138,6 +138,13 @@ Official target gates are mean <= 10 ms and every observed request <= 100 ms und
 
 Each feature experiment compares identical cases/configuration except the feature switch. Save improvements AND regressions by case ID, false non-null changes, recall changes, latency changes and budget exhaustion. Require all established correctness tests to pass. Require improvement in the targeted challenge family and no unexplained new false positives in the negative-control suite; real-data tradeoffs await scoring details. No unsupported overall accuracy threshold is invented.
 
+The [user dataset review](user-dataset-review.md) adds a validated provisional
+adapter and audited expectations, plus fixes for administrative types, province
+initials, contained names, separators and numeric context. It also replaces
+repeated full scans with indexed windows and span sweeps. Current verification
+covers 144 tests; the historical stage E measurements below retain their original
+source hashes. Official integration and the grouped holdout workflow remain pending.
+
 ## Execution stages and delegation boundaries
 
 Current status: stages A–E are implemented and verified on CPython 3.14.4 (128 tests). Stage D adds bounded trigram retrieval and OSA verification. Stage E adds independent compact and Telex/VNI hypotheses, preserves literal and tone evidence, and shares the recovery work budgets. The 15-case baseline and 14-case general-recovery fixture remain fully correct; the 36-case typing fixture improves from 21/36 under stage D to 36/36 under stage E. Reviewed measurements and hashes are recorded in `stage-results.json`; [stage E evidence](stage-e.md) documents the limits and reproduction commands. Stages F–G remain pending. Official grader compatibility remains unverified.
