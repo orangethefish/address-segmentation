@@ -1,4 +1,4 @@
-"""Stage D address matcher coordinating retrieval, verification, and joint selection.
+"""Stages A–E address matcher coordinating retrieval, verification, and joint selection.
 
 # Matcher Orchestration and Trace API (Stage D)
 
@@ -24,21 +24,24 @@ AddressMatcher coordinates end-to-end identification:
 """
 
 from collections.abc import Sequence, Set
+from dataclasses import replace
 from typing import Any
 
 from address_segmentation.approximate import (
     ApproximateIndex,
     recover_fuzzy_candidates,
+    extract_spans,
 )
 from address_segmentation.catalog import Catalog
 from address_segmentation.model import Candidate, MatcherConfig
 from address_segmentation.normalize import Token, tokenize
 from address_segmentation.retrieve import retrieve_candidates
 from address_segmentation.select import select_candidates
+from address_segmentation.typing import TypingIndex, recover_typing, contradicts_tone
 
 
 class AddressMatcher:
-    """Synchronous, standard-library address matcher implementing Stage D recovery."""
+    """Synchronous, standard-library address matcher implementing general and typing recovery."""
 
     def __init__(
         self,
@@ -55,6 +58,7 @@ class AddressMatcher:
         self._config = config if config is not None else MatcherConfig()
         # Prepare per-entry full and body folded forms once per matcher
         self._approx_index = ApproximateIndex(self._catalog) if self._config.enable_fuzzy else None
+        self._typing_index = TypingIndex(self._catalog) if (self._config.enable_typing or self._config.enable_compact) else None
 
     @property
     def catalog(self) -> Catalog:
@@ -124,7 +128,7 @@ class AddressMatcher:
         )
 
         # 2. Fast path for full exact address with no suspicious tail
-        if not self._config.enable_fuzzy or self._is_full_exact_fast_path(
+        if not (self._config.enable_fuzzy or self._typing_index) or self._is_full_exact_fast_path(
             address, tokens, exact_retrieved
         ):
             all_retrieved = exact_retrieved
@@ -157,10 +161,59 @@ class AddressMatcher:
             )
 
         # 3. Approximate fuzzy recovery (Stage D)
-        (fuzzy_retrieved, fuzzy_verified, budget_trace, exhausted_fields,
-         suspicious_to_abstain) = recover_fuzzy_candidates(
-            address, tokens, self._catalog, self._config, self._approx_index, exact_retrieved)
+        fuzzy_retrieved, fuzzy_verified = [], []
+        exhausted_fields, suspicious_to_abstain = set(), []
+        budget_trace = {
+            "counts": {"fuzzy_spans": 0, "postings": 0, "verifications": 0, "candidates_per_span": 0},
+            "limits": {"fuzzy_spans": self._config.max_fuzzy_spans, "postings": self._config.max_postings,
+                       "verifications": self._config.max_verifications, "candidates_per_span": self._config.max_candidates_per_span},
+            "exhausted": False, "exhaustion_flags": {},
+        }
+        if self._config.enable_fuzzy:
+            fuzzy_config = self._config
+            if self._typing_index is not None:
+                fuzzy_config = replace(self._config, max_candidates_per_span=max(1, self._config.max_candidates_per_span // 2))
+            (fuzzy_retrieved, fuzzy_verified, budget_trace, exhausted_fields,
+             suspicious_to_abstain) = recover_fuzzy_candidates(
+                address, tokens, self._catalog, fuzzy_config, self._approx_index, exact_retrieved)
+            budget_trace["limits"]["candidates_per_span"] = self._config.max_candidates_per_span
+        if self._typing_index is not None:
+            remaining_postings = self._config.max_postings - budget_trace["counts"]["postings"]
+            remaining_checks = self._config.max_verifications - budget_trace["counts"]["verifications"]
+            remaining_candidates = self._config.max_candidates_per_span - budget_trace["counts"]["candidates_per_span"]
+            if remaining_postings > 0 and remaining_checks > 0 and remaining_candidates > 0:
+                typing_config = replace(self._config, max_postings=remaining_postings,
+                                        max_verifications=remaining_checks, max_candidates_per_span=remaining_candidates)
+                retrieved, verified, typing_budget, fields, suspicious = recover_typing(
+                    address, tokens, exact_retrieved, self._typing_index, typing_config)
+                fuzzy_retrieved.extend(retrieved)
+                fuzzy_verified.extend(verified)
+                exhausted_fields.update(fields)
+                suspicious_to_abstain.extend(suspicious)
+                for key, count in typing_budget["counts"].items():
+                    if key in ("postings", "verifications", "candidates_per_span"):
+                        budget_trace["counts"][key] += count
+                    else:
+                        budget_trace["counts"][key] = max(budget_trace["counts"][key], count)
+                budget_trace["exhausted"] |= typing_budget["exhausted"]
+                for key, value in typing_budget["exhaustion_flags"].items():
+                    budget_trace["exhaustion_flags"][key] = budget_trace["exhaustion_flags"].get(key, False) or value
 
+            else:
+                # The remaining typing hypotheses cannot be checked. Do not let
+                # a recovered label acquire false uniqueness at the budget boundary.
+                _, _, suspicious = extract_spans(address, tokens, exact_retrieved, self._config.max_fuzzy_spans)
+                suspicious_to_abstain.extend(suspicious)
+                exhausted_fields.update(c.field for c in fuzzy_verified)
+                exhausted_fields.update(c.field for c in suspicious)
+                budget_trace["exhausted"] = True
+                for name, remaining in (("postings", remaining_postings), ("verifications", remaining_checks),
+                                        ("candidates_per_span", remaining_candidates)):
+                    if remaining == 0:
+                        budget_trace["exhaustion_flags"][name] = True
+        if self._config.enable_typing:
+            fuzzy_verified = [c for c in fuzzy_verified
+                              if c.path != "fuzzy" or not contradicts_tone(c, tokens)]
         all_retrieved = exact_retrieved + fuzzy_retrieved
 
         # Filter verified candidates under budget exhaustion policy:

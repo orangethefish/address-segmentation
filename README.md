@@ -1,8 +1,8 @@
-# Vietnamese Address Segmentation (Stages A–D)
+# Vietnamese Address Segmentation (Stages A–E)
 
-This package implements **stages A–D** of the address segmentation architecture specified in [docs/architecture.md](docs/architecture.md) and [docs/address-segmentation-plan.md](docs/address-segmentation-plan.md).
+This package implements **stages A–E** of the address segmentation architecture specified in [docs/architecture.md](docs/architecture.md) and [docs/address-segmentation-plan.md](docs/address-segmentation-plan.md).
 
-It provides a dictionary-constrained matcher with bounded typo recovery implemented strictly in the Python standard library for CPython 3.14.
+It provides a dictionary-constrained matcher with bounded typo, Telex/VNI, and whitespace recovery implemented strictly in the Python standard library for CPython 3.14.
 
 ---
 
@@ -80,7 +80,8 @@ Evaluation reports separate wrong labels, false non-null assignments, and missed
 - [`address_segmentation/__init__.py`](address_segmentation/__init__.py): Exports `AddressMatcher` as the stable application interface.
 - [`address_segmentation/catalog.py`](address_segmentation/catalog.py): Validates label sequences, deduplicates identical labels, assigns stable deterministic IDs sorted lexicographically by `(field, canonical_label)`, and freezes collision-safe exact and folded lookup indexes into immutable tuples and sets.
 - [`address_segmentation/normalize.py`](address_segmentation/normalize.py): Unicode NFC normalization, casefolding, diacritic folding (including `đ`/`Đ` -> `d`), and character-scanning tokenization. Preserves original text character slices and offsets for both precomposed NFC and decomposed NFD text. Preserves slash numeric forms (`3/2`, `56/33`).
-- [`address_segmentation/matcher.py`](address_segmentation/matcher.py): Coordinates token-window matching, ranks evidence tiers (exact outranks folded), resolves same-field competing labels, and conservatively rejects cross-field evidence span conflicts.
+- [`address_segmentation/matcher.py`](address_segmentation/matcher.py): Coordinates exact retrieval, bounded typo/typing recovery, shared work budgets, and joint selection.
+- [`address_segmentation/approximate.py`](address_segmentation/approximate.py), [`verify.py`](address_segmentation/verify.py), and [`typing.py`](address_segmentation/typing.py): Indexed recovery, thresholded OSA edit verification, compact matching, and candidate-specific Telex/VNI verification.
 - [`address_segmentation/io.py`](address_segmentation/io.py): Validates and loads dictionary JSON files (`streets`, `wards`, `provinces`) and streams JSON strings from `stdin` to JSON objects on `stdout`. Enforces one JSON string per line; rejects blank lines as malformed input.
 - [`tests/fixtures/dictionary.json`](tests/fixtures/dictionary.json): Compact reference dictionary fixture with sample canonical Vietnamese address components.
 - [`tests/test_foundation.py`](tests/test_foundation.py): Test suite covering canonical addresses, missing fields, empty inputs, non-string rejection, malformed dictionaries, accent/NFD handling, collisions, permuted inputs, numeric boundaries, shared span conflicts, catalog immutability, and CLI subprocess execution.
@@ -99,4 +100,14 @@ result, trace = matcher.identify_with_trace("Hòa Bình")
 
 The trace shows candidates before and after verification and selection pruning, plus rejection reasons. Public `identify` results always contain only the three address fields. Evaluation reports measure candidate recall and identify the first stage that loses each recoverable expected label. Use `--config path.json` with the development CLI, evaluator, or benchmark to supply explicit `MatcherConfig` values; reports record the configuration.
 
-Bounded approximate matching is enabled by default. Set `enable_fuzzy` to false for the exact baseline. Recovery uses trigram shortlists, thresholded optimal string alignment verification, and deterministic work budgets. Numeric names remain exact only. Telex/VNI and compact-word recovery remain deferred to stage E. There is no geographic inference. The development JSONL protocol is provisional until the instructor supplies the grader contract.
+General typo recovery, compact-word matching, and constrained Telex/VNI hypotheses are enabled by default. Set `enable_fuzzy`, `enable_compact`, or `enable_typing` to `false` in a configuration JSON to isolate each path. Typing and compact recovery also work with fuzzy matching disabled. Keyboard-neighbor weighting is deferred.
+
+Recovery compares complete component spans with dictionary names. Telex/VNI shape keys and terminal tone keys are candidate-specific hypotheses; literal dictionary names remain competitors. Numeric names are exact only. Compact matching changes whitespace boundaries and preserves accent evidence; it does not remove numeric separators or internal punctuation. All recovery paths share deterministic operation budgets, and exhausted searches abstain on affected recovered fields.
+
+See [stage E results and limits](docs/stage-e.md) for positive/negative controls, ablations, and measured performance. Reproduce the feature comparison with:
+
+```bash
+python3.14 -m tools.ablate --dictionary tests/fixtures/typing-dictionary.json --cases tests/fixtures/typing-cases.jsonl --output-dir reports/stage-e --timing
+```
+
+There is no geographic inference. The development JSONL protocol is provisional until the instructor supplies the grader contract.

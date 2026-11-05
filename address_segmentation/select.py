@@ -84,7 +84,7 @@ def supersede_contained_prefixes(candidates: list[Candidate]) -> list[Candidate]
 
                 # Complete-name fuzzy evidence can supersede a contained shorter exact match
                 # only with strong shared prefix + verified extension, same occurrence/context
-                if longer.path == "fuzzy" and longer.cost <= 2 and longer.score >= 10.0:
+                if longer.path in ("fuzzy", "compact", "telex", "vni") and longer.cost <= 2 and longer.score >= 10.0:
                     superseded = True
                     break
 

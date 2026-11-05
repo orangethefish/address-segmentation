@@ -140,7 +140,7 @@ Each feature experiment compares identical cases/configuration except the featur
 
 ## Execution stages and delegation boundaries
 
-Current status: stages A–D are implemented and verified on CPython 3.14.4 (120 tests). Stage D adds bounded trigram retrieval, thresholded OSA verification, conservative work budgets, and non-greedy prefix recovery. The original 15-case fixture and 14-case recovery fixture are fully correct. Measurements and source hashes are recorded in `stage-results.json`. Stages E–G remain pending. Official grader compatibility remains unverified.
+Current status: stages A–E are implemented and verified on CPython 3.14.4 (128 tests). Stage D adds bounded trigram retrieval and OSA verification. Stage E adds independent compact and Telex/VNI hypotheses, preserves literal and tone evidence, and shares the recovery work budgets. The 15-case baseline and 14-case general-recovery fixture remain fully correct; the 36-case typing fixture improves from 21/36 under stage D to 36/36 under stage E. Reviewed measurements and hashes are recorded in `stage-results.json`; [stage E evidence](stage-e.md) documents the limits and reproduction commands. Stages F–G remain pending. Official grader compatibility remains unverified.
 
 | Stage | Owned deliverables | Exit gate |
 | --- | --- | --- |

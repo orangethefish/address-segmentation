@@ -18,8 +18,8 @@ class TestConfigurationValidation(unittest.TestCase):
         self.assertEqual(config.ambiguity_margin, 0.0)
         self.assertEqual(config.min_score, 10.0)
         self.assertTrue(config.enable_fuzzy)
-        self.assertFalse(config.enable_compact)
-        self.assertFalse(config.enable_typing)
+        self.assertTrue(config.enable_compact)
+        self.assertTrue(config.enable_typing)
 
     def test_reject_bad_top_k(self):
         with self.assertRaises(ValueError):

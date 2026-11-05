@@ -1,6 +1,6 @@
 """Domain models, candidate representations, and configuration for address segmentation.
 
-# Scoring and Evidence Model (Stages C–D)
+# Scoring and Evidence Model (Stages C–E)
 
 Stage C replaces single-field heuristics with joint candidate selection.
 Stage D adds bounded approximate typo recovery (OSA distance) while preserving
@@ -51,8 +51,8 @@ class MatcherConfig:
         ambiguity_margin: Score delta within which alternative labels trigger abstention (default 0.0).
         min_score: Minimum evidence score required for candidate acceptance (default 10.0).
         enable_fuzzy: Flag for approximate matching stages (default True in Stage D).
-        enable_compact: Reserved for Stage E whitespace recovery (default False).
-        enable_typing: Reserved for Stage E typing recovery (default False).
+        enable_compact: Enable dictionary-constrained whitespace recovery (default True).
+        enable_typing: Enable candidate-specific Telex/VNI recovery (default True).
         max_fuzzy_spans: Maximum component spans evaluated for approximate search (default 128).
         max_candidates_per_span: Maximum shortlisted candidates per span (default 64).
         max_verifications: Maximum thresholded OSA verification calls (default 2048).
@@ -64,8 +64,8 @@ class MatcherConfig:
     ambiguity_margin: float = 0.0
     min_score: float = 10.0
     enable_fuzzy: bool = True
-    enable_compact: bool = False
-    enable_typing: bool = False
+    enable_compact: bool = True
+    enable_typing: bool = True
     max_fuzzy_spans: int = 128
     max_candidates_per_span: int = 64
     max_verifications: int = 2048
@@ -145,7 +145,7 @@ class Candidate:
     reasons: tuple[str, ...] = ()
 
     def __post_init__(self) -> None:
-        if self.path not in ("exact", "folded", "fuzzy"):
+        if self.path not in ("exact", "folded", "fuzzy", "compact", "telex", "vni"):
             raise ValueError(f"Invalid candidate path: {self.path!r}")
         if self.start < 0 or self.end < self.start:
             raise ValueError(f"Invalid candidate character span: [{self.start}, {self.end}]")
