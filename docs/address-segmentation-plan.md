@@ -96,6 +96,14 @@ Therefore, **normalization and typo repair are lookup aids, never replacement ou
 
 ### 4.1 Flat dictionaries as the default
 
+**[USER, 2026-11-05]** On `feat/support-for-hierachy`,
+`testcases/1/address_hierarchy.json` supplies complete, authoritative
+relationships. Missing relationships are invalid, unmentioned components remain
+null, and conflicting matches yield the strongest consistent subset with nulls
+for unresolved fields. The [hierarchy architecture](hierarchy-architecture.md)
+supersedes the flat assumption for hierarchy mode and records an isolated
+prototype's runtime evidence. Existing flat matching remains a supported mode.
+
 **[DESIGN]** Assume three separate, independently searchable sets of street, ward, and province labels. Page 6 lists these separately. The directory screenshot on p. 9 appears to show `all_raw`, `list_district`, `list_province`, `list_ward`, and `README` - notably **not a clearly named `list_street` file**. It supports separate-file packaging but does **not** prove the delivered schema or geographic relationships.
 
 Without verified links between entries, do not assume a street belongs to exactly one ward or that ward and province membership can be inferred. Geographic links may be added as optional evidence only if supplied and permitted. A street name may occur in multiple wards; preserve such relationships if the eventual schema includes them.

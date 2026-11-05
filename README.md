@@ -4,6 +4,13 @@ This package implements **stages A–E** of the address segmentation architectur
 
 It provides a dictionary-constrained matcher with bounded typo, Telex/VNI, and whitespace recovery implemented strictly in the Python standard library for CPython 3.14.
 
+The `feat/support-for-hierachy` branch includes a
+[hierarchy architecture and feasibility study](docs/hierarchy-architecture.md)
+for the supplied `testcases/1/address_hierarchy.json`. An isolated prototype
+resolves all 1,000 original results and meets the local cold timing targets with
+the prepared launch configuration. The package API below remains the flat
+implementation; the design records the production integration stages.
+
 ---
 
 ## 1. Quick Start and API

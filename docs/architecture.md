@@ -2,6 +2,12 @@
 
 This design turns [the requirements plan](address-segmentation-plan.md) into independently testable implementation stages. Build a synchronous, standard-library Python matcher, prepare dictionaries once, and isolate the grader protocol from matching. Keep evaluation and benchmark tooling outside the submission package. The requirements plan remains authoritative for provenance and scope.
 
+The hierarchy branch now has a separate [hierarchy architecture](hierarchy-architecture.md),
+based on the supplied authoritative relationships and the user decisions of
+2026-11-05. It specifies whole-path constraints, missing-field behavior, prepared
+storage and measured feasibility. The implementation described below remains the
+flat baseline; hierarchy integration follows the stages in that design.
+
 User decisions on 2026-11-04: official materials are unavailable, so use controlled fixtures; return `None` for unresolved ambiguity. CPython 3.14 remains provisional. The local interpreter is 3.14.4. No external datasets, dependencies, or geographic relationships are needed for the foundation.
 
 ## Component boundaries

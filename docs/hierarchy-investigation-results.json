@@ -1,0 +1,412 @@
+{
+  "schema_version": 1,
+  "status": "isolated selection prototype; production hierarchy integration remains planned",
+  "branch": "feat/support-for-hierachy",
+  "confirmed_policy": {
+    "hierarchy": "complete_and_authoritative",
+    "missing_components": "null_without_text_evidence",
+    "conflicts": "strongest_consistent_subset_with_null_on_unresolved_ties"
+  },
+  "audit": {
+    "counts": {
+      "streets": 162,
+      "wards": 319,
+      "provinces": 34,
+      "province_ward_occurrences": 2380,
+      "valid_triples": 166600
+    },
+    "dictionary_difference": {
+      "street": {
+        "only_list": [],
+        "only_hierarchy": []
+      },
+      "ward": {
+        "only_list": [],
+        "only_hierarchy": []
+      },
+      "province": {
+        "only_list": [],
+        "only_hierarchy": []
+      }
+    },
+    "ward_province_count_histogram": {
+      "1": 19,
+      "2": 4,
+      "3": 8,
+      "4": 11,
+      "5": 32,
+      "6": 39,
+      "7": 38,
+      "8": 37,
+      "9": 59,
+      "10": 30,
+      "11": 22,
+      "12": 12,
+      "13": 2,
+      "14": 4,
+      "15": 2
+    },
+    "streets_per_ward_histogram": {
+      "70": 2380
+    },
+    "mask_values_marshal_bytes": 147339,
+    "maximum_mask_bytes": 298,
+    "exhaustive_triples_checked": 1757052,
+    "mask_mismatches": 0,
+    "invalid_triples_passing_pairwise_checks": 210458,
+    "pairwise_counterexample": {
+      "street": "Bà Hom",
+      "ward": "Phường An Đức",
+      "province": "An Giang"
+    },
+    "raw_cases": 1000,
+    "invalid_expected_rows": []
+  },
+  "source_hashes": {
+    "all_raw.json": "ed4082097743c8832c3e9c3bc544f9126cb65fc31a9d0e8e2d147a5155965ff9",
+    "review.json": "c7321e1476f4888ea29df7bfcd514c96bbfbe18530c9436e5968d5a33c220aee",
+    "list_ward.txt": "d50cc3dd3d192b1222b58c39eb7089d638678f4a260128e9f61b57389746cfde",
+    "list_province.txt": "8934f9a657b464225a1c2c5276321f2beeb6cb353641878ec4c7370549e65d24",
+    "address_hierarchy.json": "157b578d06528b3ddb028d06ae97301e6eb807ffd307041b8026e666807facde",
+    "list_street.txt": "ba1170a20e8b8ce17975169e63d969021bccd3f8f078ca6dab929bf2b5e5cd17"
+  },
+  "investigation_source_hash": "6b607def20a437d5595f173b1f4cd97b11ec587b41d94f823ae85a4d61ea90a2",
+  "test_source_hash": "95d4450de33df4bf8dc4751398a911dde20d56686b789ca8c8584de0bd440e9a",
+  "prototype": {
+    "flat_correct": 994,
+    "hierarchy_correct": 1000,
+    "changed_cases": [
+      {
+        "row": 114,
+        "address": "72 Dinh Cong Trang, P.Long Thanh, An Giang",
+        "before": {
+          "street": "Đinh Công Tráng",
+          "ward": null,
+          "province": "An Giang"
+        },
+        "after": {
+          "street": "Đinh Công Tráng",
+          "ward": "Phường Long Thành",
+          "province": "An Giang"
+        }
+      },
+      {
+        "row": 208,
+        "address": "103 Thuy Khue, X. Long Thanh, Quang Ngai",
+        "before": {
+          "street": "Thụy Khuê",
+          "ward": null,
+          "province": "Quảng Ngãi"
+        },
+        "after": {
+          "street": "Thụy Khuê",
+          "ward": "Xã Long Thành",
+          "province": "Quảng Ngãi"
+        }
+      },
+      {
+        "row": 691,
+        "address": "403 Tran Khat Chan, Xa Long Thanh, Quang Ngai",
+        "before": {
+          "street": "Trần Khát Chân",
+          "ward": null,
+          "province": "Quảng Ngãi"
+        },
+        "after": {
+          "street": "Trần Khát Chân",
+          "ward": "Xã Long Thành",
+          "province": "Quảng Ngãi"
+        }
+      },
+      {
+        "row": 740,
+        "address": "188 Tran Khanh Du, P. Long Thanh, Ha Noi",
+        "before": {
+          "street": "Trần Khánh Dư",
+          "ward": null,
+          "province": "Hà Nội"
+        },
+        "after": {
+          "street": "Trần Khánh Dư",
+          "ward": "Phường Long Thành",
+          "province": "Hà Nội"
+        }
+      },
+      {
+        "row": 945,
+        "address": "358 Dinh Cong Trang, Xa Long Thanh, Hung Yen",
+        "before": {
+          "street": "Đinh Công Tráng",
+          "ward": null,
+          "province": "Hưng Yên"
+        },
+        "after": {
+          "street": "Đinh Công Tráng",
+          "ward": "Xã Long Thạnh",
+          "province": "Hưng Yên"
+        }
+      },
+      {
+        "row": 977,
+        "address": "345 Quang Trung, X.Long Thanh, Son La",
+        "before": {
+          "street": "Quang Trung",
+          "ward": null,
+          "province": "Sơn La"
+        },
+        "after": {
+          "street": "Quang Trung",
+          "ward": "Xã Long Thành",
+          "province": "Sơn La"
+        }
+      }
+    ],
+    "index_bytes": {
+      "flat": 604366,
+      "hierarchy": 758418
+    }
+  },
+  "validation": {
+    "unittest_command": "python3.14 -m unittest discover -s tests -v",
+    "tests_passed": 168,
+    "exhaustive_mask_mismatches": 0
+  },
+  "timing": {
+    "flat": {
+      "report_path": "reports/hierarchy-investigation/flat-timing.json",
+      "report_hash": "4565a5a904276f67e72914c72539f2c111018b94bb73a83f893ac3188d4f4597",
+      "measured_at_utc": "2026-11-05T05:25:17Z",
+      "platform": {
+        "python_version": "3.14.4 (main, Aug 20 2026, 10:41:58) [GCC 15.2.0]",
+        "python_implementation": "CPython",
+        "platform": "Linux-7.0.0-42-generic-x86_64-with-glibc2.43",
+        "system": "Linux",
+        "release": "7.0.0-42-generic",
+        "machine": "x86_64",
+        "processor": "",
+        "cpu_count": 12
+      },
+      "measurement_contract": {
+        "primary": "cold_process_request",
+        "timer": "parent perf_counter_ns immediately before Popen until complete stdout JSONL result is received",
+        "command": [
+          "/usr/bin/python3.14",
+          "-S",
+          "/home/orange/Code/address-segmentation/reports/hierarchy-investigation/flat-bundle/submission.py"
+        ],
+        "includes": [
+          "process/interpreter startup",
+          "all runtime imports",
+          "prepared file open/mapping and header checks",
+          "on-demand dictionary/postings reads",
+          "stdin transfer/JSON decoding",
+          "matching",
+          "JSON encoding and stdout flush/pipe capture"
+        ],
+        "excludes": [
+          "offline dictionary compilation",
+          "harness input setup and fixture parsing",
+          "harness bundle hash checks",
+          "output validation/scoring",
+          "report file writes",
+          "process teardown after output"
+        ],
+        "cold_definition": "fresh interpreter and matcher for every address; zero cold warmups; no result cache or persistent worker",
+        "filesystem_cache": "OS file/page caches are uncontrolled; harness preflight reads bundle files",
+        "bytecode": "checked-hash runtime bytecode is shipped in the prepared bundle; all source is also included",
+        "source_only_command_note": "source-only commands refer to a temporary copy removed after measurement",
+        "site": "site initialization disabled explicitly with -S",
+        "protocol": "UTF-8 JSON strings on stdin, three-field JSON objects captured from stdout; no prediction file",
+        "process_exit": "separately recorded; every child must also exit successfully within the timeout"
+      },
+      "phases": {
+        "cold_process_request": {
+          "count": 5000,
+          "mean_ns": 8723803.5642,
+          "mean_ms": 8.7238035642,
+          "min_ns": 7454195.0,
+          "min_ms": 7.454195,
+          "p50_ns": 8263760.0,
+          "p50_ms": 8.26376,
+          "p95_ns": 10959968.650000002,
+          "p95_ms": 10.959968650000002,
+          "p99_ns": 12228645.670000004,
+          "p99_ms": 12.228645670000004,
+          "max_ns": 30239076.0,
+          "max_ms": 30.239076
+        },
+        "cold_process_exit": {
+          "count": 5000,
+          "mean_ns": 10810397.8616,
+          "mean_ms": 10.8103978616,
+          "min_ns": 9212052.0,
+          "min_ms": 9.212052,
+          "p50_ns": 10215804.5,
+          "p50_ms": 10.2158045,
+          "p95_ns": 13885125.0,
+          "p95_ms": 13.885125,
+          "p99_ns": 15484733.960000003,
+          "p99_ms": 15.484733960000003,
+          "max_ns": 38034166.0,
+          "max_ms": 38.034166
+        }
+      },
+      "thresholds": {
+        "scope": "cold_process_request",
+        "mean_request_ms_target": 10,
+        "max_request_ms_target": 100,
+        "mean_target_met": true,
+        "max_target_met": true
+      },
+      "coverage": {
+        "selection": "all",
+        "unique_cases": 1000,
+        "total_cases": 1000,
+        "full_dataset": true,
+        "rounds": 5,
+        "warmup": 0,
+        "matches_expected": 4970
+      },
+      "bundle_files": {
+        "matcher_runtime.py": {
+          "bytes": 66774,
+          "sha256": "4c83d4ab7fa3af99d9240c7bbc647b285a4f7224e3d8665ed5624861f94969df"
+        },
+        "submission.py": {
+          "bytes": 305,
+          "sha256": "715b80f19c79a02a4018dc2a71ba7aaed5769ceccad72d2262451a4d942b96c9"
+        },
+        "dictionary.idx": {
+          "bytes": 604366,
+          "sha256": "f949070e73a9c84058c726026f5d5fd7c3070f714ecec7067a7ad750c98dd2f8"
+        },
+        "__pycache__/matcher_runtime.cpython-314.pyc": {
+          "bytes": 110602,
+          "sha256": "4f1ceeaaee0c73d33bdbe7e4af50b44ba1462a31068ac6b0b75423977fefc621"
+        }
+      }
+    },
+    "hierarchy": {
+      "report_path": "reports/hierarchy-investigation/hierarchy-timing.json",
+      "report_hash": "bbc79f4ce52ceeda74ecf8e5f7d00369b105364a44db72198c7c0635525d6d55",
+      "measured_at_utc": "2026-11-05T05:26:13Z",
+      "platform": {
+        "python_version": "3.14.4 (main, Aug 20 2026, 10:41:58) [GCC 15.2.0]",
+        "python_implementation": "CPython",
+        "platform": "Linux-7.0.0-42-generic-x86_64-with-glibc2.43",
+        "system": "Linux",
+        "release": "7.0.0-42-generic",
+        "machine": "x86_64",
+        "processor": "",
+        "cpu_count": 12
+      },
+      "measurement_contract": {
+        "primary": "cold_process_request",
+        "timer": "parent perf_counter_ns immediately before Popen until complete stdout JSONL result is received",
+        "command": [
+          "/usr/bin/python3.14",
+          "-S",
+          "/home/orange/Code/address-segmentation/reports/hierarchy-investigation/hierarchy-bundle/submission.py"
+        ],
+        "includes": [
+          "process/interpreter startup",
+          "all runtime imports",
+          "prepared file open/mapping and header checks",
+          "on-demand dictionary/postings reads",
+          "stdin transfer/JSON decoding",
+          "matching",
+          "JSON encoding and stdout flush/pipe capture"
+        ],
+        "excludes": [
+          "offline dictionary compilation",
+          "harness input setup and fixture parsing",
+          "harness bundle hash checks",
+          "output validation/scoring",
+          "report file writes",
+          "process teardown after output"
+        ],
+        "cold_definition": "fresh interpreter and matcher for every address; zero cold warmups; no result cache or persistent worker",
+        "filesystem_cache": "OS file/page caches are uncontrolled; harness preflight reads bundle files",
+        "bytecode": "checked-hash runtime bytecode is shipped in the prepared bundle; all source is also included",
+        "source_only_command_note": "source-only commands refer to a temporary copy removed after measurement",
+        "site": "site initialization disabled explicitly with -S",
+        "protocol": "UTF-8 JSON strings on stdin, three-field JSON objects captured from stdout; no prediction file",
+        "process_exit": "separately recorded; every child must also exit successfully within the timeout"
+      },
+      "phases": {
+        "cold_process_request": {
+          "count": 5000,
+          "mean_ns": 8693364.9778,
+          "mean_ms": 8.6933649778,
+          "min_ns": 7429606.0,
+          "min_ms": 7.429606,
+          "p50_ns": 8272062.0,
+          "p50_ms": 8.272062,
+          "p95_ns": 11016123.850000001,
+          "p95_ms": 11.016123850000001,
+          "p99_ns": 12384763.5,
+          "p99_ms": 12.3847635,
+          "max_ns": 17365361.0,
+          "max_ms": 17.365361
+        },
+        "cold_process_exit": {
+          "count": 5000,
+          "mean_ns": 10767966.0834,
+          "mean_ms": 10.7679660834,
+          "min_ns": 9214865.0,
+          "min_ms": 9.214865,
+          "p50_ns": 10226307.0,
+          "p50_ms": 10.226307,
+          "p95_ns": 13803749.700000001,
+          "p95_ms": 13.803749700000001,
+          "p99_ns": 15695697.300000004,
+          "p99_ms": 15.695697300000004,
+          "max_ns": 32954107.0,
+          "max_ms": 32.954107
+        }
+      },
+      "thresholds": {
+        "scope": "cold_process_request",
+        "mean_request_ms_target": 10,
+        "max_request_ms_target": 100,
+        "mean_target_met": true,
+        "max_target_met": true
+      },
+      "coverage": {
+        "selection": "all",
+        "unique_cases": 1000,
+        "total_cases": 1000,
+        "full_dataset": true,
+        "rounds": 5,
+        "warmup": 0,
+        "matches_expected": 5000
+      },
+      "bundle_files": {
+        "matcher_runtime.py": {
+          "bytes": 67424,
+          "sha256": "c4f8b745f5bfd1530323cac2cb823a2d42590f743069ac66499f10a7044576f6"
+        },
+        "submission.py": {
+          "bytes": 305,
+          "sha256": "715b80f19c79a02a4018dc2a71ba7aaed5769ceccad72d2262451a4d942b96c9"
+        },
+        "dictionary.idx": {
+          "bytes": 758418,
+          "sha256": "97afa274b517bd4899358cf3757898643dfa8d7a0a7e571ec22c81fafa8e25a2"
+        },
+        "__pycache__/matcher_runtime.cpython-314.pyc": {
+          "bytes": 111444,
+          "sha256": "abeac38fbe050e18713b04a0f257d8503cbbfcd78cf25d4632a02e076a33b4e6"
+        }
+      }
+    }
+  },
+  "reproduction": "python3.14 -m tools.investigate_hierarchy --output-dir reports/hierarchy-investigation --benchmark-rounds 5",
+  "scope_limits": [
+    "inspected development cases, not a held-out accuracy estimate",
+    "hierarchy-scale timing beyond these canonical inventories remains a production acceptance gate",
+    "-S and packaged CPython 3.14 checked-hash bytecode required for the passing measured launch configuration",
+    "launch-to-exit mean exceeds 10 ms",
+    "sequential variant measurements do not establish a statistically significant speed difference"
+  ]
+}
