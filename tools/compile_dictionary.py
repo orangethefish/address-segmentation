@@ -260,7 +260,7 @@ if __name__ == "__main__":
     directory = __file__.replace(chr(92), "/").rpartition("/")[0] or "."
     sys.exit(run_prepared_cli(default_path=directory + "/dictionary.idx"))
 ''', encoding="utf-8")
-        metadata = write_index(stage / "dictionary.idx", {
+        index_metadata = {
             "runtime_id": runtime_id,
             "python_minor": tuple(sys.version_info[:2]),
             "dictionary_hash": canonical_json_hash(data),
@@ -270,7 +270,10 @@ if __name__ == "__main__":
             "token_lengths": sorted(matcher.catalog.token_lengths),
             "entry_count": len(matcher.catalog.entries),
             "typing_max_length": matcher._typing_index.max_length if matcher._typing_index else 0,
-        }, dictionary_records(matcher))
+        }
+        if config.backend == "indexed":
+            index_metadata["fuzzy_max_length"] = matcher._approx_index.max_length if matcher._approx_index else 0
+        metadata = write_index(stage / "dictionary.idx", index_metadata, dictionary_records(matcher))
         for filename in ("matcher_runtime.py", "submission.py", "dictionary.idx"):
             (stage / filename).replace(destination / filename)
     bytecode_path = Path(py_compile.compile(

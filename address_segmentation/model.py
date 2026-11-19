@@ -56,8 +56,8 @@ class MatcherConfig:
         max_fuzzy_spans: Maximum component spans evaluated for approximate search (default 128).
         max_candidates_per_span: Maximum shortlisted candidates per span (default 64).
         max_verifications: Maximum target verification checks (default 2048).
-            trie_dp counts terminal checks, including rejected marker types;
-            its DP traversal is bounded separately by max_trie_nodes.
+            trie_dp counts terminal checks and closer-split distance checks.
+            Its DP traversal is bounded separately by max_trie_nodes.
         max_postings: Maximum trigram postings entries visited (default 12000).
         max_edits: Maximum allowable edit distance (default 2).
         backend: "indexed" for the baseline, or the experimental "trie_dp" backend.
@@ -145,6 +145,7 @@ class Candidate:
         score: Additive evidence score computed from match quality and context.
         context_marker: Whether an explicit preceding field marker supported this match.
         reasons: Diagnostic tags and features explaining candidate scoring.
+        body_start: Optional source offset of the body after a joined marker.
     """
 
     entry: "CatalogEntry"
@@ -155,6 +156,7 @@ class Candidate:
     score: float = 0.0
     context_marker: bool = False
     reasons: tuple[str, ...] = ()
+    body_start: int | None = None
 
     def __post_init__(self) -> None:
         if self.path not in ("exact", "folded", "fuzzy", "compact", "telex", "vni"):

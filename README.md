@@ -1,8 +1,36 @@
-# Vietnamese Address Segmentation (Stages A–E)
+# Vietnamese Address Segmentation
 
 This package implements **stages A–E** of the address segmentation architecture specified in [docs/architecture.md](docs/architecture.md) and [docs/address-segmentation-plan.md](docs/address-segmentation-plan.md).
 
-It provides a dictionary-constrained matcher with bounded typo, Telex/VNI, and whitespace recovery implemented strictly in the Python standard library for CPython 3.14.
+It provides a dictionary-constrained matcher with bounded typo, Telex/VNI, and whitespace recovery in the Python standard library. The teacher v2 submission has been tested on CPython 3.12 and 3.14.
+
+## Teacher v2 submission
+
+The grader builds one `Solution(list_province, list_ward, list_street)` and times each `process(s)` call. Both backends index those three flat lists during construction and match fields using text evidence. Each request returns a fresh dictionary with `province`, `ward`, and `street`. The grader scores exact canonical values one field at a time. Unsupported or ambiguous fields return `None` under the project's conservative policy.
+
+Build both files from the maintained matcher. Replace `Group_01` with your assigned group name.
+
+```sh
+python3.14 -m tools.build_submission --group Group_01
+python3.14 -m tools.evaluate_teacher_v2 --output reports/teacher-v2/package.json
+python3.14 -m tools.benchmark_solution --solution Group_01/Group_01.py --output reports/teacher-v2/public-314.json
+```
+
+The notebook preserves the teacher's grading cells and clears saved outputs. The Python file is importable with the standard library alone. Running it as a script also runs the grader, whose public downloads require `gdown` and whose workbook uses pandas and XlsxWriter.
+
+See the [v2 implementation report](docs/teacher-v2-results.md) for public accuracy, stress tests, reproduction commands, and the remaining Colab check.
+
+Build and score the trie + DP variant in a separate directory for comparison.
+
+```sh
+python3.14 -m tools.build_submission --group Group_01 --backend trie_dp --output-dir reports/teacher-v2-trie-dp/trie_dp
+python3.14 -m tools.evaluate_teacher_v2 --backend trie_dp --output reports/teacher-v2-trie-dp/package-trie_dp.json
+python3.14 -m tools.benchmark_solution --solution reports/teacher-v2-trie-dp/trie_dp/Group_01/Group_01.py --output reports/teacher-v2-trie-dp/public-trie_dp-314.json
+```
+
+The checked-in submission uses the default `indexed` backend. See the
+[v2 backend comparison](docs/teacher-v2-results.md#trie-and-dp-comparison) for
+accuracy, request latency, and index construction costs.
 
 ---
 
@@ -28,9 +56,9 @@ result = matcher.identify("56/33 Nam Kỳ Khởi Nghĩa, Phường Bến Thành,
 # }
 ```
 
-### CLI Adapter
+### Legacy fixed-dictionary CLI adapter
 
-For a dictionary fixed before submission, use the new
+For historical fresh-process runs with a fixed dictionary, use the
 [offline dictionary compiler and standalone runtime](docs/prepared-dictionary.md).
 It prepares dictionary lookups before submission and queries them on demand in
 each fresh process, retaining all matching features:
@@ -43,9 +71,9 @@ python3.14 -S reports/prepared-user-1/submission.py
 The [prepared-dictionary review](docs/prepared-dictionary.md) records complete
 test-case-1 cold timings, default versus `-S` startup and source-only comparisons,
 packaging requirements and reproduction commands. The `reports/user-1` dictionary
-comes from the dataset preparation command below. Keep the complete generated
-bundle, including its source and prepared bytecode. This path targets CPython 3.14;
-the instructor's launch and packaging contract still determines applicability.
+comes from the legacy dataset preparation command below. Keep the complete
+generated bundle, including its source and prepared bytecode. This path targets
+CPython 3.14 and uses a launch-to-result timing boundary.
 
 The development CLI loads a JSON dictionary once, reads one JSON string per line from `stdin`, and writes one UTF-8 JSON object per line to `stdout`.
 
@@ -187,12 +215,12 @@ See [stage E results and limits](docs/stage-e.md) for positive/negative controls
 python3.14 -m tools.ablate --dictionary tests/fixtures/typing-dictionary.json --cases tests/fixtures/typing-cases.jsonl --output-dir reports/stage-e --timing
 ```
 
-There is no geographic inference. The development JSONL protocol is provisional until the instructor supplies the grader contract.
+The JSONL protocol supports local development and historical fresh-process benchmarks.
 
-## Experimental trie and DP backend
+## Trie and DP backend
 
-The default `indexed` backend remains available for comparison. Select the
-prototype explicitly through the same API:
+Both backends support the teacher's v2 contract, including joined
+administrative markers. Select `trie_dp` explicitly through the same API:
 
 ```python
 from address_segmentation import AddressMatcher
@@ -221,7 +249,7 @@ O(C log C), followed by O(8*C) selection work after completeness filtering.
 
 `max_trie_nodes` bounds inspected fuzzy-trie edges per request (default 12,000),
 including length and field rejections. `max_verifications` bounds terminal
-checks, including rejected marker types. Recovery retains the existing span,
+checks and closer-split distance checks. Recovery retains the existing span,
 per-span candidate and shared typing budgets. Exhaustion rejects affected
 recovered fields and unresolved exact prefixes, preserving independent exact
 evidence. Diagnostics include the trie edge counter, including zero on exact
@@ -243,7 +271,7 @@ bundle retains the same CPython, bytecode and launch-flag requirements described
 above. This is an experimental implementation; the existing bounded span
 extraction and selected Telex/VNI rules still limit supported noise patterns.
 
-### Prototype measurements
+### Historical prototype measurements
 
 All 175 tests, compilation and whitespace checks pass on CPython 3.14.4. The
 prototype matches the baseline on all 65 control cases, 1,000 reviewed user
@@ -265,9 +293,8 @@ Every sampled prediction and every batch prediction matches its expectation.
 The prototype passes the sampled launch-to-stdout limits with `-S`; normal
 startup fails the 10 ms mean. Even with `-S`, mean launch-to-exit times are
 10.632 ms (user) and 10.952 ms (scale), so an exit-based timer fails the mean.
-The sampled maximum does not certify unmeasured inputs. Source-only prototype
-latency was not measured. The official launch and packaging contract still
-determines which measurement applies.
+The sampled maximum covers this launch-to-stdout workload. The teacher v2
+notebook measures `Solution.process()` after construction.
 
 Warm prototype matching averages 0.149 ms for user cases and 0.375 ms for scale
 cases, excluding initialization. Construction is slower and the node-based

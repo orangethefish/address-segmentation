@@ -5,7 +5,7 @@ shared with the indexed backend. No trigram postings are built by this backend.
 """
 
 from address_segmentation.approximate import (
-    TargetForm, extract_spans, fuzzy_edit_limit, make_fuzzy_candidate,
+    CandidateSpan, TargetForm, fuzzy_edit_limit, verify_fuzzy_candidate,
 )
 from address_segmentation.catalog import Catalog, build_entries
 from address_segmentation.model import Candidate, MatcherConfig
@@ -154,7 +154,8 @@ def _band_value(row, column, infinity):
 
 def search_trie(index, text: str, limit: int, max_nodes: int = 12000,
                 max_matches: int | None = None, field_hint: str | None = None,
-                marker_word: str | None = None, max_terminals: int | None = None):
+                marker_word: str | None = None, max_terminals: int | None = None,
+                *, body_only: bool = False):
     """Return all OSA neighbors within limits, with explicit truncation status.
 
     Each DP row stores at most 2*limit+1 cells. Two ancestor rows and the previous
@@ -209,6 +210,7 @@ def search_trie(index, text: str, limit: int, max_nodes: int = 12000,
                         return matches, visited, checked, "verifications"
                     checked += 1
                     if ((field_hint is not None and form.entry.field != field_hint)
+                            or (body_only and form.entry.has_prefix and form.form_type != "body")
                             or not accepts_marker(form.entry, marker_word)):
                         continue
                     if max_matches is not None and len(matches) >= max_matches:
@@ -219,10 +221,12 @@ def search_trie(index, text: str, limit: int, max_nodes: int = 12000,
     return matches, visited, checked, None
 
 
-def recover_trie_candidates(address: str, tokens, catalog, config: MatcherConfig, index, exact_candidates):
+def recover_trie_candidates(
+    span_data: tuple[list[CandidateSpan], bool, list[Candidate]],
+    config: MatcherConfig, index,
+):
     """Use shared spans and acceptance rules with deterministic trie work budgets."""
-    spans, spans_exhausted, suspicious = extract_spans(
-        address, tokens, exact_candidates, config.max_fuzzy_spans)
+    spans, spans_exhausted, suspicious = span_data
     limits = dict(fuzzy_spans=config.max_fuzzy_spans, postings=config.max_postings,
                   verifications=config.max_verifications,
                   candidates_per_span=config.max_candidates_per_span,
@@ -241,7 +245,8 @@ def recover_trie_candidates(address: str, tokens, catalog, config: MatcherConfig
         limit = min(config.max_edits, 1 if len(text) < 9 else 2)
         matches, visited, checked, exhausted = search_trie(
             index, text, limit, limits["trie_nodes"] - counts["trie_nodes"],
-            limits["candidates_per_span"], span.field_hint, span.marker_word, remaining)
+            limits["candidates_per_span"], span.field_hint, span.marker_word, remaining,
+            body_only=span.joined)
         counts["trie_nodes"] += visited
         counts["verifications"] += checked
         counts["candidates_per_span"] = max(counts["candidates_per_span"], len(matches))
@@ -250,7 +255,13 @@ def recover_trie_candidates(address: str, tokens, catalog, config: MatcherConfig
                                        context_marker=span.has_marker,
                                        reasons=("retrieved_fuzzy", "trie_osa")))
             if distance <= fuzzy_edit_limit(len(text), form.length, config):
-                candidate = make_fuzzy_candidate(span, form, distance)
+                candidate, checks, verification_exhausted = verify_fuzzy_candidate(
+                    span, form, distance, limits["verifications"] - counts["verifications"],
+                )
+                counts["verifications"] += checks
+                if verification_exhausted:
+                    flags["verifications"] = True
+                    fields.add(form.entry.field)
                 if candidate is not None:
                     verified.append(candidate)
         if exhausted:
