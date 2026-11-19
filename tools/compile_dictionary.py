@@ -234,6 +234,7 @@ if __name__ == "__main__":
             "max_tokens": matcher.catalog.max_tokens,
             "token_lengths": sorted(matcher.catalog.token_lengths),
             "entry_count": len(matcher.catalog.entries),
+            "fuzzy_max_length": matcher._approx_index.max_length if matcher._approx_index else 0,
             "typing_max_length": matcher._typing_index.max_length if matcher._typing_index else 0,
         }, dictionary_records(matcher))
         for filename in ("matcher_runtime.py", "submission.py", "dictionary.idx"):

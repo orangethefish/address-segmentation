@@ -1,5 +1,11 @@
 # Vietnamese Address Identification - Consolidated Technical Plan
 
+The [teacher v2 implementation plan](teacher-v2-implementation-plan.md) records
+the official constructor, timer and per-field scoring. The slide-era contract
+below governs historical experiments. The [v2 results](teacher-v2-results.md)
+report the current submission measurements against the retained 10 ms mean and
+100 ms maximum.
+
 **Status:** Authoritative design specification; stages A–E are implemented against controlled fixtures. See [architecture](architecture.md) and [stage E evidence](stage-e.md) for implementation status.
 **Working language/runtime:** Pure Python, provisionally CPython 3.14.  
 **Primary reference:** Instructor slide deck, *Address Segmentation* (12 pages), plus decisions and examples from our discussion.  
@@ -96,9 +102,13 @@ Therefore, **normalization and typo repair are lookup aids, never replacement ou
 
 ### 4.1 Flat dictionaries as the default
 
+**[USER, 2026-11-19]** Implement teacher v2 on `main` using the three supplied
+lists as flat label inventories. The matcher chooses among competing labels
+using text evidence and source spans.
+
 **[DESIGN]** Assume three separate, independently searchable sets of street, ward, and province labels. Page 6 lists these separately. The directory screenshot on p. 9 appears to show `all_raw`, `list_district`, `list_province`, `list_ward`, and `README` - notably **not a clearly named `list_street` file**. It supports separate-file packaging but does **not** prove the delivered schema or geographic relationships.
 
-Without verified links between entries, do not assume a street belongs to exactly one ward or that ward and province membership can be inferred. Geographic links may be added as optional evidence only if supplied and permitted. A street name may occur in multiple wards; preserve such relationships if the eventual schema includes them.
+Street and ward labels can occur in multiple geographic contexts. Treat each label as a vocabulary entry for its own field.
 
 ### 4.2 Canonical entries and collision-safe indexes
 

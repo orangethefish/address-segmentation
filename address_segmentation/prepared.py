@@ -198,6 +198,7 @@ class PreparedApproximateIndex:
         self.gram_frequency = PreparedMap(store, "frequency")
         self.postings = PreparedMap(store, "postings", self._forms)
         self.length_buckets = PreparedMap(store, "lengths", self._forms)
+        self.max_length = store.metadata.get("fuzzy_max_length", float("inf"))
 
     def _forms(self, ids):
         return (self.store.form(i) for i in ids)
