@@ -239,6 +239,28 @@ def extract_spans(
     return spans, exhausted, suspicious
 
 
+def fuzzy_edit_limit(span_length: int, target_length: int, config: MatcherConfig) -> int:
+    """Keep acceptance thresholds independent of the retrieval data structure."""
+    return 1 if target_length < 9 or span_length < 9 else min(2, config.max_edits)
+
+
+def make_fuzzy_candidate(span: CandidateSpan, form: TargetForm, distance: int) -> Candidate | None:
+    """Score a verified edit explanation using the shared completeness rules."""
+    if distance <= 0 or max(form.length, len(span.folded_text)) - distance < 4:
+        return None
+    has_marker = span.has_marker or (form.form_type == "full" and form.entry.has_prefix)
+    if form.form_type == "full":
+        base_score = (70.0 if has_marker else 50.0) + (5.0 if form.entry.has_prefix else 0.0)
+    else:
+        base_score = 65.0 if has_marker else 50.0
+    reasons = ("fuzzy_verified", f"dist_{distance}") + (("marker",) if has_marker else ())
+    if span.is_extension_of is not None:
+        reasons += ("extension_recovery",)
+    return Candidate(form.entry, span.start, span.end, "fuzzy", cost=distance,
+                     score=base_score - distance * 10.0, context_marker=has_marker,
+                     reasons=reasons)
+
+
 def recover_fuzzy_candidates(
     address: str,
     tokens: list[Token],
@@ -375,11 +397,7 @@ def recover_fuzzy_candidates(
 
             target_len = form.length
             # Acceptance rules: max1 edit for <9 letters, max2 for longer
-            allowed_edits = (
-                1
-                if target_len < 9 or span_len < 9
-                else min(2, config.max_edits)
-            )
+            allowed_edits = fuzzy_edit_limit(span_len, target_len, config)
 
             cache_key = (span_folded, form.folded_text, allowed_edits)
             if cache_key in verify_cache:
@@ -392,36 +410,10 @@ def recover_fuzzy_candidates(
                 verify_cache[cache_key] = dist
 
             # Acceptance checks
-            if 0 < dist <= allowed_edits and (max(target_len, span_len) - dist >= 4):
-                has_marker = span.has_marker or (
-                    form.form_type == "full" and form.entry.has_prefix
-                )
-                if form.form_type == "full":
-                    base_score = (
-                        70.0 if has_marker else 50.0
-                    ) + (5.0 if form.entry.has_prefix else 0.0)
-                else:
-                    base_score = 65.0 if has_marker else 50.0
-
-                score = base_score - dist * 10.0
-                reasons = (
-                    "fuzzy_verified",
-                    f"dist_{dist}",
-                ) + (("marker",) if has_marker else ())
-                if span.is_extension_of is not None:
-                    reasons = reasons + ("extension_recovery",)
-
-                v_cand = Candidate(
-                    entry=form.entry,
-                    start=span.start,
-                    end=span.end,
-                    path="fuzzy",
-                    cost=dist,
-                    score=score,
-                    context_marker=has_marker,
-                    reasons=reasons,
-                )
-                verified_fuzzy.append(v_cand)
+            if dist <= allowed_edits:
+                candidate = make_fuzzy_candidate(span, form, dist)
+                if candidate is not None:
+                    verified_fuzzy.append(candidate)
 
         if verifications_exhausted:
             break

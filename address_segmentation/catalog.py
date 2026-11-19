@@ -155,6 +155,24 @@ def validate_field_sequence(labels: Any, field_name: str) -> list[str]:
     return [label for label, _, _ in _validated_field_forms(labels, field_name, {})]
 
 
+def build_entries(streets=(), wards=(), provinces=()) -> tuple[CatalogEntry, ...]:
+    """Share canonical validation and deterministic IDs between index backends."""
+    token_cache: dict[str, tuple[str, str]] = {}
+    unique_by_field = {}
+    for field, labels in (("street", streets), ("ward", wards), ("province", provinces)):
+        unique_by_field[field] = {
+            label: (nfc, folded)
+            for label, nfc, folded in _validated_field_forms(labels, field + "s", token_cache)
+        }
+    entries = []
+    for field in LEXICOGRAPHICAL_FIELDS:
+        for label, (nfc, folded) in sorted(unique_by_field[field].items()):
+            has_prefix, prefix, body_nfc, body_folded = extract_prefix_body(field, nfc, folded)
+            entries.append(CatalogEntry(len(entries), field, label, nfc, folded,
+                                        prefix, body_nfc, body_folded, has_prefix))
+    return tuple(entries)
+
+
 class Catalog:
     """Immutable catalog storing entries and collision-safe token lookup indexes."""
 
@@ -164,40 +182,7 @@ class Catalog:
         wards: Sequence[str] | Set[str] = (),
         provinces: Sequence[str] | Set[str] = (),
     ) -> None:
-        # Normalize each label once, sharing repeated word forms only during
-        # this build. Keep all normalized collisions and original canonical text.
-        token_cache: dict[str, tuple[str, str]] = {}
-        unique_by_field = {}
-        for field, labels in (("street", streets), ("ward", wards), ("province", provinces)):
-            unique_by_field[field] = {
-                label: (nfc, folded)
-                for label, nfc, folded in _validated_field_forms(labels, field + "s", token_cache)
-            }
-
-        # Build entries sorted lexicographically by (field, canonical_label)
-        # to guarantee stable documented IDs ('province' < 'street' < 'ward')
-        entries: list[CatalogEntry] = []
-        entry_id = 0
-        for field in LEXICOGRAPHICAL_FIELDS:
-            for label, (nfc_tokens, folded_tokens) in sorted(unique_by_field[field].items()):
-                has_prefix, prefix_tokens, body_nfc, body_folded = extract_prefix_body(
-                    field, nfc_tokens, folded_tokens
-                )
-                entry = CatalogEntry(
-                    entry_id=entry_id,
-                    field=field,
-                    canonical_label=label,
-                    nfc_tokens=nfc_tokens,
-                    folded_tokens=folded_tokens,
-                    prefix_tokens=prefix_tokens,
-                    body_nfc_tokens=body_nfc,
-                    body_folded_tokens=body_folded,
-                    has_prefix=has_prefix,
-                )
-                entries.append(entry)
-                entry_id += 1
-
-        self._entries: tuple[CatalogEntry, ...] = tuple(entries)
+        self._entries = build_entries(streets, wards, provinces)
 
         exact_map: dict[tuple[str, ...], list[CatalogEntry]] = {}
         folded_map: dict[tuple[str, ...], list[CatalogEntry]] = {}

@@ -218,6 +218,68 @@ class PreparedTypingIndex:
         return ((self.store.entry(i), tuple(words)) for i, words in records)
 
 
+class PreparedTrieMap:
+    """Load only trie nodes reached by a lookup, retaining terminal collisions."""
+
+    def __init__(self, store, namespace, decode=None):
+        self.store, self.namespace, self.decode = store, namespace, decode
+        self._nodes = {}
+
+    def node(self, node_id):
+        if node_id not in self._nodes:
+            values = self.store.get(self.namespace, node_id)
+            if values is None:
+                raise ValueError("Missing prepared trie node")
+            self._nodes[node_id] = (dict(values[0]), tuple(values[1]), *values[2:])
+        return self._nodes[node_id]
+
+    def get(self, key, default=None):
+        node_id = 0
+        for part in key:
+            node_id = self.node(node_id)[0].get(part)
+            if node_id is None:
+                return default
+        records = self.node(node_id)[1]
+        if not records:
+            return default
+        return self.decode(records) if self.decode else records
+
+
+class PreparedTrieCatalog(PreparedCatalog):
+    def __init__(self, store):
+        super().__init__(store)
+        self._maps = {name: PreparedTrieMap(store, "trie_" + name, self._entries)
+                      for name in ("exact", "folded", "body_exact", "body_folded", "initials")}
+        self._windows = PreparedTrieMap(store, "trie_windows")
+
+    def _entries(self, ids):
+        return tuple(self.store.entry(i) for i in ids)
+
+    def _lookup(self, namespace, key):
+        return self._maps[namespace].get(key, ())
+
+    def window_lengths(self, key):
+        return self._windows.get(key, ())
+
+
+class PreparedTrieApproximateIndex:
+    def __init__(self, store):
+        self.store = store
+        self._nodes = PreparedTrieMap(store, "trie_fuzzy")
+
+    def node(self, node_id):
+        children, ids, low, high, fields = self._nodes.node(node_id)
+        return children, (self.store.form(i) for i in ids), low, high, fields
+
+
+class PreparedTrieTypingIndex(PreparedTypingIndex):
+    def __init__(self, store):
+        self.store = store
+        self.max_length = store.metadata["typing_max_length"]
+        self.words = PreparedTrieMap(store, "trie_words", self._records)
+        self.compact = PreparedTrieMap(store, "trie_compact", self._records)
+
+
 class PreparedMatcher(AddressMatcher):
     """Same matcher pipeline over an immutable offline-prepared dictionary."""
 
@@ -225,9 +287,13 @@ class PreparedMatcher(AddressMatcher):
         self._store = MappedDictionary(path)
         try:
             self._config = MatcherConfig(**self._store.metadata["config"])
-            self._catalog = PreparedCatalog(self._store)
-            self._approx_index = PreparedApproximateIndex(self._store) if self._config.enable_fuzzy else None
-            self._typing_index = (PreparedTypingIndex(self._store)
+            use_trie = self._config.backend == "trie_dp"
+            catalog_type = PreparedTrieCatalog if use_trie else PreparedCatalog
+            approximate_type = PreparedTrieApproximateIndex if use_trie else PreparedApproximateIndex
+            typing_type = PreparedTrieTypingIndex if use_trie else PreparedTypingIndex
+            self._catalog = catalog_type(self._store)
+            self._approx_index = approximate_type(self._store) if self._config.enable_fuzzy else None
+            self._typing_index = (typing_type(self._store)
                                   if self._config.enable_typing or self._config.enable_compact else None)
         except BaseException:
             self.close()

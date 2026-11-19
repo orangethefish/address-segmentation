@@ -27,7 +27,7 @@ from tools.datasets import canonical_json_hash, get_source_hash, sha256_file
 
 PACKAGE = Path(__file__).resolve().parent.parent / "address_segmentation"
 MODULES = ("normalize", "model", "catalog", "retrieve", "verify", "select",
-           "approximate", "typing", "matcher", "prepared")
+           "approximate", "typing", "trie", "matcher", "prepared")
 
 
 class BundleSource(ast.NodeTransformer):
@@ -122,6 +122,10 @@ def bundle_source():
         if module in ("approximate", "typing"):
             tree.body = [node for node in tree.body
                          if not (isinstance(node, ast.ClassDef) and node.name in ("ApproximateIndex", "TypingIndex"))]
+        if module == "trie":
+            # Constructors run offline. Keep only traversal/recovery functions
+            # and constants; the prepared runtime provides lazy node access.
+            tree.body = [node for node in tree.body if not isinstance(node, ast.ClassDef)]
         if module == "matcher":
             for node in tree.body:
                 if isinstance(node, ast.ClassDef) and node.name == "AddressMatcher":
@@ -143,12 +147,43 @@ def replace(instance, **changes):
     return source, runtime_id
 
 
+def trie_dictionary_records(matcher):
+    """Persist tries as individual queryable nodes, without eager reconstruction."""
+    catalog = matcher.catalog
+    for namespace, index in (("exact", catalog._exact_index), ("folded", catalog._folded_index),
+                             ("body_exact", catalog._body_exact_index),
+                             ("body_folded", catalog._body_folded_index),
+                             ("initials", catalog._province_initials),
+                             ("windows", catalog._window_lengths)):
+        for node_id, (children, values) in enumerate(zip(index._children, index._values)):
+            records = values if namespace == "windows" else [entry.entry_id for entry in values]
+            yield "trie_" + namespace, node_id, [list(children.items()), records]
+    approximate = matcher._approx_index
+    if approximate is not None:
+        for form in approximate._forms:
+            yield "form", form.form_id, [form.form_id, form.entry.entry_id, form.form_type,
+                                         form.folded_text, form.length, ()]
+        for node_id, (children, values) in enumerate(zip(approximate._trie._children,
+                                                        approximate._trie._values)):
+            yield "trie_fuzzy", node_id, [list(children.items()), [form.form_id for form in values],
+                                          *approximate._bounds[node_id]]
+    typing = matcher._typing_index
+    if typing is not None:
+        for namespace, index in (("compact", typing.compact), ("words", typing.words)):
+            for node_id, (children, values) in enumerate(zip(index._children, index._values)):
+                yield "trie_" + namespace, node_id, [list(children.items()),
+                                                    [(entry.entry_id, words) for entry, words in values]]
+
+
 def dictionary_records(matcher):
     catalog = matcher.catalog
     for entry in catalog.entries:
         yield "entry", entry.entry_id, [entry.entry_id, entry.field, entry.canonical_label,
             entry.nfc_tokens, entry.folded_tokens, entry.prefix_tokens,
             entry.body_nfc_tokens, entry.body_folded_tokens, entry.has_prefix]
+    if matcher.config.backend == "trie_dp":
+        yield from trie_dictionary_records(matcher)
+        return
     for namespace, values in (("exact", catalog._exact_index), ("folded", catalog._folded_index),
                               ("body_exact", catalog._body_exact_index),
                               ("body_folded", catalog._body_folded_index),

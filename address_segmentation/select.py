@@ -125,10 +125,6 @@ def select_candidates(
         else:
             retained_by_field[f] = sorted_f
 
-    retained_candidates: list[Candidate] = []
-    for f in FIELDS:
-        retained_candidates.extend(retained_by_field[f])
-
     # Step 3: Enumerate compatible triples bounded by (K+1)^3
     choices: dict[str, list[Candidate | None]] = {
         f: list(retained_by_field[f]) + [None] for f in FIELDS
@@ -165,7 +161,11 @@ def select_candidates(
                     if combo_score > prev_max:
                         label_max_score[f][lbl] = combo_score
 
-    # Step 4: Evaluate per-field ambiguity and acceptance
+    return resolve_selection(retained_by_field, label_max_score, best_score, config, pruned_fields)
+
+
+def resolve_selection(retained_by_field, label_max_score, best_score, config, pruned_fields):
+    """Apply the same label/null margins to either joint-selection algorithm."""
     threshold = best_score - config.ambiguity_margin
     ambiguous_fields: list[str] = []
     rejection_reasons: dict[str, str] = {}
@@ -216,4 +216,67 @@ def select_candidates(
         "rejection_reasons": rejection_reasons,
     }
 
+    retained_candidates = [candidate for field in FIELDS for candidate in retained_by_field[field]]
     return result, retained_candidates, selection_trace
+
+
+def select_candidates_dp(
+    verified_candidates: list[Candidate], config: MatcherConfig,
+) -> tuple[dict[str, str | None], list[Candidate], dict[str, Any]]:
+    """Select non-overlapping intervals with eight field-mask states per position.
+
+    Forward/backward maximum scores give each label's best complete explanation,
+    including the null alternative. No traceback tie-break or top-K truncation
+    is needed. Sorting/compressing endpoints costs O(C log C); DP costs O(8*C).
+    """
+    candidates = supersede_contained_prefixes(
+        [candidate for candidate in verified_candidates if candidate.score >= config.min_score])
+    by_field = {field: [] for field in FIELDS}
+    for candidate in candidates:
+        by_field[candidate.field].append(candidate)
+    for field in FIELDS:
+        by_field[field].sort(key=lambda c: (-c.score, c.cost, c.start, c.end, c.entry.entry_id))
+    bits = {field: 1 << index for index, field in enumerate(FIELDS)}
+    # Zero-length candidates cannot overlap any interval under spans_overlap.
+    # Place their DP edges at the final position, where increasing masks keep
+    # those edges acyclic. Normal retrieved source spans are always nonempty.
+    last = max((candidate.end for candidate in candidates), default=0)
+    spans = [(last, last) if c.start == c.end else c.span for c in candidates]
+    positions = sorted({0, *(offset for span in spans for offset in span)})
+    offsets = {position: index for index, position in enumerate(positions)}
+    edges = [[] for _ in positions]
+    for candidate, (start, end) in zip(candidates, spans):
+        edges[offsets[start]].append((offsets[end], bits[candidate.field], candidate))
+    negative_infinity = float("-inf")
+    forward = [[negative_infinity] * 8 for _ in positions]
+    forward[0][0] = 0.0
+    for position, outgoing in enumerate(edges):
+        for mask in range(8):
+            score = forward[position][mask]
+            if score == negative_infinity:
+                continue
+            if position + 1 < len(positions):
+                forward[position + 1][mask] = max(forward[position + 1][mask], score)
+            for end, bit, candidate in outgoing:
+                if not mask & bit:
+                    forward[end][mask | bit] = max(forward[end][mask | bit], score + candidate.score)
+    backward = [[0.0] * 8 for _ in positions]
+    for position in range(len(positions) - 1, -1, -1):
+        for mask in range(7, -1, -1):
+            score = backward[position + 1][mask] if position + 1 < len(positions) else 0.0
+            for end, bit, candidate in edges[position]:
+                if not mask & bit:
+                    score = max(score, candidate.score + backward[end][mask | bit])
+            backward[position][mask] = score
+    best_score = max(forward[-1])
+    label_max_score = {
+        field: {None: max(score for mask, score in enumerate(forward[-1]) if not mask & bits[field])}
+        for field in FIELDS
+    }
+    for position, outgoing in enumerate(edges):
+        for end, bit, candidate in outgoing:
+            score = max(forward[position][mask] + candidate.score + backward[end][mask | bit]
+                        for mask in range(8) if not mask & bit)
+            labels = label_max_score[candidate.field]
+            labels[candidate.label] = max(labels.get(candidate.label, negative_infinity), score)
+    return resolve_selection(by_field, label_max_score, best_score, config, [])

@@ -55,9 +55,14 @@ class MatcherConfig:
         enable_typing: Enable candidate-specific Telex/VNI recovery (default True).
         max_fuzzy_spans: Maximum component spans evaluated for approximate search (default 128).
         max_candidates_per_span: Maximum shortlisted candidates per span (default 64).
-        max_verifications: Maximum thresholded OSA verification calls (default 2048).
+        max_verifications: Maximum target verification checks (default 2048).
+            trie_dp counts terminal checks, including rejected marker types;
+            its DP traversal is bounded separately by max_trie_nodes.
         max_postings: Maximum trigram postings entries visited (default 12000).
         max_edits: Maximum allowable edit distance (default 2).
+        backend: "indexed" for the baseline, or the experimental "trie_dp" backend.
+        max_trie_nodes: Maximum trie edges inspected per request (default 12000).
+            Only used by trie_dp. DP selection does not use top_k.
     """
 
     top_k: int = 8
@@ -71,8 +76,14 @@ class MatcherConfig:
     max_verifications: int = 2048
     max_postings: int = 12000
     max_edits: int = 2
+    backend: str = "indexed"
+    max_trie_nodes: int = 12000
 
     def __post_init__(self) -> None:
+        if not isinstance(self.backend, str):
+            raise TypeError("backend must be a string")
+        if self.backend not in ("indexed", "trie_dp"):
+            raise ValueError("backend must be 'indexed' or 'trie_dp'")
         # Validate top_k
         if isinstance(self.top_k, bool) or not isinstance(self.top_k, int):
             raise TypeError(f"top_k must be an int, got {type(self.top_k).__name__}")
@@ -112,6 +123,7 @@ class MatcherConfig:
             "max_verifications",
             "max_postings",
             "max_edits",
+            "max_trie_nodes",
         ):
             bound_val = getattr(self, bound_name)
             if isinstance(bound_val, bool) or not isinstance(bound_val, int):

@@ -188,3 +188,97 @@ python3.14 -m tools.ablate --dictionary tests/fixtures/typing-dictionary.json --
 ```
 
 There is no geographic inference. The development JSONL protocol is provisional until the instructor supplies the grader contract.
+
+## Experimental trie and DP backend
+
+The default `indexed` backend remains available for comparison. Select the
+prototype explicitly through the same API:
+
+```python
+from address_segmentation import AddressMatcher
+from address_segmentation.model import MatcherConfig
+
+matcher = AddressMatcher(
+    streets=["An Phú", "An Phú Đông"],
+    wards=["Phường Bến Thành"],
+    provinces=["Thành phố Hồ Chí Minh"],
+    config=MatcherConfig(backend="trie_dp"),
+)
+```
+
+The prototype uses token tries for exact full/body names, character tries for
+initials and compact names, a token trie for typing hypotheses, and a character
+trie with banded OSA DP for ordinary typo search. It builds no trigram index.
+Canonical validation, Unicode/source spans, typed administrative markers,
+Telex/VNI verification, numeric restrictions, completeness scoring and
+null-on-ambiguity rules are shared with the default implementation.
+
+Joint selection uses forward/backward DP over source positions and eight masks
+of already-used fields. It computes competing label/null scores rather than
+breaking traceback ties. `top_k` is unused by this backend: repeated evidence
+can support a field beyond the old cutoff. Candidate endpoint sorting costs
+O(C log C), followed by O(8*C) selection work after completeness filtering.
+
+`max_trie_nodes` bounds inspected fuzzy-trie edges per request (default 12,000),
+including length and field rejections. `max_verifications` bounds terminal
+checks, including rejected marker types. Recovery retains the existing span,
+per-span candidate and shared typing budgets. Exhaustion rejects affected
+recovered fields and unresolved exact prefixes, preserving independent exact
+evidence. Diagnostics include the trie edge counter, including zero on exact
+and empty inputs.
+
+Run a comparison or build an offline bundle with the supplied configuration:
+
+```sh
+python3.14 -m tools.evaluate --dictionary reports/user-1/dictionary.json --cases reports/user-1/cases.jsonl --output reports/trie-dp-prototype/baseline.json
+python3.14 -m tools.evaluate --dictionary reports/user-1/dictionary.json --cases reports/user-1/cases.jsonl --config tests/fixtures/trie-dp-config.json --baseline reports/trie-dp-prototype/baseline.json --output reports/trie-dp-prototype/prototype.json
+python3.14 -m tools.compile_dictionary --dictionary reports/user-1/dictionary.json --config tests/fixtures/trie-dp-config.json --output-dir reports/trie-dp-prototype/bundle
+python3.14 -S reports/trie-dp-prototype/bundle/submission.py
+python3.14 -m tools.benchmark_prepared --bundle reports/trie-dp-prototype/bundle --dictionary reports/user-1/dictionary.json --cases reports/user-1/cases.jsonl --cold-cases 30 --processes 3 --no-site --output reports/trie-dp-prototype/timing.json
+```
+
+The existing compiler stores individual trie nodes and the runtime reads them on
+demand. There is no dictionary-wide reconstruction at launch. The prepared
+bundle retains the same CPython, bytecode and launch-flag requirements described
+above. This is an experimental implementation; the existing bounded span
+extraction and selected Telex/VNI rules still limit supported noise patterns.
+
+### Prototype measurements
+
+All 175 tests, compilation and whitespace checks pass on CPython 3.14.4. The
+prototype matches the baseline on all 65 control cases, 1,000 reviewed user
+cases and 1,000 synthetic scale cases, with zero regressions. Original user
+accuracy stays 994/1,000 because the six accent collisions remain null.
+Complete prepared/source traces agree on every user and scale case. These are
+development fixtures, not an independent accuracy holdout.
+
+The cold comparison uses **30 uniformly sampled unique cases per dataset,
+repeated in three rounds**, with shipped bytecode. Each table cell summarizes
+90 fresh processes; each run also checks three complete 1,000-case batches.
+Every sampled prediction and every batch prediction matches its expectation.
+
+| Dictionary | Indexed `-S` mean ms | Trie + DP `-S` mean ms | Trie + DP `-S` max ms | Trie + DP normal-startup mean ms |
+| --- | ---: | ---: | ---: | ---: |
+| User: 515 labels | 8.252 | 8.663 | 10.453 | 12.048 |
+| Scale: 24,174 labels | 9.621 | 8.962 | 9.508 | 12.632 |
+
+The prototype passes the sampled launch-to-stdout limits with `-S`; normal
+startup fails the 10 ms mean. Even with `-S`, mean launch-to-exit times are
+10.632 ms (user) and 10.952 ms (scale), so an exit-based timer fails the mean.
+The sampled maximum does not certify unmeasured inputs. Source-only prototype
+latency was not measured. The official launch and packaging contract still
+determines which measurement applies.
+
+Warm prototype matching averages 0.149 ms for user cases and 0.375 ms for scale
+cases, excluding initialization. Construction is slower and the node-based
+prepared artifacts are larger: about 1.22 MB versus 0.60 MB for user data, and
+40.34 MB versus 29.25 MB at scale (decimal MB). This prototype demonstrates
+feasibility and removes selection's top-K cutoff; it does not establish a
+general speed or memory improvement.
+
+[Recorded results](docs/trie-dp-results.json) retain source/dataset identities,
+configurations, accuracy comparisons, construction/warm statistics, sampled
+case IDs, launch-to-exit measurements and hashes of full reports. Raw reports,
+bundles and the measurement scripts remain under ignored
+`reports/trie-dp-prototype/`. The reproduction commands above use the same
+sample size, rounds and seed.

@@ -36,8 +36,11 @@ from address_segmentation.catalog import Catalog
 from address_segmentation.model import Candidate, MatcherConfig
 from address_segmentation.normalize import Token, tokenize
 from address_segmentation.retrieve import retrieve_candidates
-from address_segmentation.select import select_candidates
+from address_segmentation.select import select_candidates, select_candidates_dp
 from address_segmentation.typing import TypingIndex, recover_typing, contradicts_tone
+from address_segmentation.trie import (
+    TrieCatalog, TrieApproximateIndex, TrieTypingIndex, recover_trie_candidates,
+)
 
 
 class AddressMatcher:
@@ -54,11 +57,15 @@ class AddressMatcher:
         if config is not None and not isinstance(config, MatcherConfig):
             raise TypeError(f"config must be a MatcherConfig, got {type(config).__name__}")
 
-        self._catalog = Catalog(streets=streets, wards=wards, provinces=provinces)
         self._config = config if config is not None else MatcherConfig()
+        use_trie = self._config.backend == "trie_dp"
+        catalog_type = TrieCatalog if use_trie else Catalog
+        self._catalog = catalog_type(streets=streets, wards=wards, provinces=provinces)
         # Prepare per-entry full and body folded forms once per matcher
-        self._approx_index = ApproximateIndex(self._catalog) if self._config.enable_fuzzy else None
-        self._typing_index = TypingIndex(self._catalog) if (self._config.enable_typing or self._config.enable_compact) else None
+        approximate_type = TrieApproximateIndex if use_trie else ApproximateIndex
+        typing_type = TrieTypingIndex if use_trie else TypingIndex
+        self._approx_index = approximate_type(self._catalog) if self._config.enable_fuzzy else None
+        self._typing_index = typing_type(self._catalog) if (self._config.enable_typing or self._config.enable_compact) else None
 
     @property
     def catalog(self) -> Catalog:
@@ -94,6 +101,7 @@ class AddressMatcher:
         self, address: str
     ) -> tuple[dict[str, str | None], list[Candidate], list[Candidate], list[Candidate], dict[str, Any], dict[str, Any]]:
         """Internal unified execution pipeline for identify and identify_with_trace."""
+        selector = select_candidates_dp if self._config.backend == "trie_dp" else select_candidates
         tokens = tokenize(address)
         if not tokens or self._catalog.max_tokens == 0:
             empty_result: dict[str, str | None] = {
@@ -154,7 +162,7 @@ class AddressMatcher:
                 },
                 "exhausted": False,
             }
-            result, retained, selection_trace = select_candidates(
+            result, retained, selection_trace = selector(
                 all_verified, self._config
             )
             return (
@@ -179,8 +187,9 @@ class AddressMatcher:
             fuzzy_config = self._config
             if self._typing_index is not None:
                 fuzzy_config = replace(self._config, max_candidates_per_span=max(1, self._config.max_candidates_per_span // 2))
+            recovery = recover_trie_candidates if self._config.backend == "trie_dp" else recover_fuzzy_candidates
             (fuzzy_retrieved, fuzzy_verified, budget_trace, exhausted_fields,
-             suspicious_to_abstain) = recover_fuzzy_candidates(
+             suspicious_to_abstain) = recovery(
                 address, tokens, self._catalog, fuzzy_config, self._approx_index, exact_retrieved)
             budget_trace["limits"]["candidates_per_span"] = self._config.max_candidates_per_span
         if self._typing_index is not None:
@@ -241,7 +250,7 @@ class AddressMatcher:
         all_verified = list(deduped.values())
 
         # 4. Joint selection
-        result, retained, selection_trace = select_candidates(
+        result, retained, selection_trace = selector(
             all_verified, self._config
         )
 
@@ -294,6 +303,11 @@ class AddressMatcher:
             selection_trace,
             budget_trace,
         ) = self._execute_pipeline(address)
+
+        if self._config.backend == "trie_dp":
+            budget_trace["counts"].setdefault("trie_nodes", 0)
+            budget_trace["limits"]["trie_nodes"] = self._config.max_trie_nodes
+            budget_trace.setdefault("exhaustion_flags", {}).setdefault("trie_nodes", False)
 
         fresh_result = {
             "street": result["street"],
