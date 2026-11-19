@@ -23,15 +23,20 @@ Stage D adds bounded, deterministic typo recovery for address components:
    fields are preserved.
 """
 
-from collections.abc import Sequence
+from bisect import bisect_left
+import re
 from typing import Any
-from address_segmentation.retrieve import accepts_marker, find_preceding_marker
+from address_segmentation.retrieve import (
+    JOINED_MARKER_PATTERNS, MARKER_FIELD_BY_ENDING, accepts_marker, find_preceding_marker, joined_markers,
+)
 from dataclasses import dataclass
 
 from address_segmentation.catalog import Catalog, CatalogEntry
 from address_segmentation.model import Candidate, MatcherConfig
 from address_segmentation.normalize import Token
 from address_segmentation.verify import thresholded_osa_distance
+
+COMPONENT_SEPARATOR = re.compile(r"[,;\n]")
 
 
 class ExhaustedDict(dict):
@@ -59,12 +64,14 @@ class CandidateSpan:
 
     start: int
     end: int
-    raw_text: str
+    words: tuple[Token, ...]
     folded_text: str
     has_marker: bool
     field_hint: str | None
     is_extension_of: Candidate | None
     marker_word: str | None = None
+    joined: bool = False
+    literal_alternatives: tuple[str, ...] = ()
 
 
 def extract_trigrams(text: str) -> tuple[str, ...]:
@@ -137,6 +144,7 @@ class ApproximateIndex:
             k: tuple(v) for k, v in length_buckets.items()
         }
         self._short_name_forms: tuple[TargetForm, ...] = tuple(short_name_forms)
+        self.max_length = max(length_buckets, default=0)
         self._gram_frequency: dict[str, int] = {
             g: len(p) for g, p in self._postings.items()
         }
@@ -183,37 +191,58 @@ def extract_spans(
     candidates_by_start = {}
     for candidate in exact_candidates:
         candidates_by_start.setdefault(candidate.start, []).append(candidate)
+
+    def add_span(start, words, field, prefix, marker_word, *, joined=False, literal_alternatives=()):
+        nonlocal exhausted
+        end = words[-1].end
+        folded = " ".join(word.folded for word in words)
+        key = (start, end, folded, field)
+        if key in seen:
+            return
+        if len(spans) >= max_spans:
+            exhausted = True
+            return
+        seen.add(key)
+        spans.append(CandidateSpan(start, end, words, folded, field is not None, field,
+                                   prefix, marker_word, joined, literal_alternatives))
+
     # Partition tokens at separators and explicit field markers, including no-comma input.
-    groups = []
-    group = []
-    for index, token in enumerate(tokens):
-        if group and any(c in address[tokens[group[-1]].end:token.start] for c in ",;\n"):
-            groups.append(group)
-            group = []
-        group.append(index)
-    if group:
-        groups.append(group)
-    for indices in groups:
+    boundaries = [0]
+    for index in range(1, len(tokens)):
+        if COMPONENT_SEPARATOR.search(address, tokens[index - 1].end, tokens[index].start):
+            boundaries.append(index)
+    boundaries.append(len(tokens))
+    candidate_starts = sorted(candidates_by_start)
+    for group_start, group_end in zip(boundaries, boundaries[1:]):
+        if exhausted:
+            # Further recovery is already inconclusive. Only groups with an
+            # exact candidate can still affect the suspicious-prefix policy.
+            exact_pos = bisect_left(candidate_starts, tokens[group_start].start)
+            if exact_pos == len(candidate_starts) or candidate_starts[exact_pos] >= tokens[group_end - 1].end:
+                continue
         markers = {}
-        starts = {tokens[index].start: pos for pos, index in enumerate(indices)}
-        for pos, index in enumerate(indices):
-            for field in ("street", "ward", "province"):
+        for index in range(group_start + 1, group_end):
+            previous_token = tokens[index - 1]
+            field = MARKER_FIELD_BY_ENDING.get(previous_token.folded)
+            if field is not None:
                 marker = find_preceding_marker(tokens, index, field, address)
-                if marker is not None and marker[0] in starts:
-                    markers[starts[marker[0]]] = (pos, field)
-        cuts = sorted({0, len(indices), *markers})
+                if marker is not None:
+                    marker_index = index - 1 if previous_token.start == marker[0] else index - 2
+                    if marker_index >= group_start:
+                        markers[marker_index] = (index, field)
+        cuts = sorted({group_start, group_end, *markers})
         for left, right in zip(cuts, cuts[1:]):
             hint = markers.get(left)
             body = hint[0] if hint else left
             if hint is None:
-                while body < right and (tokens[indices[body]].folded.replace("/", "").isdigit()
-                        or (tokens[indices[body]].folded == "so" and body+1 < right
-                            and tokens[indices[body+1]].folded.replace("/", "").isdigit())):
+                while body < right and (tokens[body].folded.replace("/", "").isdigit()
+                        or (tokens[body].folded == "so" and body+1 < right
+                            and tokens[body+1].folded.replace("/", "").isdigit())):
                     body += 1
                 left = body
             if body >= right:
                 continue
-            start, end = tokens[indices[left]].start, tokens[indices[right-1]].end
+            start, end = tokens[left].start, tokens[right - 1].end
             while coverage_position < len(coverage) and coverage[coverage_position][0] <= start:
                 covered_end = max(covered_end, coverage[coverage_position][1])
                 coverage_position += 1
@@ -223,29 +252,48 @@ def extract_spans(
                            and (hint is None or c.field == hint[1])), None)
             if prefix is not None:
                 suspicious.append(prefix)
+            # Each joined marker offers an alternative body view within the
+            # component. Literal spans and their ordinary recovery remain viable.
+            alternatives = {}
+            for pos in range(body, right):
+                if tokens[pos].folded[:1] not in JOINED_MARKER_PATTERNS:
+                    continue
+                for marker in joined_markers(tokens, pos, address):
+                    marker_pos = pos if marker.start == tokens[pos].start else pos - 1
+                    if marker_pos >= body:
+                        alternatives.setdefault(marker_pos, []).append((pos, marker))
             for offset in dict.fromkeys((left, body)):
-                folded = " ".join(tokens[indices[pos]].folded for pos in range(offset, right))
-                key = (start, end, folded)
-                if key in seen:
-                    continue
-                seen.add(key)
-                if len(spans) >= max_spans:
-                    exhausted = True
-                    continue
-                spans.append(CandidateSpan(start, end, address[start:end], folded,
-                                           hint is not None, hint[1] if hint else None, prefix,
-                                           tokens[indices[left]].folded if hint else None))
+                words = tuple(tokens[offset:right])
+                split_forms = tuple(
+                    " ".join((marker.body.folded, *(token.folded for token in tokens[pos + 1:right])))
+                    for pos, marker in alternatives.get(offset, ())
+                )
+                add_span(start, words, hint[1] if hint else None, prefix,
+                         tokens[left].folded if hint else None,
+                         literal_alternatives=split_forms)
+            joined_cuts = [*sorted(alternatives), right]
+            for marker_pos, stop in zip(joined_cuts, joined_cuts[1:]):
+                for pos, marker in alternatives[marker_pos]:
+                    if pos >= stop:
+                        continue
+                    joined_end = tokens[stop - 1].end
+                    matching = [c for c in candidates_by_start.get(marker.start, ())
+                                if c.field == marker.field]
+                    if any(c.end >= joined_end for c in matching):
+                        continue
+                    joined_prefix = next(iter(matching), None)
+                    if joined_prefix is not None:
+                        suspicious.append(joined_prefix)
+                    words = (marker.body, *tokens[pos + 1:stop])
+                    add_span(marker.start, words, marker.field, joined_prefix, marker.word, joined=True)
     spans.sort(key=lambda span: (span.is_extension_of is None, span.start, -(span.end-span.start), span.folded_text))
     return spans, exhausted, suspicious
 
 
 def recover_fuzzy_candidates(
-    address: str,
-    tokens: list[Token],
-    catalog: Catalog,
+    span_data: tuple[list[CandidateSpan], bool, list[Candidate]],
     config: MatcherConfig,
     approx_index: ApproximateIndex,
-    exact_candidates: list[Candidate],
 ) -> tuple[
     list[Candidate],
     list[Candidate],
@@ -267,9 +315,7 @@ def recover_fuzzy_candidates(
     candidates_per_span_exhausted = False
     exhausted_fields: set[str] = set()
 
-    spans, spans_exhausted, suspicious_exact = extract_spans(
-        address, tokens, exact_candidates, config.max_fuzzy_spans
-    )
+    spans, spans_exhausted, suspicious_exact = span_data
     if spans_exhausted:
         # If spans budget is hit, mark all fields evaluated as potentially truncated
         exhausted_fields.update({"street", "ward", "province"})
@@ -284,7 +330,8 @@ def recover_fuzzy_candidates(
 
         # Acceptance conservative rules:
         # Length >= 5 for fuzzy, no digits/numeric strings
-        if span_len < 5 or any(c.isdigit() for c in span_folded):
+        if (span_len < 5 or span_len > approx_index.max_length + config.max_edits
+                or any(c.isdigit() for c in span_folded)):
             continue
 
         # Extract trigrams and sort rare-first
@@ -308,6 +355,7 @@ def recover_fuzzy_candidates(
                 # Filter by length bucket delta <= max_edits
                 if (abs(target_form.length - span_len) <= config.max_edits
                         and (span.field_hint is None or target_form.entry.field == span.field_hint)
+                        and (not span.joined or not target_form.entry.has_prefix or target_form.form_type == "body")
                         and accepts_marker(target_form.entry, span.marker_word)):
                     form_gram_hits[target_form] = form_gram_hits.get(target_form, 0) + 1
             if postings_exhausted:
@@ -323,6 +371,7 @@ def recover_fuzzy_candidates(
                 postings_count += 1
                 if (abs(tf.length - span_len) <= config.max_edits
                         and (span.field_hint is None or tf.entry.field == span.field_hint)
+                        and (not span.joined or not tf.entry.has_prefix or tf.form_type == "body")
                         and accepts_marker(tf.entry, span.marker_word)):
                     form_gram_hits.setdefault(tf, 0)
 
@@ -393,6 +442,26 @@ def recover_fuzzy_candidates(
 
             # Acceptance checks
             if 0 < dist <= allowed_edits and (max(target_len, span_len) - dist >= 4):
+                # A closer explicit split belongs to the marker-aware path.
+                # This also prevents a contradictory type from reappearing as
+                # an ordinary deletion of the marker in the literal path.
+                closer_split = False
+                for alternative in span.literal_alternatives:
+                    if abs(len(alternative) - target_len) >= dist:
+                        continue
+                    if alternative == form.folded_text:
+                        closer_split = True
+                        break
+                    if verifications_count >= config.max_verifications:
+                        verifications_exhausted = True
+                        exhausted_fields.add(form.entry.field)
+                        break
+                    verifications_count += 1
+                    if thresholded_osa_distance(alternative, form.folded_text, dist - 1) < dist:
+                        closer_split = True
+                        break
+                if closer_split or verifications_exhausted:
+                    continue
                 has_marker = span.has_marker or (
                     form.form_type == "full" and form.entry.has_prefix
                 )
@@ -420,6 +489,7 @@ def recover_fuzzy_candidates(
                     score=score,
                     context_marker=has_marker,
                     reasons=reasons,
+                    body_start=span.words[0].start if span.joined else None,
                 )
                 verified_fuzzy.append(v_cand)
 

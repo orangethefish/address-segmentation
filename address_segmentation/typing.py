@@ -5,15 +5,16 @@ must agree with the candidate; absent accents remain unspecified. Compact matchi
 removes whitespace only, never punctuation or numeric separators. These paths use
 hash lookups and share the recovery span, postings, and verification budgets.
 """
+from bisect import bisect_left
 from dataclasses import dataclass
 import unicodedata
 from typing import Any
 
 from address_segmentation.catalog import Catalog
 
-from address_segmentation.approximate import extract_spans
+from address_segmentation.approximate import CandidateSpan
 from address_segmentation.model import Candidate, MatcherConfig
-from address_segmentation.normalize import Token, fold_accents
+from address_segmentation.normalize import Token, fold_accents, normalize_nfc
 from address_segmentation.retrieve import accepts_marker
 
 TONES = dict(zip('sfrxj', '\u0301\u0300\u0309\u0303\u0323'))
@@ -104,11 +105,11 @@ class TypingIndex:
 
 
 def recover_typing(
-    address: str, tokens: list[Token], exact: list[Candidate],
+    address: str, span_data: tuple[list[CandidateSpan], bool, list[Candidate]],
     index: TypingIndex, config: MatcherConfig,
 ) -> tuple[list[Candidate], list[Candidate], dict[str, Any], set[str], list[Candidate]]:
     """Return retrieved, verified, budgets, exhausted fields, suspicious prefixes."""
-    spans, exhausted, suspicious = extract_spans(address, tokens, exact, config.max_fuzzy_spans)
+    spans, exhausted, suspicious = span_data
     counts = dict(fuzzy_spans=len(spans), postings=0, verifications=0, candidates_per_span=0)
     limits = dict(fuzzy_spans=config.max_fuzzy_spans, postings=config.max_postings,
                   verifications=config.max_verifications, candidates_per_span=config.max_candidates_per_span)
@@ -117,13 +118,13 @@ def recover_typing(
     fields = set(('street', 'ward', 'province')) if exhausted else set()
     retrieved, verified = [], []
     for span in spans:
-        # extract_spans may supply a marker-stripped body as folded_text; preserve
-        # original composed syllables by taking the corresponding trailing tokens.
-        words = [t.nfc for t in tokens if span.start <= t.start and t.end <= span.end]
-        size = len(span.folded_text.split())
-        words = words[-size:]
+        # A typing transformation compresses pairs and can remove at most
+        # one terminal tone character per word. Anything longer cannot match.
+        if len(span.folded_text) > 2 * index.max_length + 2 * len(span.words) - 1:
+            continue
+        words = [token.nfc for token in span.words]
         modes = []
-        compact = ''.join(fold_accents(w) for w in words)
+        compact = ''.join(token.folded for token in span.words)
         if config.enable_compact and 5 <= len(compact) <= index.max_length:
             modes.append(('compact', index.compact.get(compact, ()), None))
         if config.enable_typing:
@@ -146,6 +147,8 @@ def recover_typing(
                     continue
                 if not accepts_marker(entry, span.marker_word):
                     continue
+                if span.joined and target != entry.body_nfc_tokens:
+                    continue
                 candidate = Candidate(entry, span.start, span.end, mode, score=0)
                 retrieved.append(candidate)
                 if counts['verifications'] >= limits['verifications']:
@@ -155,8 +158,7 @@ def recover_typing(
                 counts['verifications'] += 1
                 if mode == 'compact':
                     # Must actually explain a changed word boundary, with no punctuation.
-                    body_start = next(t.start for t in tokens if span.start <= t.start and t.nfc == words[0])
-                    source = address[body_start:span.end]
+                    source = address[span.words[0].start:span.end]
                     if any(not (c.isalpha() or c.isspace() or unicodedata.category(c).startswith('M')) for c in source):
                         continue
                     if tuple(fold_accents(w) for w in words) == tuple(fold_accents(w) for w in target):
@@ -177,8 +179,19 @@ def recover_typing(
 
 def contradicts_tone(candidate: Candidate, tokens: list[Token]) -> bool:
     """Prevent ordinary edit deletion from overriding an explicit residual tone."""
-    words = [t.nfc for t in tokens if candidate.start <= t.start and t.end <= candidate.end]
-    for target in (candidate.entry.nfc_tokens, candidate.entry.body_nfc_tokens):
+    start = bisect_left(tokens, candidate.start, key=lambda token: token.start)
+    end = bisect_left(tokens, candidate.end, lo=start, key=lambda token: token.start)
+    window = tokens[start:end]
+    words = [token.nfc for token in window if token.end <= candidate.end]
+    targets = (candidate.entry.nfc_tokens, candidate.entry.body_nfc_tokens)
+    if candidate.body_start is not None:
+        for index, token in enumerate(window):
+            if token.start <= candidate.body_start < token.end:
+                words = words[index:]
+                words[0] = normalize_nfc(token.text[candidate.body_start-token.start:]).casefold()
+                break
+        targets = (candidate.entry.body_nfc_tokens,)
+    for target in targets:
         if len(target) > len(words):
             continue
         observed = words[-len(target):]

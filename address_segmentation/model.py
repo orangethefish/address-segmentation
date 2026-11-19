@@ -133,6 +133,7 @@ class Candidate:
         score: Additive evidence score computed from match quality and context.
         context_marker: Whether an explicit preceding field marker supported this match.
         reasons: Diagnostic tags and features explaining candidate scoring.
+        body_start: Optional source offset of the body after a joined marker.
     """
 
     entry: "CatalogEntry"
@@ -143,6 +144,7 @@ class Candidate:
     score: float = 0.0
     context_marker: bool = False
     reasons: tuple[str, ...] = ()
+    body_start: int | None = None
 
     def __post_init__(self) -> None:
         if self.path not in ("exact", "folded", "fuzzy", "compact", "telex", "vni"):

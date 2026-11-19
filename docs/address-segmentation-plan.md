@@ -1,5 +1,11 @@
 # Vietnamese Address Identification - Consolidated Technical Plan
 
+The [teacher v2 implementation plan](teacher-v2-implementation-plan.md) records
+the official constructor, timer and per-field scoring. The slide-era contract
+below governs historical experiments. The [v2 results](teacher-v2-results.md)
+report the current submission measurements against the retained 10 ms mean and
+100 ms maximum.
+
 **Status:** Authoritative design specification; stages A–E are implemented against controlled fixtures. See [architecture](architecture.md) and [stage E evidence](stage-e.md) for implementation status.
 **Working language/runtime:** Pure Python, provisionally CPython 3.14.  
 **Primary reference:** Instructor slide deck, *Address Segmentation* (12 pages), plus decisions and examples from our discussion.  

@@ -1,5 +1,11 @@
 # Address segmentation architecture and execution plan
 
+Teacher v2 uses an instance built from the grader's three lists and times each
+`process()` call. The exported `Solution` uses the flat matcher, including
+dictionary-constrained joined markers. See the [v2 implementation plan](teacher-v2-implementation-plan.md)
+and [results](teacher-v2-results.md). The fresh-process and prepared-bundle
+measurements in the original architecture are historical.
+
 This design turns [the requirements plan](address-segmentation-plan.md) into independently testable implementation stages. Build a synchronous, standard-library Python matcher, prepare dictionaries once, and isolate the grader protocol from matching. Keep evaluation and benchmark tooling outside the submission package. The requirements plan remains authoritative for provenance and scope.
 
 The hierarchy branch now has a separate [hierarchy architecture](hierarchy-architecture.md),
@@ -41,7 +47,7 @@ Use a small package from the start. This refines the original plan's optional si
 | `address_segmentation/matcher.py` | Prepare once; coordinate stages; fresh result per call |
 | `address_segmentation/io.py` | Provisional JSON dictionary loader and JSONL adapter |
 | `address_segmentation/__init__.py` | Export `AddressMatcher` only as the stable application API |
-| `submission.py` | Eventually implement the official grader interface; no speculative global data loading |
+| `tools/build_submission.py` | Export the teacher's self-contained notebook and Python source from the maintained matcher |
 | `tools/evaluate.py`, `tools/benchmark.py`, `tools/preflight.py` | Offline development commands with machine-readable reports |
 | `tests/fixtures/`, `tests/test_*.py` | Handwritten challenge data, schema and behavior tests |
 | `benchmarks/` | Dataset generators, manifests, frozen configurations; no runtime dependency |

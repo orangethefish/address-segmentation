@@ -1,8 +1,24 @@
-# Vietnamese Address Segmentation (Stages A–E)
+# Vietnamese Address Segmentation
 
 This package implements **stages A–E** of the address segmentation architecture specified in [docs/architecture.md](docs/architecture.md) and [docs/address-segmentation-plan.md](docs/address-segmentation-plan.md).
 
-It provides a dictionary-constrained matcher with bounded typo, Telex/VNI, and whitespace recovery implemented strictly in the Python standard library for CPython 3.14.
+It provides a dictionary-constrained matcher with bounded typo, Telex/VNI, and whitespace recovery in the Python standard library. The teacher v2 submission has been tested on CPython 3.12 and 3.14.
+
+## Teacher v2 submission
+
+The grader builds one `Solution(list_province, list_ward, list_street)` and times each `process(s)` call. The solution indexes the supplied lists during construction and returns a fresh dictionary with `province`, `ward`, and `street` for each request. It scores exact canonical values one field at a time. Unsupported or ambiguous fields return `None` under the project's conservative policy.
+
+Build both files for the assigned group from the maintained matcher:
+
+```sh
+python3.14 -m tools.build_submission --group Group_01
+python3.14 -m tools.evaluate_teacher_v2 --output reports/teacher-v2/package.json
+python3.14 -m tools.benchmark_solution --solution Group_01/Group_01.py --output reports/teacher-v2/public-314.json
+```
+
+The notebook preserves the teacher's grading cells and clears saved outputs. The Python file is importable with the standard library alone. Running it as a script also runs the grader, whose public downloads require `gdown` and whose workbook uses pandas and XlsxWriter.
+
+Geographic filtering is disabled for v2. The legacy hierarchy covers 2 of the 200 public triples. See the [v2 implementation report](docs/teacher-v2-results.md) for public accuracy, stress tests, reproduction commands, and the remaining Colab check.
 
 The `feat/support-for-hierachy` branch includes a
 [hierarchy architecture and feasibility study](docs/hierarchy-architecture.md)
@@ -35,9 +51,9 @@ result = matcher.identify("56/33 Nam Kỳ Khởi Nghĩa, Phường Bến Thành,
 # }
 ```
 
-### CLI Adapter
+### Legacy fixed-dictionary CLI adapter
 
-For a dictionary fixed before submission, use the new
+For historical fresh-process runs with a fixed dictionary, use the
 [offline dictionary compiler and standalone runtime](docs/prepared-dictionary.md).
 It prepares dictionary lookups before submission and queries them on demand in
 each fresh process, retaining all matching features:
@@ -50,9 +66,9 @@ python3.14 -S reports/prepared-user-1/submission.py
 The [prepared-dictionary review](docs/prepared-dictionary.md) records complete
 test-case-1 cold timings, default versus `-S` startup and source-only comparisons,
 packaging requirements and reproduction commands. The `reports/user-1` dictionary
-comes from the dataset preparation command below. Keep the complete generated
-bundle, including its source and prepared bytecode. This path targets CPython 3.14;
-the instructor's launch and packaging contract still determines applicability.
+comes from the legacy dataset preparation command below. Keep the complete
+generated bundle, including its source and prepared bytecode. This path targets
+CPython 3.14 and uses a launch-to-result timing boundary.
 
 The development CLI loads a JSON dictionary once, reads one JSON string per line from `stdin`, and writes one UTF-8 JSON object per line to `stdout`.
 

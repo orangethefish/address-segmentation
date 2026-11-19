@@ -1,5 +1,10 @@
 # Architecture for address hierarchy matching
 
+This design applies to the legacy relationship dataset. Geographic filtering
+stays disabled for teacher v2, where the existing hierarchy covers 19 of 200
+public province–ward pairs and 2 of 200 complete paths. See the
+[v2 compatibility audit](teacher-v2-implementation-plan.md#4-hierarchy-audit-and-decision).
+
 Keep text matching over unique canonical names and add a hard relationship
 constraint to joint selection. Compile each name's valid province–ward locations
 into an integer bit mask offline, then intersect masks for selected candidates.

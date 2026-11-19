@@ -13,10 +13,11 @@ This module scans normalized token sequences across bounded token windows:
    or across major punctuation boundaries.
 """
 
+from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from address_segmentation.model import Candidate, MatcherConfig
-from address_segmentation.normalize import Token
+from address_segmentation.normalize import Token, fold_accents, is_combining_mark, normalize_nfc
 
 if TYPE_CHECKING:
     from address_segmentation.catalog import Catalog, CatalogEntry
@@ -35,6 +36,162 @@ MARKER_KINDS = {
     "thanh": "thanh_pho", "tp": "thanh_pho", "tinh": "tinh", "t": "tinh",
     "duong": "duong", "d": "duong",
 }
+
+MARKER_ENDINGS = {
+    "ward": frozenset(("phuong", "p", "xa", "x", "tt", "tran")),
+    "province": frozenset(("pho", "tp", "tinh", "t")),
+    "street": frozenset(("duong", "d")),
+}
+MARKER_FIELD_BY_ENDING = {
+    ending: field for field, endings in MARKER_ENDINGS.items() for ending in endings
+}
+
+# Indexed by the folded initial of the marker's final syllable.
+JOINED_MARKER_PATTERNS = {
+    "p": (("ward", "", "phường", "phuong"), ("province", "thành", "phố", "pho"),
+          ("ward", "", "p", "p")),
+    "x": (("ward", "", "xã", "xa"), ("ward", "", "x", "x")),
+    "t": (("ward", "thị", "trấn", "tran"), ("province", "", "tỉnh", "tinh"),
+          ("province", "", "tp", "tp"), ("ward", "", "tt", "tt"),
+          ("province", "", "t", "t")),
+    "d": (("street", "", "đường", "duong"), ("street", "", "đ", "d")),
+}
+
+
+@dataclass(frozen=True, slots=True)
+class JoinedMarker:
+    field: str
+    word: str
+    start: int
+    body: Token
+    exact: bool
+    nfc: tuple[str, ...]
+    folded: tuple[str, ...]
+
+
+def joined_markers(tokens: list[Token], index: int, address: str, *, catalog: "Catalog | None" = None):
+    """Yield alternative splits of a token, keeping its literal view available."""
+    token = tokens[index]
+    if not token.folded:
+        return
+    recovery_markers = {}
+    for field, head, tail, folded_tail in JOINED_MARKER_PATTERNS.get(token.folded[0], ()):
+        if len(token.folded) <= len(folded_tail) or not token.folded.startswith(folded_tail):
+            continue
+        if catalog is not None and not catalog.window_lengths(token.folded[len(folded_tail):]):
+            continue
+        if catalog is None and len(folded_tail) == 1 and not token.text[0].isupper():
+            continue
+        start = token.start
+        nfc_head, folded_head = (), ()
+        if head:
+            if index == 0:
+                continue
+            previous = tokens[index - 1]
+            delimiter = address[previous.end:token.start]
+            if (previous.folded != fold_accents(head)
+                    or "\n" in delimiter or not is_valid_marker_delimiter(delimiter)):
+                continue
+            start = previous.start
+            nfc_head, folded_head = (previous.nfc,), (previous.folded,)
+
+        # The folded Vietnamese marker has one base character per letter.
+        # Count in the original token so decomposed accents retain their offsets.
+        cut = 0
+        for _ in folded_tail:
+            cut += 1
+            while cut < len(token.text) and is_combining_mark(token.text[cut]):
+                cut += 1
+            if cut == len(token.text):
+                break
+        prefix, suffix = token.text[:cut], token.text[cut:]
+        # For a one-letter abbreviation, require a visible title-case boundary
+        # before admitting edits. Exact lookup can support case-insensitive splits.
+        if not suffix or not suffix[0].isalnum():
+            continue
+        allows_recovery = len(folded_tail) > 1 or (
+            prefix.isupper() and suffix[0].isupper() and any(c.islower() for c in suffix[1:])
+        )
+        if (catalog is None and not allows_recovery) or fold_accents(prefix) != folded_tail:
+            continue
+        nfc = normalize_nfc(suffix).casefold()
+        body = Token(suffix, nfc, fold_accents(nfc), token.start + cut, token.end)
+        prefix_nfc = normalize_nfc(prefix).casefold()
+        marker_nfc = (*nfc_head, prefix_nfc)
+        marker_folded = (*folded_head, folded_tail)
+        exact = (not head or nfc_head == (head,)) and (
+            prefix_nfc == tail or (tail == "đ" and prefix_nfc == "d")
+        )
+        marker = JoinedMarker(field, marker_folded[0], start, body, exact, marker_nfc, marker_folded)
+        if catalog is not None:
+            yield marker
+        else:
+            # For recovery, prefer exact marker spelling and then greater
+            # coverage. For example, X + An has stronger spelling evidence
+            # than the accent-folded Xa + n split.
+            key = (start, field)
+            previous = recovery_markers.get(key)
+            if previous is None or (marker.exact, body.start) > (previous.exact, previous.body.start):
+                recovery_markers[key] = marker
+    yield from recovery_markers.values()
+
+
+def _retrieve_joined(tokens, catalog, address, literal_candidates):
+    literal_scores = {}
+    for candidate in literal_candidates:
+        key = (candidate.start, candidate.end, candidate.path)
+        literal_scores[key] = max(candidate.score, literal_scores.get(key, 0.0))
+
+    for index in range(len(tokens)):
+        if tokens[index].folded[:1] not in JOINED_MARKER_PATTERNS:
+            continue
+        for marker in joined_markers(tokens, index, address, catalog=catalog):
+            for length in catalog.window_lengths(marker.body.folded):
+                end_index = index + length
+                if end_index > len(tokens):
+                    continue
+                window = [marker.body, *tokens[index + 1:end_index]]
+                if any(any(c in address[left.end:right.start] for c in ",;\n")
+                       for left, right in zip(window, window[1:])):
+                    continue
+                end = window[-1].end
+                if (window[-1].folded.isdigit() and end_index < len(tokens)
+                        and tokens[end_index].folded.isdigit()
+                        and address[end:tokens[end_index].start].isspace()):
+                    continue
+                nfc = tuple(t.nfc for t in window)
+                folded = tuple(t.folded for t in window)
+                exact_ids = {entry.entry_id for entry in catalog.lookup_body_exact(nfc)}
+                for entry in catalog.lookup_body_folded(folded):
+                    if entry.field != marker.field or not accepts_marker(entry, marker.word):
+                        continue
+                    exact_body = entry.entry_id in exact_ids
+                    full = entry.has_prefix and marker.folded == entry.folded_tokens[:len(entry.prefix_tokens)]
+                    if full:
+                        exact = exact_body and marker.nfc == entry.prefix_tokens
+                    else:
+                        exact = exact_body and (marker.exact or not entry.has_prefix)
+                    path = "exact" if exact else "folded"
+                    if full:
+                        score = (FULL_EXACT_SCORE if exact else FULL_FOLDED_SCORE) + 5.0
+                    elif exact:
+                        score = BODY_EXACT_WITH_MARKER_SCORE if entry.has_prefix else FULL_EXACT_SCORE
+                    else:
+                        score = BODY_FOLDED_WITH_MARKER_SCORE if entry.has_prefix else FULL_FOLDED_SCORE
+                    # Equal-quality literal evidence remains viable at the same
+                    # occurrence. A joined interpretation gets no free advantage.
+                    literal_score = literal_scores.get((marker.start, end, path))
+                    if literal_score is not None:
+                        score = min(score, literal_score)
+                    if literal_candidates:
+                        start_index = index if marker.start == tokens[index].start else index - 1
+                        for field in MARKER_ENDINGS:
+                            preceding = find_preceding_marker(tokens, start_index, field, address)
+                            if preceding and (preceding[0], end, path) in literal_scores:
+                                score = min(score, BARE_EXACT_SCORE if exact else BARE_FOLDED_SCORE)
+                                break
+                    yield Candidate(entry, marker.start, end, path, score=score,
+                                    context_marker=True, reasons=("joined_marker", "marker"))
 
 
 def accepts_marker(entry: "CatalogEntry", marker_word: str | None) -> bool:
@@ -67,6 +224,8 @@ def find_preceding_marker(
         return None
 
     prev_tok = tokens[body_start_idx - 1]
+    if MARKER_FIELD_BY_ENDING.get(prev_tok.folded) != field:
+        return None
     sep = address[prev_tok.end : tokens[body_start_idx].start]
     if not is_valid_marker_delimiter(sep):
         return None
@@ -291,6 +450,11 @@ def retrieve_candidates(
                         reasons=reasons,
                     )
                 )
+
+    for candidate in _retrieve_joined(tokens, catalog, address, raw_candidates):
+        raw_candidates.append(candidate)
+        if candidate.path == "exact":
+            marked_spans_by_field[candidate.field].append(candidate.span)
 
     # Conjunction-marker propagation:
     # In coordinate structures like "đường X và Y", propagate marker evidence to Y

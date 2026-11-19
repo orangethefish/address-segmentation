@@ -167,6 +167,7 @@ class AddressMatcher:
             )
 
         # 3. Approximate fuzzy recovery (Stage D)
+        span_data = extract_spans(address, tokens, exact_retrieved, self._config.max_fuzzy_spans)
         fuzzy_retrieved, fuzzy_verified = [], []
         exhausted_fields, suspicious_to_abstain = set(), []
         budget_trace = {
@@ -181,7 +182,7 @@ class AddressMatcher:
                 fuzzy_config = replace(self._config, max_candidates_per_span=max(1, self._config.max_candidates_per_span // 2))
             (fuzzy_retrieved, fuzzy_verified, budget_trace, exhausted_fields,
              suspicious_to_abstain) = recover_fuzzy_candidates(
-                address, tokens, self._catalog, fuzzy_config, self._approx_index, exact_retrieved)
+                span_data, fuzzy_config, self._approx_index)
             budget_trace["limits"]["candidates_per_span"] = self._config.max_candidates_per_span
         if self._typing_index is not None:
             remaining_postings = self._config.max_postings - budget_trace["counts"]["postings"]
@@ -191,7 +192,7 @@ class AddressMatcher:
                 typing_config = replace(self._config, max_postings=remaining_postings,
                                         max_verifications=remaining_checks, max_candidates_per_span=remaining_candidates)
                 retrieved, verified, typing_budget, fields, suspicious = recover_typing(
-                    address, tokens, exact_retrieved, self._typing_index, typing_config)
+                    address, span_data, self._typing_index, typing_config)
                 fuzzy_retrieved.extend(retrieved)
                 fuzzy_verified.extend(verified)
                 exhausted_fields.update(fields)
@@ -208,7 +209,7 @@ class AddressMatcher:
             else:
                 # The remaining typing hypotheses cannot be checked. Do not let
                 # a recovered label acquire false uniqueness at the budget boundary.
-                _, _, suspicious = extract_spans(address, tokens, exact_retrieved, self._config.max_fuzzy_spans)
+                _, _, suspicious = span_data
                 suspicious_to_abstain.extend(suspicious)
                 exhausted_fields.update(c.field for c in fuzzy_verified)
                 exhausted_fields.update(c.field for c in suspicious)
