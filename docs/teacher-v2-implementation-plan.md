@@ -364,3 +364,150 @@ unmentioned or ambiguous components are still unconfirmed. The checked-in
 `Group_01` files are drafts. Use the assigned name for the final build and
 confirm it in a clean Colab run. See the [v2 results](teacher-v2-results.md) for
 the validation commands and current timing evidence.
+
+## 9. Teacher v2 on the trie and DP branch
+
+Implement the same flat-list contract on `feature/implement-with-trie-and-dp`.
+The teacher's [quick start](../teacher-info/Quick%20start_v2.docx) confirms the
+submission layout and valid geographic combinations. The
+[executable notebook](../teacher-info/GettingStarted_v2.ipynb) defines the
+three-list constructor, exact-label scoring, and `process()` timer. Follow the
+notebook's constructor where the quick-start screenshot shows an older form.
+
+### Measured starting point
+
+All three variants ran as standalone Python exports on the original 200
+teacher public addresses. The two pre-port exports use the matcher at
+`afe07a9`, packaged for this measurement with the exporter from `e884ae7`.
+Their public predictions matched the branch package. The v2 indexed
+reference is the checked-in export at `e884ae7`.
+
+| Variant | Street / 200 | Ward / 200 | Province / 200 | Correct fields / 600 | Score / 10 | Complete / 200 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| Branch indexed before v2 | 200 | 184 | 179 | 563 | 9.38 | 167 |
+| Branch trie + DP before v2 | 200 | 187 | 180 | 567 | 9.45 | 169 |
+| Main indexed with v2 | 200 | 200 | 200 | 600 | 10.00 | 200 |
+
+The pre-port trie recovered four fields across three rows via ordinary fuzzy
+matching, with zero regressions against branch indexed. Of its 33 remaining
+misses, 29 first lose the expected label at retrieval, three at verification,
+and one at selection. The trie retrieval trace already applies OSA distance
+and marker filtering, so its stage counts describe this backend's pipeline.
+No public case exhausted a trie recovery budget in the pre-port trace.
+
+Each interpreter had two fresh runs per variant with five passes per run.
+These are run-level mean ranges and the highest observed per-request maximum,
+in milliseconds. All passes had stable predictions, zero exceptions, and met
+the project's public timing limits. Peak traced construction allocations were
+0.65–0.69 MiB for indexed and 2.82–2.89 MiB for the pre-port trie.
+
+| Variant | Python 3.12.3 mean | 3.12.3 max | Python 3.14.4 mean | 3.14.4 max |
+| --- | ---: | ---: | ---: | ---: |
+| Branch indexed before v2 | 0.511–0.586 | 1.965 | 0.219–0.245 | 0.695 |
+| Branch trie + DP before v2 | 1.076–1.233 | 8.724 | 0.401–0.422 | 2.708 |
+| Main indexed with v2 | 0.392–0.439 | 1.569 | 0.180–0.200 | 1.038 |
+
+The trie was slower on the pre-port public comparison. Measure again after
+the port, since exact recognition can bypass fuzzy traversal. The runs cover
+public input only. Raw timing samples, predictions, failures, and data and
+export hashes are in ignored `reports/teacher-v2-trie-dp/export-*.json`.
+
+### Implementation sequence
+
+1. **Integrate v2 in a worktree for the trie branch.** Use `e884ae7` as the v2
+   source and keep `indexed` available as the control. A merge preview found
+   conflicts in `address_segmentation/approximate.py`,
+   `address_segmentation/matcher.py`, and `README.md`. Retain the v2
+   tokenizer, joined exact retrieval, shared span extraction and typing rules.
+   Keep the branch's trie catalog and indexes, banded OSA traversal, and
+   forward/backward interval selection across the eight field masks.
+2. **Share the joined-marker acceptance rules.** Compute `span_data` once in
+   `AddressMatcher` and pass it to both fuzzy backends and typing recovery.
+   Exact and compact/typing lookups can use the existing trie catalog and
+   typing-index interfaces. For trie typo search, use the split body text
+   with the original source span, enforce the marker's field and type, and
+   filter typed entries to their body form for a joined query. Preserve
+   literal candidates and apply v2's closer-split guard to ordinary fuzzy
+   matches so deletion of a conflicting marker cannot rescue a label.
+   Propagate `body_start` for tone checks. Apply these rules within the
+   node, terminal, per-span and shared typing budgets. Retain exhaustion
+   diagnostics and independent exact evidence. Run DP on original source
+   intervals, respecting overlap and label/null ties.
+3. **Export both variants with the same notebook contract.** Add a
+   `--backend {indexed,trie_dp}` selection to `tools.build_submission` and
+   `tools.evaluate_teacher_v2`. Record the backend in evaluation metadata.
+   Include `trie.py` after its dependencies and before `matcher.py` in the
+   exporter, and select the backend internally in `Solution.__init__`.
+   Write the variants to separate output directories using the same group
+   name. Prove package, standalone Python and notebook prediction parity,
+   including with replacement inventories outside the repository. Preserve
+   both grader cells and clear all outputs. In the legacy compiler, write
+   indexed fuzzy length metadata only for the indexed backend. The trie
+   stores length bounds per node. Run the prepared/source parity tests
+   separately on Python 3.14.
+4. **Check correctness before ranking performance.** Run the branch's trie
+   OSA and DP reference tests, v2 parity checks and the 1,000 reviewed legacy
+   cases, including the six ambiguity cases. Run joined and separated marker
+   controls on both backends, covering compact input, Telex/VNI, transpositions,
+   decomposed accents, wrong administrative types, literal marker-like names,
+   numeric streets and bounded-work abstention. Target 600/600 fields and
+   200/200 complete public addresses with zero exceptions. Report every
+   remaining field difference and where the expected candidate was lost,
+   along with false non-null matches on independent cases.
+5. **Compare exports from the same integrated revision.** Use
+   `tools.benchmark_solution` on Python 3.12 and 3.14, with identical data
+   hashes and case order for each workload. Record the revision and each
+   export's own hash. Alternate backend order across fresh interpreter runs.
+   Use five passes per run, a fresh `Solution` each pass and no request
+   warmup. Report public field and complete-address
+   gains/regressions, mean/p50/p95/p99/max and first-call latency, construction
+   time and peak traced allocations. Repeat with the 23,800-street scale and
+   long-noise workloads. Tag slow cases with exact or recovery path and
+   budget outcomes using untimed traces. Compare against the pre-port
+   baselines above and the indexed v2 control from the same revision. Treat
+   the project's 10 ms mean and 100 ms maximum as timing gates and keep
+   the final backend choice open until correctness and timing are measured.
+
+### Reproduce the pre-port exports
+
+Run from the repository root at `e884ae7`. The temporary exporter adjustment
+keeps the tokenization and house-number helpers used by the older source.
+
+```sh
+review_dir="$(mktemp -d)"
+git archive afe07a9 | tar -x -C "$review_dir"
+mkdir -p "$review_dir/teacher-info"
+cp tools/build_submission.py "$review_dir/tools/"
+cp teacher-info/GettingStarted_v2.ipynb "$review_dir/teacher-info/"
+(cd "$review_dir" && python3.14 - <<'PY'
+from tools import build_submission as builder
+
+builder.MODULES = (*builder.MODULES[:-1], "trie", builder.MODULES[-1])
+builder.DEVELOPMENT_ONLY -= {"is_base_alnum", "is_house_number_token"}
+api = builder.API
+for backend in ("indexed", "trie_dp"):
+    builder.API = api.replace(
+        "provinces=list_province,",
+        f'provinces=list_province, config=self.MatcherConfig(backend="{backend}"),',
+    )
+    builder.build_submission("Group_xx", f"exported/{backend}")
+PY
+)
+benchmark_exports() {
+  runtime="$1"
+  run="$2"
+  shift 2
+  for variant in "$@"; do
+    case "$variant" in
+      main-indexed) submission="Group_01/Group_01.py" ;;
+      branch-*) submission="$review_dir/exported/${variant#branch-}/Group_xx/Group_xx.py" ;;
+    esac
+    "$runtime" -m tools.benchmark_solution --solution "$submission" \
+      --output "reports/teacher-v2-trie-dp/reproduced/export-$variant-$runtime-run$run.json"
+  done
+}
+for runtime in python3.12 python3.14; do
+  benchmark_exports "$runtime" 1 main-indexed branch-indexed branch-trie_dp
+  benchmark_exports "$runtime" 2 branch-trie_dp branch-indexed main-indexed
+done
+```
