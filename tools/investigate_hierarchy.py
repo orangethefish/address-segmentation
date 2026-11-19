@@ -135,32 +135,34 @@ def prototype_source(source):
     tree = ast.parse(source)
     for node in tree.body:
         if isinstance(node, ast.FunctionDef) and node.name == "select_candidates":
-            node.args.args.append(ast.arg(arg="hierarchy"))
+            node.args.args[-1] = ast.arg(arg="hierarchy")
+            node.args.defaults.clear()
             index = next(i for i, item in enumerate(node.body)
                          if isinstance(item, ast.Assign)
                          and any(isinstance(t, ast.Name) and t.id == "choices" for t in item.targets))
-            node.body[index:index] = ast.parse(
-                'masks = {c.entry.entry_id: hierarchy[c.entry.entry_id] for c in retained_candidates}'
-            ).body
+            node.body[index:index] = ast.parse('''
+location_masks = None
+required_masks = {c.entry.entry_id: hierarchy[c.entry.entry_id] for c in retained_candidates}
+''').body
             outer = next(n for n in node.body if isinstance(n, ast.For) and isinstance(n.target, ast.Name) and n.target.id == "cs")
-            outer.body[:0] = ast.parse('street_mask = masks[cs.entry.entry_id] if cs is not None else None').body
+            outer.body[:0] = ast.parse('required_street = required_masks[cs.entry.entry_id] if cs is not None else None').body
             middle = next(n for n in outer.body if isinstance(n, ast.For) and n.target.id == "cw")
             middle.body[:0] = ast.parse('''
-pair_mask = masks[cw.entry.entry_id] if cw is not None else None
-if street_mask is not None:
-    pair_mask = street_mask if pair_mask is None else street_mask & pair_mask
+pair_mask = required_masks[cw.entry.entry_id] if cw is not None else None
+if required_street is not None:
+    pair_mask = required_street if pair_mask is None else required_street & pair_mask
 if pair_mask == 0:
     continue
 ''').body
             inner = next(n for n in middle.body if isinstance(n, ast.For) and n.target.id == "cp")
             inner.body[:0] = ast.parse('''
-if cp is not None and pair_mask is not None and not (pair_mask & masks[cp.entry.entry_id]):
+if cp is not None and pair_mask is not None and not (pair_mask & required_masks[cp.entry.entry_id]):
     continue
 ''').body
         if isinstance(node, ast.ClassDef) and node.name == "AddressMatcher":
             for child in ast.walk(node):
                 if isinstance(child, ast.Call) and isinstance(child.func, ast.Name) and child.func.id == "select_candidates":
-                    child.args.append(ast.Attribute(value=ast.Name(id="self", ctx=ast.Load()), attr="_hierarchy", ctx=ast.Load()))
+                    child.args[-1] = ast.Attribute(value=ast.Name(id="self", ctx=ast.Load()), attr="_hierarchy", ctx=ast.Load())
         if isinstance(node, ast.ClassDef) and node.name == "PreparedMatcher":
             constructor = next(n for n in node.body if isinstance(n, ast.FunctionDef) and n.name == "__init__")
             block = next(n for n in constructor.body if isinstance(n, ast.Try))

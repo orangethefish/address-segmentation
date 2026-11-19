@@ -56,6 +56,7 @@ class AddressMatcher:
 
         self._catalog = Catalog(streets=streets, wards=wards, provinces=provinces)
         self._config = config if config is not None else MatcherConfig()
+        self._location_masks = None
         # Prepare per-entry full and body folded forms once per matcher
         self._approx_index = ApproximateIndex(self._catalog) if self._config.enable_fuzzy else None
         self._typing_index = TypingIndex(self._catalog) if (self._config.enable_typing or self._config.enable_compact) else None
@@ -155,7 +156,7 @@ class AddressMatcher:
                 "exhausted": False,
             }
             result, retained, selection_trace = select_candidates(
-                all_verified, self._config
+                all_verified, self._config, self._location_masks
             )
             return (
                 result,
@@ -243,7 +244,7 @@ class AddressMatcher:
 
         # 4. Joint selection
         result, retained, selection_trace = select_candidates(
-            all_verified, self._config
+            all_verified, self._config, self._location_masks
         )
 
         # Record budget exhaustion in selection rejection reasons if field is null

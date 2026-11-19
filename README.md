@@ -18,7 +18,10 @@ python3.14 -m tools.benchmark_solution --solution Group_01/Group_01.py --output 
 
 The notebook preserves the teacher's grading cells and clears saved outputs. The Python file is importable with the standard library alone. Running it as a script also runs the grader, whose public downloads require `gdown` and whose workbook uses pandas and XlsxWriter.
 
-Geographic filtering is disabled for v2. The legacy hierarchy covers 2 of the 200 public triples. See the [v2 implementation report](docs/teacher-v2-results.md) for public accuracy, stress tests, reproduction commands, and the remaining Colab check.
+The v2 notebook and Python exports use the teacher's flat inventories.
+The optional offline hierarchy is available in the prepared bundle below.
+See the [v2 implementation report](docs/teacher-v2-results.md) for public
+accuracy, stress tests, reproduction commands, and the remaining Colab check.
 
 The `feat/support-for-hierachy` branch includes a
 [hierarchy architecture and feasibility study](docs/hierarchy-architecture.md)
@@ -26,6 +29,46 @@ for the supplied `testcases/1/address_hierarchy.json`. An isolated prototype
 resolves all 1,000 original results and meets the local cold timing targets with
 the prepared launch configuration. The package API below remains the flat
 implementation; the design records the production integration stages.
+
+### Offline hierarchy for the public v2 inventories
+
+Build the hierarchy from a local province/ward snapshot, individual ward GeoJSON
+files, and a Vietnam OSM extract. The builder reads the three teacher inventory
+files. Scoring and path coverage use the public answers in a separate step.
+The two supplemental street links each carry a government source in
+[street-evidence.json](testcases/teacher-v2/street-evidence.json).
+
+The builder needs `osmium` and `shapely` in its Python environment. The compiled
+bundle runs with the Python 3.14 standard library. The inputs used for the local
+build are stored in the ignored `reports/teacher-v2-hierarchy/sources/` directory.
+They came from the [Vietnam Provinces API](https://provinces.open-api.vn/api/v2/?depth=2),
+[Vietnamese Provinces Database v4.1.0](https://github.com/thanglequoc/vietnamese-provinces-database/releases/tag/v4.1.0),
+and [Geofabrik](https://download.geofabrik.de/asia/vietnam.html). The generated
+`sources.json` records their hashes. The map data is subject to the
+[OpenStreetMap ODbL](https://www.openstreetmap.org/copyright).
+
+```sh
+hierarchy_dir=reports/teacher-v2-hierarchy
+python3.14 -m tools.build_teacher_v2_hierarchy \
+  --admin "$hierarchy_dir/sources/admin-v2.json" \
+  --boundaries "$hierarchy_dir/sources/ward-polygons" \
+  --roads "$hierarchy_dir/sources/vietnam.osm.pbf" \
+  --street-evidence testcases/teacher-v2/street-evidence.json \
+  --output-dir "$hierarchy_dir"
+PYTHONHASHSEED=0 python3.14 -m tools.compile_dictionary --dictionary "$hierarchy_dir/dictionary.json" \
+  --hierarchy "$hierarchy_dir/address_hierarchy_v2.json" --output-dir "$hierarchy_dir/bundle"
+python3.14 -m tools.evaluate_teacher_v2 --prepared-index "$hierarchy_dir/bundle/dictionary.idx" \
+  --hierarchy "$hierarchy_dir/address_hierarchy_v2.json" --output "$hierarchy_dir/evaluation.json"
+```
+
+The standalone bundle reads JSON strings on standard input. Geography
+breaks ties among text-supported interpretations. Missing links remain
+eligible, and a field with no text candidate stays null.
+
+```sh
+printf '%s\n' '"Đường Phạm Viết Chánh, Phường Cẩm Lệ, Thành phố Đà Nẵng"' |
+  python3.14 -S "$hierarchy_dir/bundle/submission.py"
+```
 
 ---
 

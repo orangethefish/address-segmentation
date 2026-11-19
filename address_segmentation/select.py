@@ -28,6 +28,7 @@ Unlike single-field independent matching, joint selection evaluates complete tri
 """
 
 from bisect import bisect_left
+from collections.abc import Mapping
 from typing import TYPE_CHECKING, Any
 
 from address_segmentation.model import Candidate, MatcherConfig
@@ -91,6 +92,7 @@ def spans_overlap(c1: Candidate, c2: Candidate) -> bool:
 def select_candidates(
     verified_candidates: list[Candidate],
     config: MatcherConfig,
+    location_masks: Mapping[int, int] | None = None,
 ) -> tuple[dict[str, str | None], list[Candidate], dict[str, Any]]:
     """Jointly evaluate candidate combinations and return (result, retained_candidates, selection_trace).
 
@@ -135,7 +137,13 @@ def select_candidates(
     }
 
     best_score: float = 0.0
-    label_max_score: dict[str, dict[str | None, float]] = {f: {} for f in FIELDS}
+    scores_by_support: list[dict[str, dict[str | None, float]]] = [
+        {f: {} for f in FIELDS} for _ in range(3 if location_masks is not None else 1)
+    ]
+    masks = None if location_masks is None else {
+        candidate.entry.entry_id: location_masks.get(candidate.entry.entry_id, 0)
+        for candidate in retained_candidates
+    }
 
     for cs in choices["street"]:
         for cw in choices["ward"]:
@@ -158,7 +166,19 @@ def select_candidates(
                 if combo_score > best_score:
                     best_score = combo_score
 
-                # Aggregate max combo score achieved by each field label
+                # Map evidence ranks only the text interpretations within the ambiguity margin.
+                support = 0
+                if masks is not None:
+                    street_mask = masks[cs.entry.entry_id] if cs is not None else 0
+                    ward_mask = masks[cw.entry.entry_id] if cw is not None else 0
+                    province_mask = masks[cp.entry.entry_id] if cp is not None else 0
+                    if cw is not None and cp is not None:
+                        area = ward_mask & province_mask
+                        support = int(bool(area)) + int(bool(street_mask & area))
+                    else:
+                        support = int(bool(street_mask & (ward_mask | province_mask)))
+
+                label_max_score = scores_by_support[support]
                 for f, cand in (("street", cs), ("ward", cw), ("province", cp)):
                     lbl = cand.label if cand is not None else None
                     prev_max = label_max_score[f].get(lbl, -1.0)
@@ -167,6 +187,12 @@ def select_candidates(
 
     # Step 4: Evaluate per-field ambiguity and acceptance
     threshold = best_score - config.ambiguity_margin
+    label_max_score = scores_by_support[0]
+    if masks is not None:
+        for scores in reversed(scores_by_support):
+            if any(score >= threshold - 1e-9 for score in scores["street"].values()):
+                label_max_score = scores
+                break
     ambiguous_fields: list[str] = []
     rejection_reasons: dict[str, str] = {}
     result: dict[str, str | None] = {"street": None, "ward": None, "province": None}

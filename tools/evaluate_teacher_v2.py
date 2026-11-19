@@ -1,12 +1,16 @@
 """Load and score the teacher's v2 data without modifying the supplied files."""
 
 import argparse
+from contextlib import nullcontext
 import json
 from pathlib import Path
 
 from address_segmentation import AddressMatcher
 from address_segmentation.catalog import validate_field_sequence
-from tools.datasets import EvaluationCase, get_platform_metadata, get_source_hash, sha256_bytes
+from address_segmentation.prepared import PreparedMatcher
+from tools.datasets import (
+    EvaluationCase, canonical_json_hash, get_platform_metadata, get_source_hash, sha256_bytes, sha256_file,
+)
 from tools.evaluate import EVALUATION_FIELDS, make_rate
 
 
@@ -117,6 +121,32 @@ def validate_result(result):
         raise ValueError(f"Invalid result: {result!r}")
 
 
+def audit_hierarchy(hierarchy, cases):
+    all_streets = {street for wards in hierarchy.values() for streets in wards.values() for street in streets}
+    checked_pairs = checked_paths = covered_pairs = covered_paths = 0
+    missing_paths = []
+    for case in cases:
+        province, ward, street = (case.expected[field] for field in ("province", "ward", "street"))
+        if province is None or ward is None:
+            continue
+        streets = hierarchy.get(province, {}).get(ward)
+        checked_pairs += 1
+        covered_pairs += streets is not None
+        if street is None:
+            continue
+        checked_paths += 1
+        if streets is not None and street in streets:
+            covered_paths += 1
+        else:
+            reason = "missing_province_ward" if streets is None else (
+                "street_found_in_other_area" if street in all_streets else "street_unmapped"
+            )
+            missing_paths.append({"id": case.id, "expected": case.expected, "reason": reason})
+    return {"province_ward": make_rate(covered_pairs, checked_pairs),
+            "complete_path": make_rate(covered_paths, checked_paths),
+            "missing_paths": missing_paths}
+
+
 def write_report(path, report):
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -128,21 +158,39 @@ def main():
     parser.add_argument("--source-dir", type=Path, default=Path("teacher-info/v2_2_level_address"))
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--baseline", type=Path)
+    parser.add_argument("--prepared-index", type=Path, help="Evaluate a compiled dictionary.idx")
+    parser.add_argument("--hierarchy", type=Path, help="Also audit coverage of a hierarchy JSON")
     args = parser.parse_args()
 
     lists, cases, metadata = load_teacher_v2(args.source_dir)
-    matcher = AddressMatcher(**{field + "s": labels for field, labels in lists.items()})
+    dictionary = {field + "s": labels for field, labels in lists.items()}
+    hierarchy = None
+    if args.hierarchy:
+        raw_hierarchy = args.hierarchy.read_bytes()
+        hierarchy = json.loads(raw_hierarchy, object_pairs_hook=_unique_object)
+        metadata["hierarchy_sha256"] = sha256_bytes(raw_hierarchy)
     predictions, exceptions = {}, {}
-    for case in cases:
-        try:
-            result = matcher.identify(case.address)
-            validate_result(result)
-            predictions[case.id] = result
-        except Exception as error:
-            exceptions[case.id] = f"{type(error).__name__}: {error}"
+    matching = PreparedMatcher(args.prepared_index) if args.prepared_index else nullcontext(AddressMatcher(**dictionary))
+    with matching as matcher:
+        if args.prepared_index:
+            index_metadata = matcher._store.metadata
+            if index_metadata["dictionary_hash"] != canonical_json_hash(dictionary):
+                parser.error("Prepared index and teacher inventories differ")
+            if hierarchy is not None and index_metadata.get("hierarchy_hash") != canonical_json_hash(hierarchy):
+                parser.error("Prepared index and hierarchy differ")
+            metadata["prepared_index_sha256"] = sha256_file(args.prepared_index)
+        for case in cases:
+            try:
+                result = matcher.identify(case.address)
+                validate_result(result)
+                predictions[case.id] = result
+            except Exception as error:
+                exceptions[case.id] = f"{type(error).__name__}: {error}"
     metrics = score_teacher_v2(cases, predictions, exceptions)
     metadata.update(platform=get_platform_metadata(), source_hash=get_source_hash())
     report = {"metadata": metadata, "metrics": metrics, "predictions": predictions, "exceptions": exceptions}
+    if hierarchy is not None:
+        report["hierarchy_coverage"] = audit_hierarchy(hierarchy, cases)
     if args.baseline:
         baseline = json.loads(args.baseline.read_text(encoding="utf-8"))
         report["baseline_comparison"] = compare_teacher_v2(cases, metadata, metrics, baseline)

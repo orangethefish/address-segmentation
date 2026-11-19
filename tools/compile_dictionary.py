@@ -9,6 +9,7 @@ import argparse
 import ast
 from dataclasses import asdict
 import hashlib
+from itertools import chain
 import json
 import marshal
 from pathlib import Path
@@ -22,7 +23,7 @@ import zlib
 
 from address_segmentation import AddressMatcher
 from address_segmentation.io import load_config, load_dictionary
-from address_segmentation.prepared import INDEX_MAGIC, INDEX_SLOT, index_key
+from address_segmentation.prepared import HIERARCHY_TIEBREAK_POLICY, INDEX_MAGIC, INDEX_SLOT, index_key
 from tools.datasets import canonical_json_hash, get_source_hash, sha256_file
 
 PACKAGE = Path(__file__).resolve().parent.parent / "address_segmentation"
@@ -202,11 +203,59 @@ def write_index(path, metadata, records):
     return metadata
 
 
-def compile_dictionary(dictionary_path, output_dir, config_path=None):
+def unique_hierarchy_object(pairs):
+    result = {}
+    for key, value in pairs:
+        if key in result:
+            raise ValueError(f"Duplicate hierarchy key: {key!r}")
+        result[key] = value
+    return result
+
+
+def hierarchy_records(hierarchy, catalog):
+    """Compile one bit per province–ward occurrence against stable catalog IDs."""
+    if not isinstance(hierarchy, dict):
+        raise ValueError("Expected a hierarchy object keyed by province")
+    entries = {(entry.field, entry.canonical_label): entry.entry_id for entry in catalog.entries}
+    masks = {}
+    next_bit = 1
+    for province, wards in sorted(hierarchy.items()):
+        province_id = entries.get(("province", province))
+        if province_id is None or not isinstance(wards, dict):
+            raise ValueError(f"Expected a known province with a ward object: {province!r}")
+        for ward, streets in sorted(wards.items()):
+            ward_id = entries.get(("ward", ward))
+            if ward_id is None or not isinstance(streets, list):
+                raise ValueError(f"Expected a known ward with a street array: {(province, ward)!r}")
+            masks[province_id] = masks.get(province_id, 0) | next_bit
+            masks[ward_id] = masks.get(ward_id, 0) | next_bit
+            seen = set()
+            for street in streets:
+                street_id = entries.get(("street", street)) if isinstance(street, str) else None
+                if street_id is None or street_id in seen:
+                    raise ValueError(f"Unknown or duplicate street at {(province, ward, street)!r}")
+                seen.add(street_id)
+                masks[street_id] = masks.get(street_id, 0) | next_bit
+            next_bit <<= 1
+    return (("location", entry_id, mask) for entry_id, mask in masks.items())
+
+
+def compile_dictionary(dictionary_path, output_dir, config_path=None, *, hierarchy_path=None):
     start = time.perf_counter_ns()
     data = load_dictionary(str(dictionary_path))
     config = load_config(config_path)
     matcher = AddressMatcher(**data, config=config)
+    records = dictionary_records(matcher)
+    hierarchy_metadata = {}
+    if hierarchy_path is not None:
+        raw = Path(hierarchy_path).read_bytes()
+        hierarchy = json.loads(raw, object_pairs_hook=unique_hierarchy_object)
+        records = chain(records, hierarchy_records(hierarchy, matcher.catalog))
+        hierarchy_metadata = {
+            "hierarchy_hash": canonical_json_hash(hierarchy),
+            "hierarchy_file_hash": hashlib.sha256(raw).hexdigest(),
+            "hierarchy_policy": HIERARCHY_TIEBREAK_POLICY,
+        }
     source, runtime_id = bundle_source()
     destination = Path(output_dir)
     destination.mkdir(parents=True, exist_ok=True)
@@ -236,7 +285,8 @@ if __name__ == "__main__":
             "entry_count": len(matcher.catalog.entries),
             "fuzzy_max_length": matcher._approx_index.max_length if matcher._approx_index else 0,
             "typing_max_length": matcher._typing_index.max_length if matcher._typing_index else 0,
-        }, dictionary_records(matcher))
+            **hierarchy_metadata,
+        }, records)
         for filename in ("matcher_runtime.py", "submission.py", "dictionary.idx"):
             (stage / filename).replace(destination / filename)
     bytecode_path = Path(py_compile.compile(
@@ -266,9 +316,11 @@ def main(argv=None):
     parser.add_argument("--dictionary", required=True)
     parser.add_argument("--output-dir", required=True)
     parser.add_argument("--config")
+    parser.add_argument("--hierarchy", type=Path, help="Optional province → ward → street JSON")
     args = parser.parse_args(argv)
     try:
-        manifest = compile_dictionary(args.dictionary, args.output_dir, args.config)
+        manifest = compile_dictionary(args.dictionary, args.output_dir, args.config,
+                                      hierarchy_path=args.hierarchy)
     except (OSError, ValueError, TypeError) as exc:
         parser.exit(1, f"Compilation error: {exc}\n")
     print(f"Compiled {manifest['metadata']['entry_count']} labels into {args.output_dir}")

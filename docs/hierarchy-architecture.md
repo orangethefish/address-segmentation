@@ -1,9 +1,10 @@
 # Architecture for address hierarchy matching
 
-This design applies to the legacy relationship dataset. Geographic filtering
-stays disabled for teacher v2, where the existing hierarchy covers 19 of 200
-public province–ward pairs and 2 of 200 complete paths. See the
-[v2 compatibility audit](teacher-v2-implementation-plan.md#4-hierarchy-audit-and-decision).
+This hard-filtering design applies to the legacy relationship dataset. That
+dataset covers 19 of 200 public v2 province–ward pairs and 2 of 200 complete
+paths. The separately built v2 hierarchy provides optional geographic
+tie-breaking in the prepared bundle. [Legacy compatibility audit](teacher-v2-implementation-plan.md#4-hierarchy-audit-and-decision) ·
+[Offline v2 hierarchy](../README.md#offline-hierarchy-for-the-public-v2-inventories)
 
 Keep text matching over unique canonical names and add a hard relationship
 constraint to joint selection. Compile each name's valid province–ward locations
@@ -11,10 +12,10 @@ into an integer bit mask offline, then intersect masks for selected candidates.
 This separates spelling evidence from location identity, supports repeated names,
 and avoids loading the 5.29 MB hierarchy in each graded process.
 
-The isolated selection prototype matches all 1,000 original development results
-and passes the local launch-to-stdout limits over 5,000 fresh processes. The
-maintained package and ordinary compiler still implement flat matching. This
-design specifies their integration; the prototype establishes feasibility.
+The isolated hard-filtering prototype matches all 1,000 original development
+results and passes the local launch-to-stdout limits over 5,000 fresh processes.
+The prepared compiler's v2 mode uses map evidence only within the text
+ambiguity margin.
 
 ## Confirmed behavior
 

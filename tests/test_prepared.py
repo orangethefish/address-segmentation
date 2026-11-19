@@ -157,6 +157,38 @@ class PreparedTests(unittest.TestCase):
         self.assertEqual(first["files"], second["files"])
         self.assertEqual(first["metadata"], second["metadata"])
 
+    def test_compiled_hierarchy_resolves_only_text_supported_ambiguity(self):
+        data = {"streets": ["Lê Lợi", "Trần Phú"], "wards": ["Hòa Bình", "Tân Bình"],
+                "provinces": ["Hà Nội"]}
+        dictionary = self.base / "hierarchy-dictionary.json"
+        dictionary.write_text(json.dumps(data), encoding="utf-8")
+        hierarchy = self.base / "hierarchy.json"
+        hierarchy.write_text(json.dumps({"Hà Nội": {"Hòa Bình": [], "Tân Bình": ["Lê Lợi"]}}),
+                             encoding="utf-8")
+        destination = self.base / "with-hierarchy"
+        manifest = compile_dictionary(dictionary, destination, hierarchy_path=hierarchy)
+        self.assertIn("hierarchy_hash", manifest["metadata"])
+        ordinary = AddressMatcher(**data)
+        address = "Đường Lê Lợi, Phường Hòa Bình, Phường Tân Bình, Thành phố Hà Nội"
+        self.assertIsNone(ordinary.identify(address)["ward"])
+        hierarchy.unlink()
+        with load_runtime(destination).PreparedMatcher(destination / "dictionary.idx") as prepared:
+            self.assertEqual(prepared.identify(address), {
+                "street": "Lê Lợi", "ward": "Tân Bình", "province": "Hà Nội",
+            })
+            for independent in ("Đường Lê Lợi", "Đường Trần Phú, Phường Hòa Bình, Hà Nội",
+                                "Đường Lê Lợi, Phường Hòa Bình, Hà Nội"):
+                self.assertEqual(prepared.identify(independent), ordinary.identify(independent))
+
+    def test_hierarchy_rejects_street_absent_from_dictionary(self):
+        hierarchy = self.base / "invalid-hierarchy.json"
+        hierarchy.write_text(json.dumps({
+            "Thành phố Hồ Chí Minh": {"Phường Bến Thành": ["unknown street"]},
+        }), encoding="utf-8")
+        with self.assertRaisesRegex(ValueError, "Unknown or duplicate street"):
+            compile_dictionary(FIXTURES / "dictionary.json", self.base / "invalid-hierarchy",
+                               hierarchy_path=hierarchy)
+
     def test_bundle_runs_without_repository_with_or_without_bytecode(self):
         bundle = self.bundles[""]
         destination = self.base / "relocated bundle"

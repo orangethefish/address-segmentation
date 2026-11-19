@@ -19,6 +19,7 @@ from address_segmentation.model import MatcherConfig
 
 INDEX_MAGIC = b"ASIDX002"
 INDEX_SLOT = struct.Struct("<QII")
+HIERARCHY_TIEBREAK_POLICY = "text-ambiguity-tiebreak"
 # The bundle compiler replaces this value with its source identity.
 RUNTIME_ID = None
 
@@ -227,6 +228,9 @@ class PreparedMatcher(AddressMatcher):
         try:
             self._config = MatcherConfig(**self._store.metadata["config"])
             self._catalog = PreparedCatalog(self._store)
+            self._location_masks = (PreparedMap(self._store, "location")
+                                    if self._store.metadata.get("hierarchy_policy") == HIERARCHY_TIEBREAK_POLICY
+                                    else None)
             self._approx_index = PreparedApproximateIndex(self._store) if self._config.enable_fuzzy else None
             self._typing_index = (PreparedTypingIndex(self._store)
                                   if self._config.enable_typing or self._config.enable_compact else None)
